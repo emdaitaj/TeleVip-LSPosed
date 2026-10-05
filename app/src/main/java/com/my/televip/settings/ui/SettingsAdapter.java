@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.my.televip.Configs.ConfigItem;
 import com.my.televip.Configs.ConfigManager;
 import com.my.televip.Audio;
+import com.my.televip.features.hideChats.HideChats;
+import com.my.televip.features.hideChats.HideChatsConfig;
 import com.my.televip.language.Keys;
 import com.my.televip.language.Translator;
 import com.my.televip.logging.Logger;
@@ -18,6 +20,7 @@ import com.my.televip.settings.controller.SettingsController;
 import com.my.televip.ui.ThemeColors;
 import com.my.televip.utils.DialogUtils;
 import com.my.televip.utils.Utils;
+import com.my.televip.virtuals.ActionBar.AlertDialog;
 import com.my.televip.virtuals.androidx.ViewHolder;
 import com.my.televip.virtuals.messenger.browser.Browser;
 import com.my.televip.ui.Cells.ExpandableTextCheckCell;
@@ -29,8 +32,6 @@ import com.my.televip.virtuals.ui.Cells.TextSettingsCell;
 import de.robv.android.xposed.XposedHelpers;
 
 public class SettingsAdapter {
-
-    private static boolean isLongText = false;
 
     public static int getRow(int position) { return ConfigManager.getItems().get(position).getType(); }
 
@@ -99,6 +100,13 @@ public class SettingsAdapter {
                                 break;
                         }
                         settingsCell.cell.setTextAndValue(Translator.get(item.getKey()), value, false, false);
+                    } else if (item.getKey().equals(Keys.HideChatsMode)) {
+                        settingsCell.cell.setTextAndValue(Translator.get(item.getKey()), getHideChatsModeName(item.getIntValue()), false, false);
+                        settingsCell.cell.getTextView().setTextColor(ThemeColors.getTextColor());
+                    } else if (item.getKey().equals(Keys.HideChatsSelect)) {
+                        int count = HideChats.getSelectedCount();
+                        settingsCell.cell.setTextAndValue(Translator.get(item.getKey()), count == 0 ? Translator.get(Keys.HideChatsNoneSelected) : Translator.get(Keys.HideChatsSelectedCount, count), false, false);
+                        settingsCell.cell.getTextView().setTextColor(ThemeColors.getTextColor());
                     } else {
                         settingsCell.cell.setText(Translator.get(item.getKey()), false);
                         settingsCell.cell.getTextView().setTextColor(ThemeColors.getTextBlueColor());
@@ -112,24 +120,9 @@ public class SettingsAdapter {
                     TextInfoCellHolder textInfoCell = new TextInfoCellHolder(holder);
                     TextView textView = textInfoCell.text.getTextView();
                     if (item.getKey().equals(Keys.OfflineVisibilityInfo)) {
-                        textView.setMaxLines(2);
-                        textView.setEllipsize(TextUtils.TruncateAt.END);
-                        textView.setText(Translator.get(Keys.OfflineVisibilityInfo));
-                        if (textView.getMaxLines() == 2) {
-                            isLongText = false;
-                        }
-                        textView.setOnClickListener(v -> {
-                            if (!isLongText) {
-                                textView.setMaxLines(Integer.MAX_VALUE);
-                                textView.setEllipsize(null);
-                                isLongText = true;
-                            } else {
-                                textView.setMaxLines(2);
-                                textView.setEllipsize(TextUtils.TruncateAt.END);
-                                textView.setText(Translator.get(Keys.OfflineVisibilityInfo));
-                                isLongText = false;
-                            }
-                        });
+                        bindExpandableInfo(textView, Translator.get(Keys.OfflineVisibilityInfo), 2);
+                    } else if (item.getKey().equals(Keys.HideChatsInfo)) {
+                        bindExpandableInfo(textView, Translator.get(Keys.HideChatsInfo), 3);
                     }
                     break;
             }
@@ -145,6 +138,14 @@ public class SettingsAdapter {
                 if (viewType == ConfigItem.SWITCH) {
                     TextCheckCellHolder textCheck = new TextCheckCellHolder(holder);
                     boolean checked = !textCheck.cell.isChecked();
+                    if (checked && item.getKey().equals(Keys.HideChats) && HideChats.needsEnableConfirmation()) {
+                        confirmHideAllChats(settingsController, () -> {
+                            item.setEnable(true);
+                            item.run();
+                            notifyItemChanged(settingsController, position);
+                        });
+                        return;
+                    }
                     textCheck.cell.setChecked(checked);
                     item.setEnable(checked);
                     item.run();
@@ -178,6 +179,29 @@ public class SettingsAdapter {
                                         }
                                     });
                             dlg.show();
+                            break;
+                        case Keys.HideChatsMode:
+                            Dialog modeDialog = DialogUtils.createSingleChoiceDialog((Activity) settingsController.getContext(), new String[]{
+                                            getHideChatsModeName(HideChatsConfig.MODE_SHOW_ONLY_SELECTED), getHideChatsModeName(HideChatsConfig.MODE_HIDE_SELECTED)},
+                                    Translator.get(Keys.HideChatsMode), item.getIntValue(), (dialog, which) -> {
+                                        Runnable apply = () -> {
+                                            item.setIntValue(which);
+                                            HideChats.onSettingsChanged();
+                                            notifyItemChanged(settingsController, position);
+                                        };
+                                        boolean hideAll = which == HideChatsConfig.MODE_SHOW_ONLY_SELECTED
+                                                && ConfigManager.hideChats != null && ConfigManager.hideChats.isEnable()
+                                                && HideChats.getSelectedCount() == 0;
+                                        if (hideAll && item.getIntValue() != which) {
+                                            confirmHideAllChats(settingsController, apply);
+                                        } else {
+                                            apply.run();
+                                        }
+                                    });
+                            modeDialog.show();
+                            break;
+                        case Keys.HideChatsSelect:
+                            HideChats.openPicker((Activity) settingsController.getContext(), () -> notifyItemChanged(settingsController, position));
                             break;
                     }
                 }
@@ -234,6 +258,49 @@ public class SettingsAdapter {
         public TextInfoCellHolder(Object obj) {
             text = (TextInfoCell) XposedHelpers.getObjectField(obj, "view");
         }
+    }
+
+    private static String getHideChatsModeName(int mode) {
+        return Translator.get(mode == HideChatsConfig.MODE_HIDE_SELECTED ? Keys.HideChatsModeHide : Keys.HideChatsModeShowOnly);
+    }
+
+    /**
+     * "Show only selected chats" with nothing selected hides every chat: ask first.
+     */
+    private static void confirmHideAllChats(SettingsController settingsController, Runnable onConfirm) {
+        AlertDialog alertDialog = new AlertDialog(settingsController.getContext());
+        alertDialog.setTitle(Translator.get(Keys.HideChats));
+        alertDialog.setMessage(Translator.get(Keys.HideChatsEnableNoSelection));
+        alertDialog.setPositiveButton(Translator.get(Keys.HideChatsEnable), AlertDialog.click(onConfirm::run));
+        alertDialog.setNegativeButton(Translator.get(Keys.Cancel), null);
+        alertDialog.setNeutralButton(Translator.get(Keys.HideChatsSelect), AlertDialog.click(() ->
+                HideChats.openPicker((Activity) settingsController.getContext(), () -> notifyItemChanged(settingsController, ConfigManager.getItems().indexOf(ConfigManager.hideChatsSelect)))));
+        alertDialog.show();
+    }
+
+    private static void notifyItemChanged(SettingsController settingsController, int position) {
+        try {
+            if (position < 0 || settingsController.settingsActivity == null || settingsController.settingsActivity.listView == null) return;
+            settingsController.settingsActivity.listView.getAdapter().notifyItemChanged(position);
+        } catch (Throwable t) {
+            Logger.e(t);
+        }
+    }
+
+    /**
+     * Info text collapsed to a few lines; a tap expands / collapses it. Rebinding collapses it again.
+     */
+    private static void bindExpandableInfo(TextView textView, String text, int collapsedLines) {
+        textView.setText(text);
+        textView.setTag(Boolean.FALSE);
+        textView.setMaxLines(collapsedLines);
+        textView.setEllipsize(TextUtils.TruncateAt.END);
+        textView.setOnClickListener(v -> {
+            boolean expanded = !Boolean.TRUE.equals(textView.getTag());
+            textView.setTag(expanded);
+            textView.setMaxLines(expanded ? Integer.MAX_VALUE : collapsedLines);
+            textView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
+        });
     }
 
     public static void playAudio(Context context) {

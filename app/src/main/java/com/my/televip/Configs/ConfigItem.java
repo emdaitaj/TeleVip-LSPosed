@@ -77,10 +77,16 @@ public class ConfigItem {
         ConfigPreferences.putBoolean(key, value);
     }
 
-    public int getCustomCalendar() { return ConfigPreferences.getInt(key+"Int"); }
+    public int getIntValue() { return ConfigPreferences.getInt(key + "Int"); }
+
+    public void setIntValue(int value) {
+        ConfigPreferences.putInt(key + "Int", value);
+    }
+
+    public int getCustomCalendar() { return getIntValue(); }
 
     public void setCustomCalendar(int value) {
-        ConfigPreferences.putInt(key+"Int", value);
+        setIntValue(value);
     }
 
     public void run() {

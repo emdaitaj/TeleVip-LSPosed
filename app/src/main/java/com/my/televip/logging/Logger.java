@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import com.my.televip.Clients.ClientManager;
 import com.my.televip.application.ApplicationLoaderHook;
 import com.my.televip.obfuscate.struct.ResolverRegistry;
 
@@ -33,7 +34,8 @@ public class Logger {
             StringBuilder log = new StringBuilder();
 
             log.append("[TeleVip] [Error] pkgName: ").append(pkgName).append(" ").append(throwable).append("\n");
-            log.append("appName = ").append(ResolverRegistry.getResolverClass().getSimpleName()).append("\n");
+            Class<?> resolverClass = ResolverRegistry.getResolverClass();
+            log.append("appName = ").append(resolverClass != null ? resolverClass.getSimpleName() : String.valueOf(ClientManager.getCurrent())).append("\n");
 
             try {
                 PackageManager pm = ApplicationLoaderHook.getApplicationContext().getPackageManager();
