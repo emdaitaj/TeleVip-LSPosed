@@ -13,6 +13,7 @@ import com.my.televip.Drawable.ArrowDrawable;
 import com.my.televip.Audio;
 import com.my.televip.base.BaseMethodHook;
 import com.my.televip.dex.DexInjector;
+import com.my.televip.features.hideChats.ui.ChatPicker;
 import com.my.televip.hooks.HMethod;
 import com.my.televip.language.Keys;
 import com.my.televip.language.Translator;
@@ -100,6 +101,10 @@ public class SettingsActivity {
             HMethod.hookMethod(ClassLoad.getClass(ClassNames.LAUNCH_ACTIVITY), "onBackPressed", new BaseMethodHook() {
                 @Override
                 protected void beforeMethod(MethodHookParam param) {
+                    if (ChatPicker.dismissCurrent()) {
+                        param.setResult(null);
+                        return;
+                    }
                     if (isSettings) {
                         settingsController.hide();
                         settingsController.settingsView = null;

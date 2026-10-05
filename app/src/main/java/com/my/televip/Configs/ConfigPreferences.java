@@ -15,12 +15,20 @@ public class ConfigPreferences {
         sharedPreferences = ApplicationLoaderHook.getApplicationContext().getSharedPreferences("TeleVip", Activity.MODE_PRIVATE);
     }
 
+    public static void ensureInit() {
+        if (sharedPreferences == null) init();
+    }
+
     public static boolean getBoolean(String key) {
+        return getBoolean(key, false);
+    }
+
+    public static boolean getBoolean(String key, boolean defValue) {
         try {
-            return sharedPreferences.getBoolean(key, false);
+            return sharedPreferences.getBoolean(key, defValue);
         } catch (ClassCastException e) {
             sharedPreferences.edit().remove(key).apply();
-            return false;
+            return defValue;
         }
     }
 

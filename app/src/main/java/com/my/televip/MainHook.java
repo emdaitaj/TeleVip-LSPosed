@@ -8,6 +8,7 @@ import com.my.televip.Class.ClassLoad;
 import com.my.televip.Class.ClassNames;
 import com.my.televip.Clients.ClientManager;
 import com.my.televip.base.BaseMethodHook;
+import com.my.televip.features.hideChats.HideChats;
 import com.my.televip.hooks.HMethod;
 import com.my.televip.utils.Utils;
 
@@ -28,6 +29,15 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
         Utils.classLoader = lpparam.classLoader;
         Utils.pkgName = lpparam.packageName;
+
+        if (HideChats.isPotentiallySupported()) {
+            HMethod.hookMethod(ClassLoad.getClass(ClassNames.APPLICATION_LOADER), "onCreate", new BaseMethodHook() {
+                @Override
+                protected void afterMethod(MethodHookParam param) {
+                    HideChats.earlyInit();
+                }
+            });
+        }
 
         HMethod.hookMethod(ClassLoad.getClass(ClassNames.LAUNCH_ACTIVITY), "onCreate", Bundle.class, new BaseMethodHook() {
             @Override

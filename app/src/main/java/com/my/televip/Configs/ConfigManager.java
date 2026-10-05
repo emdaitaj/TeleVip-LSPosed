@@ -27,7 +27,9 @@ import com.my.televip.features.otherFeatures.AlwaysSaveMedia;
 import com.my.televip.features.otherFeatures.CopyNameHook;
 import com.my.televip.features.otherFeatures.EditOnlineTextView;
 import com.my.televip.features.otherFeatures.FeatureInitializer;
+import com.my.televip.features.hideChats.HideChats;
 import com.my.televip.language.Keys;
+import com.my.televip.language.Translator;
 import com.my.televip.logging.Logger;
 
 import java.util.ArrayList;
@@ -83,6 +85,15 @@ public class ConfigManager {
     public static ConfigItem hideProxySponsor;
     public static ConfigItem showUserID;
     public static ConfigItem customCalendar;
+
+    // Hide Chats
+    public static ConfigItem hideChatsSettings;
+    public static ConfigItem hideChats;
+    public static ConfigItem hideChatsMode;
+    public static ConfigItem hideChatsSelect;
+    public static ConfigItem hideChatsHideNew;
+    public static ConfigItem hideChatsMuteNotifications;
+    public static ConfigItem hideChatsInfo;
 
     // Other Features
     public static ConfigItem otherFeatures;
@@ -219,6 +230,32 @@ public class ConfigManager {
         }
 
         items.add(shadows);
+
+        // Hide Chats
+        if (HideChats.isSupported()) {
+            hideChatsSettings = new ConfigItem(ConfigItem.HEADER, Keys.HideChatsSettings);
+            items.add(hideChatsSettings);
+
+            hideChats = new ConfigItem(ConfigItem.SWITCH, Keys.HideChats, ConfigPreferences.getBoolean(Keys.HideChats), HideChats::onToggle);
+            items.add(hideChats);
+
+            hideChatsMode = new ConfigItem(ConfigItem.TEXT, Keys.HideChatsMode);
+            items.add(hideChatsMode);
+
+            hideChatsSelect = new ConfigItem(ConfigItem.TEXT, Keys.HideChatsSelect);
+            items.add(hideChatsSelect);
+
+            hideChatsHideNew = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsHideNew, Translator.get(Keys.HideChatsHideNewInfo), ConfigPreferences.getBoolean(Keys.HideChatsHideNew), HideChats::onSettingsChanged);
+            items.add(hideChatsHideNew);
+
+            hideChatsMuteNotifications = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsMuteNotifications, Translator.get(Keys.HideChatsMuteNotificationsInfo), ConfigPreferences.getBoolean(Keys.HideChatsMuteNotifications, true), HideChats::onSettingsChanged);
+            items.add(hideChatsMuteNotifications);
+
+            hideChatsInfo = new ConfigItem(ConfigItem.INFO, Keys.HideChatsInfo);
+            items.add(hideChatsInfo);
+
+            items.add(shadows);
+        }
 
         // Other Features
         otherFeatures = new ConfigItem(ConfigItem.HEADER, Keys.OtherFeaturesSettings);
