@@ -26,15 +26,18 @@ final class ChatClassifier {
     static final class Probe {
         final long key;
         final int activatedAt;
+        // activity seen when the chat went pending (0 = unknown): proof enough once a basic group loads
+        final int date;
         // attempts in the current round, finished rounds
         int attempts;
         int rounds;
         boolean roundActive;
         Runnable roundTimeout;
 
-        Probe(long key, int activatedAt) {
+        Probe(long key, int activatedAt, int date) {
             this.key = key;
             this.activatedAt = activatedAt;
+            this.date = date;
         }
     }
 
@@ -72,25 +75,39 @@ final class ChatClassifier {
         }
         boolean isChat = DialogIds.isChatDialog(key);
         if (isChat && chat == null) chat = TgAccess.getChat(filter.getMessagesController(), -key);
-        if (chat != null && TgAccess.boolValue(TgAccess.callStatic(TgAccess.chatObjectClass, "ChatObject", "isNotInChat", chat), false)) {
-            // a chat we were removed from or left that is still listed: its history can no longer be
-            // asked about, and it existed long enough to end
-            return store(data, key, false);
+        if (isNotInChat(chat)) {
+            // still listed after we were removed or left: hidden like an old chat, but not classified,
+            // since its history can no longer be asked about and joining again must count as new
+            data.dead.add(key);
+            return false;
         }
-        Boolean isNew = decideByChatDate(chat, activatedAt);
-        // A message older than the activation proves a private chat or basic group existed. Channels
-        // and supergroups may show history from before we joined: only their join date counts.
-        if (isNew == null && date > 0 && date <= activatedAt && (!isChat || chat != null && !TgAccess.isChannel(chat))) {
-            isNew = false;
-        }
+        data.dead.remove(key);
+        Boolean isNew = decide(chat, isChat, date, activatedAt);
         if (isNew != null) {
             return store(data, key, isNew);
         }
         if (data.pending.add(key)) {
             int account = filter.account;
-            HideChats.post(() -> startProbe(account, data, key, activatedAt));
+            HideChats.post(() -> startProbe(account, data, key, activatedAt, date));
         }
         return false;
+    }
+
+    /**
+     * What can be told without asking the server: join / creation dates, or a message older than the
+     * activation, which proves a private chat or basic group existed. Channels and supergroups may show
+     * history from before we joined: only their join date counts. Null when undecided.
+     */
+    private static Boolean decide(Object chat, boolean isChat, int date, int activatedAt) {
+        Boolean isNew = decideByChatDate(chat, activatedAt);
+        if (isNew == null && date > 0 && date <= activatedAt && (!isChat || chat != null && !TgAccess.isChannel(chat))) {
+            isNew = false;
+        }
+        return isNew;
+    }
+
+    private static boolean isNotInChat(Object chat) {
+        return chat != null && TgAccess.boolValue(TgAccess.callStatic(TgAccess.chatObjectClass, "ChatObject", "isNotInChat", chat), false);
     }
 
     /**
@@ -116,9 +133,9 @@ final class ChatClassifier {
         return TgAccess.isChannel(chat) ? Boolean.FALSE : null;
     }
 
-    private static void startProbe(int account, HideChatsConfig.AccountData data, long key, int activatedAt) {
+    private static void startProbe(int account, HideChatsConfig.AccountData data, long key, int activatedAt, int date) {
         if (!data.pending.contains(key) || data.probes.containsKey(key)) return;
-        Probe probe = new Probe(key, activatedAt);
+        Probe probe = new Probe(key, activatedAt, date);
         probe.roundTimeout = () -> endRound(account, data, probe);
         data.probes.put(key, probe);
         startRound(account, data, probe);
@@ -136,12 +153,14 @@ final class ChatClassifier {
     private static void sendProbe(int account, HideChatsConfig.AccountData data, Probe probe) {
         if (data.probes.get(probe.key) != probe || !probe.roundActive) return;
         // the chat may have been loaded in the meantime
-        Object chat = DialogIds.isChatDialog(probe.key) ? TgAccess.getChat(TgAccess.getMessagesController(account), -probe.key) : null;
-        if (chat != null && TgAccess.boolValue(TgAccess.callStatic(TgAccess.chatObjectClass, "ChatObject", "isNotInChat", chat), false)) {
-            finish(account, data, probe, false);
+        boolean isChat = DialogIds.isChatDialog(probe.key);
+        Object chat = isChat ? TgAccess.getChat(TgAccess.getMessagesController(account), -probe.key) : null;
+        if (isNotInChat(chat)) {
+            data.dead.add(probe.key);
+            finish(account, data, probe, null);
             return;
         }
-        Boolean isNew = decideByChatDate(chat, probe.activatedAt);
+        Boolean isNew = decide(chat, isChat, probe.date, probe.activatedAt);
         if (isNew != null) {
             finish(account, data, probe, isNew);
             return;
@@ -266,11 +285,16 @@ final class ChatClassifier {
         handler.postDelayed(() -> startRound(account, data, probe), delay);
     }
 
-    private static void finish(int account, HideChatsConfig.AccountData data, Probe probe, boolean isNew) {
+    /**
+     * @param isNew the classification, or null when the chat turned out to be one we are not in
+     */
+    private static void finish(int account, HideChatsConfig.AccountData data, Probe probe, Boolean isNew) {
         data.probes.remove(probe.key);
         handler.removeCallbacks(probe.roundTimeout);
         waiting.remove(probe);
-        if (probe.activatedAt == data.activatedAt && store(data, probe.key, isNew)) {
+        if (isNew == null) {
+            data.pending.remove(probe.key);
+        } else if (probe.activatedAt == data.activatedAt && store(data, probe.key, isNew)) {
             HideChatsConfig.markDirty(data);
         }
         NotificationsHooks.settleHeld(account, data);

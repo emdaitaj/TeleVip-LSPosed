@@ -28,30 +28,19 @@ final class NotificationsHooks {
     static final class Held {
         final ArrayList<Object> messages = new ArrayList<>();
         final ArrayList<Object> pushMessages = new ArrayList<>();
-        // restored at startup, handed back without sound: TLRPC.Message / pushed MessageObjects
-        final ArrayList<Object> restoredMessages = new ArrayList<>();
-        final ArrayList<Object> restoredPushMessages = new ArrayList<>();
         // dialog id -> unread count
         final HashMap<Long, Integer> unread = new HashMap<>();
 
         boolean isEmpty() {
-            return messages.isEmpty() && pushMessages.isEmpty() && restoredMessages.isEmpty()
-                    && restoredPushMessages.isEmpty() && unread.isEmpty();
+            return messages.isEmpty() && pushMessages.isEmpty() && unread.isEmpty();
         }
 
         void dropDialog(long dialogId) {
             unread.remove(dialogId);
             messages.removeIf(messageObject -> TgAccess.getMessageObjectDialogId(messageObject) == dialogId);
             pushMessages.removeIf(messageObject -> TgAccess.getMessageObjectDialogId(messageObject) == dialogId);
-            restoredMessages.removeIf(message -> TgAccess.getMessageDialogId(message) == dialogId);
-            restoredPushMessages.removeIf(messageObject -> TgAccess.getMessageObjectDialogId(messageObject) == dialogId);
         }
     }
-
-    private static final int HOLD_LIVE = 0;
-    private static final int HOLD_PUSH = 1;
-    private static final int HOLD_RESTORED = 2;
-    private static final int HOLD_RESTORED_PUSH = 3;
 
     private NotificationsHooks() {}
 
@@ -84,7 +73,7 @@ final class NotificationsHooks {
                     if (!filter.isHidden(dialogId)) {
                         visible.add(messageObject);
                     } else if (filter.isPending(dialogId)) {
-                        hold(filter, dialogId, messageObject, push ? HOLD_PUSH : HOLD_LIVE);
+                        hold(filter, dialogId, messageObject, push);
                     }
                 }
                 if (snapshotChanged) {
@@ -133,36 +122,25 @@ final class NotificationsHooks {
                         HideChatsConfig.markDirty(filter.data);
                         HideChats.scheduleCountersRefresh(filter.account);
                     }
+                    // The restored state is rebuilt from the database whenever Telegram reloads it. For chats
+                    // still being classified it is simply dropped, and reloaded (from then current data) if
+                    // they turn out visible: see settleHeld.
                     Object dialogs = param.args[0];
                     if (dialogs != null) {
                         for (int i = TgAccess.intValue(TgAccess.call(dialogs, "LongSparseArray", "size"), 0) - 1; i >= 0; i--) {
                             long dialogId = TgAccess.longValue(TgAccess.call(dialogs, "LongSparseArray", "keyAt", i), 0);
                             if (!filter.isHidden(dialogId)) continue;
-                            if (filter.isPending(dialogId)) {
-                                holdUnread(filter, dialogId, TgAccess.intValue(TgAccess.call(dialogs, "LongSparseArray", "valueAt", i), 0));
-                            }
+                            if (filter.isPending(dialogId)) filter.data.restoreDropped.add(filter.toPeerKey(dialogId));
                             TgAccess.call(dialogs, "LongSparseArray", "removeAt", i);
                         }
                     }
                     if (param.args[1] instanceof ArrayList) {
                         //noinspection unchecked
-                        ((ArrayList<Object>) param.args[1]).removeIf(message -> {
-                            if (message == null) return false;
-                            long dialogId = TgAccess.getMessageDialogId(message);
-                            if (!filter.isHidden(dialogId)) return false;
-                            if (filter.isPending(dialogId)) hold(filter, dialogId, message, HOLD_RESTORED);
-                            return true;
-                        });
+                        ((ArrayList<Object>) param.args[1]).removeIf(message -> message != null && dropRestored(filter, TgAccess.getMessageDialogId(message)));
                     }
                     if (param.args[2] instanceof ArrayList) {
                         //noinspection unchecked
-                        ((ArrayList<Object>) param.args[2]).removeIf(messageObject -> {
-                            if (messageObject == null) return false;
-                            long dialogId = TgAccess.getMessageObjectDialogId(messageObject);
-                            if (!filter.isHidden(dialogId)) return false;
-                            if (filter.isPending(dialogId)) hold(filter, dialogId, messageObject, HOLD_RESTORED_PUSH);
-                            return true;
-                        });
+                        ((ArrayList<Object>) param.args[2]).removeIf(messageObject -> messageObject != null && dropRestored(filter, TgAccess.getMessageObjectDialogId(messageObject)));
                     }
                     if (param.args[6] instanceof Collection) {
                         //noinspection unchecked
@@ -233,7 +211,6 @@ final class NotificationsHooks {
         if (filter != null && filter.data != data) return;
         ArrayList<Held> deliver = new ArrayList<>();
         synchronized (data.held) {
-            if (data.held.isEmpty()) return;
             Iterator<Map.Entry<Long, Held>> iterator = data.held.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Long, Held> entry = iterator.next();
@@ -243,24 +220,9 @@ final class NotificationsHooks {
                 if (filter == null || !filter.isHiddenKey(key)) deliver.add(entry.getValue());
             }
         }
-        if (deliver.isEmpty()) return;
         Object controller = TgAccess.getNotificationsController(account);
         Class<?>[] newMessagesTypes = {ArrayList.class, boolean.class, boolean.class, CountDownLatch.class};
         for (Held held : deliver) {
-            // restored ones first and silently (isLast = false), as they were before the restart
-            if (!held.restoredPushMessages.isEmpty()) {
-                TgAccess.callWithTypes(controller, "NotificationsController", "processNewMessages", newMessagesTypes, held.restoredPushMessages, false, true, null);
-            }
-            if (!held.restoredMessages.isEmpty()) {
-                ArrayList<Object> restored = new ArrayList<>(held.restoredMessages.size());
-                for (Object message : held.restoredMessages) {
-                    Object messageObject = TgAccess.newMessageObject(account, message);
-                    if (messageObject != null) restored.add(messageObject);
-                }
-                if (!restored.isEmpty()) {
-                    TgAccess.callWithTypes(controller, "NotificationsController", "processNewMessages", newMessagesTypes, restored, false, false, null);
-                }
-            }
             if (!held.pushMessages.isEmpty()) {
                 TgAccess.callWithTypes(controller, "NotificationsController", "processNewMessages", newMessagesTypes, held.pushMessages, true, true, null);
             }
@@ -273,9 +235,20 @@ final class NotificationsHooks {
                 TgAccess.callWithTypes(controller, "NotificationsController", "processDialogsUpdateRead", new Class[]{TgAccess.longSparseIntArrayClass}, unread);
             }
         }
+        // Restored notifications dropped for chats that turned out visible: let Telegram restore them
+        // again, from the current database state, the way it does after loading dialogs.
+        boolean reload = false;
+        for (Long key : data.restoreDropped) {
+            if (filter != null && data.pending.contains(key)) continue;
+            data.restoreDropped.remove(key);
+            if (filter == null || !filter.isHiddenKey(key)) reload = true;
+        }
+        if (reload) {
+            TgAccess.call(TgAccess.getMessagesStorage(account), "MessagesStorage", "loadUnreadMessages");
+        }
     }
 
-    private static void hold(HiddenFilter filter, long dialogId, Object message, int kind) {
+    private static void hold(HiddenFilter filter, long dialogId, Object messageObject, boolean push) {
         long key = filter.toPeerKey(dialogId);
         HashMap<Long, Held> held = filter.data.held;
         synchronized (held) {
@@ -284,24 +257,20 @@ final class NotificationsHooks {
                 entry = new Held();
                 held.put(key, entry);
             }
-            ArrayList<Object> messages;
-            switch (kind) {
-                case HOLD_PUSH:
-                    messages = entry.pushMessages;
-                    break;
-                case HOLD_RESTORED:
-                    messages = entry.restoredMessages;
-                    break;
-                case HOLD_RESTORED_PUSH:
-                    messages = entry.restoredPushMessages;
-                    break;
-                default:
-                    messages = entry.messages;
-                    break;
-            }
-            if (messages.size() < MAX_HELD_MESSAGES) messages.add(message);
+            ArrayList<Object> messages = push ? entry.pushMessages : entry.messages;
+            if (messages.size() < MAX_HELD_MESSAGES) messages.add(messageObject);
         }
         settleIfClassified(filter, key);
+    }
+
+    private static boolean dropRestored(HiddenFilter filter, long dialogId) {
+        if (!filter.isHidden(dialogId)) return false;
+        if (filter.isPending(dialogId)) {
+            long key = filter.toPeerKey(dialogId);
+            filter.data.restoreDropped.add(key);
+            settleIfClassified(filter, key);
+        }
+        return true;
     }
 
     /**

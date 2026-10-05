@@ -335,7 +335,7 @@ final class SearchHooks {
                 if (type == REQUEST_PEERS) {
                     filterPeers(account, args[0]);
                 } else if (type == REQUEST_POSTS) {
-                    filterPosts(account, args[0]);
+                    filterPosts(account, request, args[0]);
                 } else if (isMessages(args[0]) && SearchPager.onResponse(account, getPagerKind(request), request, args[0],
                         response -> invokeDelegate(method, original, new Object[]{response, null}))) {
                     return null;
@@ -348,19 +348,22 @@ final class SearchHooks {
     }
 
     /**
-     * Public posts search: pages come out shorter. Screens that page by count must then stop instead
-     * of asking for the same (filtered) page again, so count drops to what is left.
+     * Public posts search: pages come out shorter, the count drops by what was removed. A first page
+     * that loses everything ends the search (count 0): screens with nothing to show would otherwise
+     * ask for that same first page again and again.
      */
-    private static void filterPosts(int account, Object response) {
+    private static void filterPosts(int account, Object request, Object response) {
         HiddenFilter filter = HideChatsConfig.filterFor(account);
         if (filter == null || !isMessages(response)) return;
         ArrayList<Object> messages = TgAccess.getList(response, "TLRPC$messages_Messages", "messages");
         if (messages == null) return;
         int size = messages.size();
         messages.removeIf(message -> message != null && filter.isHidden(TgAccess.getMessageDialogId(message)));
-        if (messages.size() != size) {
-            TgAccess.set(response, "TLRPC$messages_Messages", "count", messages.size());
-        }
+        int removed = size - messages.size();
+        if (removed == 0) return;
+        boolean firstPage = TgAccess.intValue(TgAccess.get(request, "TLRPC$TL_channels_searchPosts", "offset_rate"), 0) == 0;
+        int count = TgAccess.intValue(TgAccess.get(response, "TLRPC$messages_Messages", "count"), 0);
+        TgAccess.set(response, "TLRPC$messages_Messages", "count", messages.isEmpty() && firstPage ? 0 : Math.max(messages.size(), count - removed));
     }
 
     private static void filterPeers(int account, Object response) {

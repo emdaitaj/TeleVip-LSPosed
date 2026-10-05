@@ -49,6 +49,11 @@ public class HideChatsConfig {
         final Set<Long> newChats = ConcurrentHashMap.newKeySet();
         // first seen after activation and waiting for ChatClassifier; kept in memory only
         final Set<Long> pending = ConcurrentHashMap.newKeySet();
+        // listed chats we were removed from / left: hidden like old ones, never classified (we may join
+        // again, and then the join date decides); kept in memory only
+        final Set<Long> dead = ConcurrentHashMap.newKeySet();
+        // pending chats whose notifications restored at startup were dropped (NotificationsHooks)
+        final Set<Long> restoreDropped = ConcurrentHashMap.newKeySet();
         // ChatClassifier requests in flight (UI thread only)
         final HashMap<Long, ChatClassifier.Probe> probes = new HashMap<>();
         // notifications of pending chats (guarded by itself)
@@ -231,6 +236,7 @@ public class HideChatsConfig {
             data.known.clear();
             data.newChats.clear();
             data.pending.clear();
+            data.dead.clear();
             data.activatedAt = 0;
         }
         data.snapshotRequested = false;

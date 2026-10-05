@@ -46,7 +46,6 @@ final class TgAccess {
     static volatile Class<?> notificationsControllerClass;
     static volatile Class<?> connectionsManagerClass;
     static volatile Class<?> messageObjectClass;
-    static volatile Class<?> messageClass;
     static volatile Class<?> sharedConfigClass;
     static volatile Class<?> chatObjectClass;
     static volatile Class<?> tlObjectClass;
@@ -86,7 +85,6 @@ final class TgAccess {
         notificationsControllerClass = findClass(ClassNames.NOTIFICATIONS_CONTROLLER);
         connectionsManagerClass = findClass(ClassNames.CONNECTIONS_MANAGER);
         messageObjectClass = findClass(ClassNames.MESSAGE_OBJECT);
-        messageClass = findClass(ClassNames.MESSAGE);
         sharedConfigClass = findClass(ClassNames.SHARED_CONFIG);
         chatObjectClass = findClass(ClassNames.CHAT_OBJECT);
         tlObjectClass = findClass(ClassNames.TL_OBJECT);
@@ -496,9 +494,28 @@ final class TgAccess {
     static long resolveEncryptedChatUserId(int account, Object messagesController, int encryptedChatId) {
         long userId = getEncryptedChatUserId(messagesController, encryptedChatId);
         if (userId != 0 || Looper.myLooper() == Looper.getMainLooper()) return userId;
+        // not in the database either: do not ask again for a while
+        long cacheKey = ((long) account << 32) | (encryptedChatId & 0xffffffffL);
+        Long missingSince = missingEncryptedChats.get(cacheKey);
+        if (missingSince != null && System.currentTimeMillis() - missingSince < MISSING_ENCRYPTED_CHAT_RETRY_MS) return 0;
+        userId = loadEncryptedChatUserId(account, messagesController, encryptedChatId);
+        if (userId == 0) {
+            missingEncryptedChats.put(cacheKey, System.currentTimeMillis());
+        } else {
+            missingEncryptedChats.remove(cacheKey);
+        }
+        return userId;
+    }
+
+    private static final long MISSING_ENCRYPTED_CHAT_RETRY_MS = 60000;
+    private static final Map<Long, Long> missingEncryptedChats = new ConcurrentHashMap<>();
+
+    private static long loadEncryptedChatUserId(int account, Object messagesController, int encryptedChatId) {
+        long userId = 0;
         Object storage = getMessagesStorage(account);
         if (storage == null) return 0;
-        if (Thread.currentThread() == get(storage, "MessagesStorage", "storageQueue")) {
+        Thread thread = Thread.currentThread();
+        if (thread == call(storage, "MessagesStorage", "getStorageQueue") || thread.getName().startsWith("storageQueue")) {
             // inside a storage task: waiting for another one would deadlock, so query directly
             try {
                 SQLiteCursor cursor = new MessagesStorage(storage).getDatabase()
@@ -585,20 +602,6 @@ final class TgAccess {
 
     static long getMessageObjectDialogId(Object messageObject) {
         return longValue(call(messageObject, "MessageObject", "getDialogId"), 0);
-    }
-
-    /**
-     * new MessageObject(account, message, false, false), as Telegram builds restored notifications.
-     */
-    static Object newMessageObject(int account, Object message) {
-        if (messageObjectClass == null || messageClass == null || message == null) return null;
-        try {
-            return messageObjectClass.getConstructor(int.class, messageClass, boolean.class, boolean.class)
-                    .newInstance(account, message, false, false);
-        } catch (Throwable t) {
-            Logger.w("HideChats: unable to create a MessageObject: " + t);
-            return null;
-        }
     }
 
     static int getMessageObjectDate(Object messageObject) {

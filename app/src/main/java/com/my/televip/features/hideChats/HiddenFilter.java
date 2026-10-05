@@ -30,9 +30,11 @@ final class HiddenFilter {
     boolean isHidden(long dialogId) {
         long key = toPeerKey(dialogId);
         if (key == 0) return false;
-        // a secret chat whose user could not be found: only "show only selected" knows what to do with
-        // it (everything that is not selected is hidden)
-        if (DialogIds.isEncryptedDialog(key)) return mode == HideChatsConfig.MODE_SHOW_ONLY_SELECTED;
+        // a secret chat whose user could not be found: only its own selection can be checked
+        if (DialogIds.isEncryptedDialog(key)) {
+            boolean isSelected = selected.contains(key);
+            return mode == HideChatsConfig.MODE_SHOW_ONLY_SELECTED ? !isSelected : isSelected;
+        }
         return isHiddenKey(key);
     }
 
@@ -43,7 +45,7 @@ final class HiddenFilter {
     boolean isHiddenKey(long key) {
         if (mode == HideChatsConfig.MODE_SHOW_ONLY_SELECTED) {
             if (selected.contains(key)) return false;
-            if (data.known.contains(key)) return true;
+            if (data.known.contains(key) || data.dead.contains(key)) return true;
             if (data.newChats.contains(key)) return hideNewChats;
             return data.pending.contains(key);
         }
