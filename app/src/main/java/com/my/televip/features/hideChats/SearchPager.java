@@ -5,7 +5,10 @@ import com.my.televip.logging.Logger;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.robv.android.xposed.XposedHelpers;
@@ -19,7 +22,8 @@ import de.robv.android.xposed.XposedHelpers;
  * - rate based searches deliver exactly the requested number of results while more exist. Results
  *   fetched beyond that are kept and handed out first with the next page; the next_rate the screen
  *   gets is a token (negative, real rates never are) that maps its next request back to the real
- *   server position.
+ *   server position. A token stays valid after use: the same position may be continued by more than
+ *   one screen (the music player continues the search list's position).
  * - the calls log pages by message id and accepts any non-empty page: whole pages are delivered.
  * The refill is bounded: when nearly every result belongs to hidden chats, a page can still come out
  * short and the screen stops paging there (searching inside the chat still finds everything).
@@ -40,32 +44,55 @@ final class SearchPager {
     // refill pages of rate based searches are fetched larger: with most chats hidden, few results
     // of a page survive
     private static final int REFILL_PAGE_SIZE = 50;
-    private static final int MAX_SESSIONS = 32;
+    private static final int MAX_SESSIONS = 64;
     private static final String KEY_SESSION = "televipHideChatsSearchSession";
     private static final String KEY_OWN_REQUEST = "televipHideChatsOwnRequest";
     private static final String REQUEST = "TLRPC$TL_messages_searchGlobal";
     private static final String RESPONSE = "TLRPC$messages_Messages";
 
     /**
-     * Where a refilled rate based search goes on: the server position and the results fetched
-     * beyond the last delivered page.
+     * Where a refilled rate based search goes on: the server position and the results fetched beyond
+     * the delivered page, with the users / chats they need. Never changed once created.
      */
     private static final class Session {
         final int token;
-        int rate;
-        int offsetId;
-        long offsetPeerId;
-        Object offsetPeer;
+        final int rate;
+        final int offsetId;
+        final Object offsetPeer;
         // the server has nothing more: only the kept results are left
-        boolean serverEnd;
-        final ArrayList<Object> results = new ArrayList<>();
-        final ArrayList<Object> users = new ArrayList<>();
-        final ArrayList<Object> chats = new ArrayList<>();
-        int hidden;
-        int delivered;
+        final boolean serverEnd;
+        final List<Object> results;
+        final List<Object> users;
+        final List<Object> chats;
+        final int hidden;
+        final int delivered;
 
-        Session(int token) {
+        Session(int token, Page page, ArrayList<Object> results, ArrayList<Object> users, ArrayList<Object> chats) {
             this.token = token;
+            this.rate = page.rate;
+            this.offsetId = page.offsetId;
+            this.offsetPeer = page.getOffsetPeer();
+            this.serverEnd = page.serverEnd;
+            this.results = Collections.unmodifiableList(results);
+            this.users = Collections.unmodifiableList(users);
+            this.chats = Collections.unmodifiableList(chats);
+            this.hidden = page.hidden;
+            this.delivered = page.delivered;
+        }
+    }
+
+    /**
+     * Results taken from one server page (or kept from a previous delivery), starting at index start.
+     */
+    private static final class Segment {
+        final int start;
+        final List<Object> users;
+        final List<Object> chats;
+
+        Segment(int start, List<Object> users, List<Object> chats) {
+            this.start = start;
+            this.users = users;
+            this.chats = chats;
         }
     }
 
@@ -144,19 +171,21 @@ final class SearchPager {
         final Session previous;
         final Delivery delivery;
         final ArrayList<Object> results = new ArrayList<>();
+        final ArrayList<Segment> segments = new ArrayList<>();
         final ArrayList<Object> users = new ArrayList<>();
         final ArrayList<Object> chats = new ArrayList<>();
-        // users / chats of the last server page: the only ones results kept for later can need
-        ArrayList<Object> lastUsers = new ArrayList<>();
-        ArrayList<Object> lastChats = new ArrayList<>();
         int hidden;
         int delivered;
         int serverCount;
         int extraPages;
-        // server position after the last page
+        // server position after the last page; its peer is built when needed from the users / chats
+        // of the page the position comes from
         int rate;
         int offsetId;
         long offsetPeerId;
+        Object offsetPeer;
+        List<Object> offsetUsers = Collections.emptyList();
+        List<Object> offsetChats = Collections.emptyList();
         boolean serverEnd;
         boolean done;
 
@@ -173,10 +202,10 @@ final class SearchPager {
 
         boolean start() {
             if (previous != null) {
-                synchronized (sessions) {
-                    sessions.remove(previous.token);
+                if (!previous.results.isEmpty()) {
+                    segments.add(new Segment(0, previous.users, previous.chats));
+                    results.addAll(previous.results);
                 }
-                results.addAll(previous.results);
                 users.addAll(previous.users);
                 chats.addAll(previous.chats);
                 hidden = previous.hidden;
@@ -184,16 +213,13 @@ final class SearchPager {
                 // the position stays where it was until a non-empty server page moves it
                 rate = previous.rate;
                 offsetId = previous.offsetId;
-                offsetPeerId = previous.offsetPeerId;
+                offsetPeer = previous.offsetPeer;
                 serverEnd = previous.serverEnd;
-                lastUsers = new ArrayList<>(previous.users);
-                lastChats = new ArrayList<>(previous.chats);
-            }
-            if (previous != null && previous.serverEnd) {
-                // the request only went out because a request has to: its answer is not part of the results
-                serverEnd = true;
-                deliver();
-                return true;
+                if (serverEnd) {
+                    // the request only went out because a request has to: its answer is not a result
+                    deliver();
+                    return true;
+                }
             }
             int removed = consume(container);
             if (previous == null && removed == 0) return false;
@@ -203,16 +229,21 @@ final class SearchPager {
 
         private int consume(Object response) {
             ArrayList<Object> messages = TgAccess.getList(response, RESPONSE, "messages");
+            ArrayList<Object> pageUsers = copy(TgAccess.getList(response, RESPONSE, "users"));
+            ArrayList<Object> pageChats = copy(TgAccess.getList(response, RESPONSE, "chats"));
+            HashMap<Long, Object> chatsById = filter != null ? SearchHooks.chatsById(pageChats) : null;
             int size = messages != null ? messages.size() : 0;
+            int start = results.size();
             int removed = 0;
             boolean snapshotChanged = false;
             for (int i = 0; i < size; i++) {
                 Object message = messages.get(i);
                 if (message == null) continue;
-                long dialogId = TgAccess.getMessageDialogId(message);
                 if (filter != null) {
+                    long dialogId = TgAccess.getMessageDialogId(message);
                     // results come from all of our chats, including ones never loaded on this device
-                    if (filter.observeDialog(dialogId, TgAccess.getMessageDate(message))) snapshotChanged = true;
+                    Object chat = dialogId < 0 ? chatsById.get(-dialogId) : null;
+                    if (filter.observeDialog(dialogId, TgAccess.getMessageDate(message), chat)) snapshotChanged = true;
                     if (filter.isHidden(dialogId)) {
                         removed++;
                         continue;
@@ -221,8 +252,7 @@ final class SearchPager {
                 results.add(message);
             }
             if (snapshotChanged) HideChatsConfig.markDirty(filter.data);
-            ArrayList<Object> pageUsers = copy(TgAccess.getList(response, RESPONSE, "users"));
-            ArrayList<Object> pageChats = copy(TgAccess.getList(response, RESPONSE, "chats"));
+            if (results.size() > start) segments.add(new Segment(start, pageUsers, pageChats));
             users.addAll(pageUsers);
             chats.addAll(pageChats);
             hidden += removed;
@@ -231,8 +261,9 @@ final class SearchPager {
                 Object last = messages.get(size - 1);
                 offsetId = TgAccess.getMessageId(last);
                 offsetPeerId = TgAccess.getMessagePeerDialogId(last);
-                lastUsers = pageUsers;
-                lastChats = pageChats;
+                offsetPeer = null;
+                offsetUsers = pageUsers;
+                offsetChats = pageChats;
             }
             if (kind == KIND_RATE) {
                 if (size > 0) rate = TgAccess.intValue(TgAccess.get(response, RESPONSE, "next_rate"), 0);
@@ -273,7 +304,7 @@ final class SearchPager {
             Object nextRequest = copyRequest(request);
             if (nextRequest == null) return null;
             if (kind == KIND_RATE) {
-                Object peer = buildInputPeer(offsetPeerId, users, chats);
+                Object peer = getOffsetPeer();
                 if (peer == null) return null;
                 TgAccess.set(nextRequest, REQUEST, "offset_rate", rate);
                 TgAccess.set(nextRequest, REQUEST, "offset_peer", peer);
@@ -282,6 +313,13 @@ final class SearchPager {
             TgAccess.set(nextRequest, REQUEST, "offset_id", offsetId);
             XposedHelpers.setAdditionalInstanceField(nextRequest, KEY_OWN_REQUEST, true);
             return nextRequest;
+        }
+
+        Object getOffsetPeer() {
+            if (offsetPeer == null && offsetPeerId != 0) {
+                offsetPeer = buildInputPeer(offsetPeerId, offsetUsers, offsetChats);
+            }
+            return offsetPeer;
         }
 
         void deliver() {
@@ -305,17 +343,7 @@ final class SearchPager {
                 if (kind == KIND_RATE) {
                     int flags = TgAccess.intValue(TgAccess.get(response, RESPONSE, "flags"), 0);
                     if (more) {
-                        Session session = newSession();
-                        session.rate = rate;
-                        session.offsetId = offsetId;
-                        session.offsetPeerId = offsetPeerId;
-                        session.offsetPeer = buildInputPeer(offsetPeerId, lastUsers, lastChats);
-                        session.serverEnd = serverEnd;
-                        session.results.addAll(rest);
-                        session.users.addAll(lastUsers);
-                        session.chats.addAll(lastChats);
-                        session.hidden = hidden;
-                        session.delivered = delivered;
+                        Session session = newSession(rest);
                         TgAccess.set(response, RESPONSE, "next_rate", session.token);
                         flags |= 1;
                     } else {
@@ -335,9 +363,29 @@ final class SearchPager {
         }
 
         /**
+         * Keeps the results beyond the delivered page with the users / chats of the pages they came from.
+         */
+        private Session newSession(ArrayList<Object> rest) {
+            ArrayList<Object> restUsers = new ArrayList<>();
+            ArrayList<Object> restChats = new ArrayList<>();
+            for (int i = 0, count = segments.size(); i < count; i++) {
+                int end = i + 1 < count ? segments.get(i + 1).start : results.size();
+                if (end <= limit) continue;
+                restUsers.addAll(segments.get(i).users);
+                restChats.addAll(segments.get(i).chats);
+            }
+            synchronized (sessions) {
+                lastToken = lastToken <= Integer.MIN_VALUE + 1 ? -1 : lastToken - 1;
+                Session session = new Session(lastToken, this, rest, restUsers, restChats);
+                sessions.put(session.token, session);
+                return session;
+            }
+        }
+
+        /**
          * The offset peer of the next request: the chat of the last result, as Telegram builds it.
          */
-        private Object buildInputPeer(long dialogId, ArrayList<Object> users, ArrayList<Object> chats) {
+        private Object buildInputPeer(long dialogId, List<Object> users, List<Object> chats) {
             if (DialogIds.isUserDialog(dialogId)) {
                 Object user = findById(users, "TLRPC$User", dialogId);
                 if (user == null) return TgAccess.getInputPeer(TgAccess.getMessagesController(account), dialogId);
@@ -370,16 +418,7 @@ final class SearchPager {
         }
     }
 
-    private static Session newSession() {
-        synchronized (sessions) {
-            lastToken = lastToken <= Integer.MIN_VALUE + 1 ? -1 : lastToken - 1;
-            Session session = new Session(lastToken);
-            sessions.put(session.token, session);
-            return session;
-        }
-    }
-
-    private static Object findById(ArrayList<Object> objects, String classKey, long id) {
+    private static Object findById(List<Object> objects, String classKey, long id) {
         for (int i = objects.size() - 1; i >= 0; i--) {
             Object object = objects.get(i);
             if (TgAccess.longValue(TgAccess.get(object, classKey, "id"), 0) == id) return object;

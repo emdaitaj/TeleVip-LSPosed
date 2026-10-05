@@ -29,7 +29,11 @@ final class HiddenFilter {
 
     boolean isHidden(long dialogId) {
         long key = toPeerKey(dialogId);
-        return key != 0 && isHiddenKey(key);
+        if (key == 0) return false;
+        // a secret chat whose user could not be found: only "show only selected" knows what to do with
+        // it (everything that is not selected is hidden)
+        if (DialogIds.isEncryptedDialog(key)) return mode == HideChatsConfig.MODE_SHOW_ONLY_SELECTED;
+        return isHiddenKey(key);
     }
 
     /**
@@ -67,7 +71,7 @@ final class HiddenFilter {
         int chatId = DialogIds.getEncryptedChatId(dialogId);
         Long cached = encryptedChatUsers != null ? encryptedChatUsers.get(chatId) : null;
         if (cached == null) {
-            long userId = TgAccess.getEncryptedChatUserId(getMessagesController(), chatId);
+            long userId = TgAccess.resolveEncryptedChatUserId(account, getMessagesController(), chatId);
             cached = userId != 0 ? userId : dialogId;
             if (encryptedChatUsers == null) encryptedChatUsers = new HashMap<>();
             encryptedChatUsers.put(chatId, cached);
@@ -81,9 +85,17 @@ final class HiddenFilter {
      * the caller persists it.
      */
     boolean observeDialog(long dialogId, int lastActivityDate) {
+        return observeDialog(dialogId, lastActivityDate, null);
+    }
+
+    /**
+     * @param chat the TLRPC.Chat of a group / channel when the caller has it (e.g. from a response
+     *             that is not stored yet), otherwise null
+     */
+    boolean observeDialog(long dialogId, int lastActivityDate, Object chat) {
         long key = toPeerKey(dialogId);
         if (key == 0 || isClassified(key) || data.pending.contains(key)) return false;
-        return ChatClassifier.classify(this, key, lastActivityDate);
+        return ChatClassifier.classify(this, key, lastActivityDate, chat);
     }
 
     /**

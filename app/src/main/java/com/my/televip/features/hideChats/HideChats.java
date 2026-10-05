@@ -312,6 +312,14 @@ public class HideChats {
         }
     }
 
+    /**
+     * Always later on the UI thread: for work started from inside hooks, which must not re-enter
+     * Telegram (sort, reload, notify) in the middle of the hooked call.
+     */
+    static void post(Runnable runnable) {
+        handler.post(runnable);
+    }
+
     static void runOnUiThread(Runnable runnable) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             runnable.run();

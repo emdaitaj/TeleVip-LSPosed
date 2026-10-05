@@ -244,7 +244,7 @@ public class HideChatsConfig {
     private static void requestSnapshot(int account, AccountData data) {
         if (data.snapshotRequested) return;
         data.snapshotRequested = true;
-        HideChats.runOnUiThread(() -> {
+        HideChats.post(() -> {
             if (data.activatedAt != 0 || activatedAt == 0 || !isEnabled()
                     || TgAccess.getClientUserId(account) != data.userId) {
                 data.snapshotRequested = false;
@@ -316,6 +316,7 @@ public class HideChatsConfig {
             return;
         }
         int snapshotActivatedAt = data.activatedAt;
+        String dialogsQuery = "SELECT did FROM dialogs WHERE date <= " + snapshotActivatedAt;
         MessagesStorage messagesStorage = new MessagesStorage(storage);
         try {
             messagesStorage.getStorageQueue().postRunnable(() -> {
@@ -323,7 +324,8 @@ public class HideChatsConfig {
                 try {
                     SQLiteDatabase database = messagesStorage.getDatabase();
                     HashMap<Integer, Long> encryptedChatUsers = readEncryptedChatUsers(database);
-                    SQLiteCursor cursor = database.queryFinalized("SELECT did FROM dialogs", new Object[0]);
+                    // the query may run seconds later: chats active since then are classified as they show up
+                    SQLiteCursor cursor = database.queryFinalized(dialogsQuery, new Object[0]);
                     try {
                         while (cursor.next()) {
                             long dialogId = cursor.longValue(0);

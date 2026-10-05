@@ -1,5 +1,6 @@
 package com.my.televip.features.hideChats;
 
+import android.os.Looper;
 import android.util.SparseArray;
 
 import com.my.televip.Class.ClassLoad;
@@ -7,6 +8,8 @@ import com.my.televip.Class.ClassNames;
 import com.my.televip.logging.Logger;
 import com.my.televip.obfuscate.Obfuscate;
 import com.my.televip.utils.Utils;
+import com.my.televip.virtuals.SQLite.SQLiteCursor;
+import com.my.televip.virtuals.messenger.MessagesStorage;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -43,6 +46,7 @@ final class TgAccess {
     static volatile Class<?> notificationsControllerClass;
     static volatile Class<?> connectionsManagerClass;
     static volatile Class<?> messageObjectClass;
+    static volatile Class<?> messageClass;
     static volatile Class<?> sharedConfigClass;
     static volatile Class<?> chatObjectClass;
     static volatile Class<?> tlObjectClass;
@@ -82,6 +86,7 @@ final class TgAccess {
         notificationsControllerClass = findClass(ClassNames.NOTIFICATIONS_CONTROLLER);
         connectionsManagerClass = findClass(ClassNames.CONNECTIONS_MANAGER);
         messageObjectClass = findClass(ClassNames.MESSAGE_OBJECT);
+        messageClass = findClass(ClassNames.MESSAGE);
         sharedConfigClass = findClass(ClassNames.SHARED_CONFIG);
         chatObjectClass = findClass(ClassNames.CHAT_OBJECT);
         tlObjectClass = findClass(ClassNames.TL_OBJECT);
@@ -484,6 +489,35 @@ final class TgAccess {
         return callWithTypes(messagesController, "MessagesController", "getInputPeer", new Class[]{long.class}, dialogId);
     }
 
+    /**
+     * User of a secret chat. When it is not in memory it is read from the database, except on the UI
+     * thread, which must not wait for the storage queue. Returns 0 when unknown.
+     */
+    static long resolveEncryptedChatUserId(int account, Object messagesController, int encryptedChatId) {
+        long userId = getEncryptedChatUserId(messagesController, encryptedChatId);
+        if (userId != 0 || Looper.myLooper() == Looper.getMainLooper()) return userId;
+        Object storage = getMessagesStorage(account);
+        if (storage == null) return 0;
+        if (Thread.currentThread() == get(storage, "MessagesStorage", "storageQueue")) {
+            // inside a storage task: waiting for another one would deadlock, so query directly
+            try {
+                SQLiteCursor cursor = new MessagesStorage(storage).getDatabase()
+                        .queryFinalized("SELECT user FROM enc_chats WHERE uid = " + encryptedChatId, new Object[0]);
+                try {
+                    if (cursor.next()) userId = cursor.longValue(0);
+                } finally {
+                    cursor.dispose();
+                }
+            } catch (Throwable t) {
+                Logger.e(t);
+            }
+            return userId;
+        }
+        // loads it from the database through the storage queue (and keeps it in memory), as Telegram does
+        Object chat = callWithTypes(messagesController, "MessagesController", "getEncryptedChatDB", new Class[]{int.class, boolean.class}, encryptedChatId, false);
+        return longValue(get(chat, "TLRPC$EncryptedChat", "user_id"), 0);
+    }
+
     static long getEncryptedChatUserId(Object messagesController, int encryptedChatId) {
         Object encryptedChat = call(messagesController, "MessagesController", "getEncryptedChat", encryptedChatId);
         return longValue(get(encryptedChat, "TLRPC$EncryptedChat", "user_id"), 0);
@@ -551,6 +585,20 @@ final class TgAccess {
 
     static long getMessageObjectDialogId(Object messageObject) {
         return longValue(call(messageObject, "MessageObject", "getDialogId"), 0);
+    }
+
+    /**
+     * new MessageObject(account, message, false, false), as Telegram builds restored notifications.
+     */
+    static Object newMessageObject(int account, Object message) {
+        if (messageObjectClass == null || messageClass == null || message == null) return null;
+        try {
+            return messageObjectClass.getConstructor(int.class, messageClass, boolean.class, boolean.class)
+                    .newInstance(account, message, false, false);
+        } catch (Throwable t) {
+            Logger.w("HideChats: unable to create a MessageObject: " + t);
+            return null;
+        }
     }
 
     static int getMessageObjectDate(Object messageObject) {

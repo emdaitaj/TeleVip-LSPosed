@@ -55,36 +55,40 @@ final class ChatClassifier {
 
     /**
      * @param key  peer key (HiddenFilter#toPeerKey) of a chat without classification
-     * @param date latest known activity in the chat, 0 when unknown
+     * @param date a date the chat was active at (its last message, a search hit...), 0 when unknown
+     * @param chat its TLRPC.Chat when the caller has one that is not stored yet, otherwise null
      * @return true when the chat was classified right away (the caller persists the snapshot)
      */
-    static boolean classify(HiddenFilter filter, long key, int date) {
+    static boolean classify(HiddenFilter filter, long key, int date, Object chat) {
         HideChatsConfig.AccountData data = filter.data;
         int activatedAt = filter.activatedAt;
         if (key == data.userId || activatedAt <= 0) {
             // no snapshot yet: whatever the account already has existed
             return store(data, key, false);
         }
-        Object chat = DialogIds.isChatDialog(key) ? TgAccess.getChat(filter.getMessagesController(), -key) : null;
-        if (chat != null && TgAccess.boolValue(TgAccess.callStatic(TgAccess.chatObjectClass, "ChatObject", "isNotInChat", chat), false)) {
-            // not one of our chats (left, kicked, a public channel we only looked at)
+        if (DialogIds.isEncryptedDialog(key)) {
+            // a secret chat whose user is unknown: decided once the user is (HiddenFilter#isHidden)
             return false;
         }
-        Boolean isNew = decideByChatDate(chat, activatedAt);
-        if (isNew == null && date > 0 && date <= activatedAt) {
-            isNew = false;
+        boolean isChat = DialogIds.isChatDialog(key);
+        if (isChat && chat == null) chat = TgAccess.getChat(filter.getMessagesController(), -key);
+        if (chat != null && TgAccess.boolValue(TgAccess.callStatic(TgAccess.chatObjectClass, "ChatObject", "isNotInChat", chat), false)) {
+            // a chat we were removed from or left that is still listed: its history can no longer be
+            // asked about, and it existed long enough to end
+            return store(data, key, false);
         }
-        if (isNew == null && DialogIds.isEncryptedDialog(key)) {
-            // secret chat whose user is not loaded yet: its activity is all there is to go by
-            if (date <= 0) return false;
-            isNew = true;
+        Boolean isNew = decideByChatDate(chat, activatedAt);
+        // A message older than the activation proves a private chat or basic group existed. Channels
+        // and supergroups may show history from before we joined: only their join date counts.
+        if (isNew == null && date > 0 && date <= activatedAt && (!isChat || chat != null && !TgAccess.isChannel(chat))) {
+            isNew = false;
         }
         if (isNew != null) {
             return store(data, key, isNew);
         }
         if (data.pending.add(key)) {
             int account = filter.account;
-            HideChats.runOnUiThread(() -> startProbe(account, data, key, activatedAt));
+            HideChats.post(() -> startProbe(account, data, key, activatedAt));
         }
         return false;
     }
@@ -133,6 +137,10 @@ final class ChatClassifier {
         if (data.probes.get(probe.key) != probe || !probe.roundActive) return;
         // the chat may have been loaded in the meantime
         Object chat = DialogIds.isChatDialog(probe.key) ? TgAccess.getChat(TgAccess.getMessagesController(account), -probe.key) : null;
+        if (chat != null && TgAccess.boolValue(TgAccess.callStatic(TgAccess.chatObjectClass, "ChatObject", "isNotInChat", chat), false)) {
+            finish(account, data, probe, false);
+            return;
+        }
         Boolean isNew = decideByChatDate(chat, probe.activatedAt);
         if (isNew != null) {
             finish(account, data, probe, isNew);

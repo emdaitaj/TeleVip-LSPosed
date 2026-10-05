@@ -8,6 +8,7 @@ import com.my.televip.obfuscate.ArgsResolver;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.robv.android.xposed.XposedHelpers;
 
@@ -165,6 +166,19 @@ final class SearchHooks {
                 if (names != null && i < names.size()) names.remove(i);
             }
         }
+    }
+
+    /**
+     * The chats of a response (not stored by Telegram yet when the hooks look at it).
+     */
+    static HashMap<Long, Object> chatsById(ArrayList<Object> chats) {
+        HashMap<Long, Object> result = new HashMap<>();
+        if (chats == null) return result;
+        for (Object chat : chats) {
+            long id = TgAccess.longValue(TgAccess.get(chat, "TLRPC$Chat", "id"), 0);
+            if (id != 0) result.put(id, chat);
+        }
+        return result;
     }
 
     private static int getAdapterAccount(Object adapter) {
@@ -334,7 +348,8 @@ final class SearchHooks {
     }
 
     /**
-     * Public posts search pages by next_rate; pages may come out shorter.
+     * Public posts search: pages come out shorter. Screens that page by count must then stop instead
+     * of asking for the same (filtered) page again, so count drops to what is left.
      */
     private static void filterPosts(int account, Object response) {
         HiddenFilter filter = HideChatsConfig.filterFor(account);
@@ -343,10 +358,8 @@ final class SearchHooks {
         if (messages == null) return;
         int size = messages.size();
         messages.removeIf(message -> message != null && filter.isHidden(TgAccess.getMessageDialogId(message)));
-        int removed = size - messages.size();
-        if (removed > 0) {
-            int count = TgAccess.intValue(TgAccess.get(response, "TLRPC$messages_Messages", "count"), 0);
-            TgAccess.set(response, "TLRPC$messages_Messages", "count", Math.max(messages.size(), count - removed));
+        if (messages.size() != size) {
+            TgAccess.set(response, "TLRPC$messages_Messages", "count", messages.size());
         }
     }
 
@@ -356,9 +369,11 @@ final class SearchHooks {
         // my_results are our own contacts and chats, including ones never loaded on this device
         ArrayList<Object> myResults = TgAccess.getList(response, "TLRPC$TL_contacts_found", "my_results");
         if (myResults != null) {
+            HashMap<Long, Object> chats = chatsById(TgAccess.getList(response, "TLRPC$TL_contacts_found", "chats"));
             boolean snapshotChanged = false;
             for (Object peer : myResults) {
-                if (filter.observeDialog(TgAccess.getPeerDialogId(peer), 0)) snapshotChanged = true;
+                long dialogId = TgAccess.getPeerDialogId(peer);
+                if (filter.observeDialog(dialogId, 0, dialogId < 0 ? chats.get(-dialogId) : null)) snapshotChanged = true;
             }
             if (snapshotChanged) HideChatsConfig.markDirty(filter.data);
         }
