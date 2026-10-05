@@ -128,6 +128,9 @@ public class Keys {
     public static final String HideChatsClear = "HideChatsClear";
     public static final String HideChatsSectionChats = "HideChatsSectionChats";
     public static final String HideChatsSectionContacts = "HideChatsSectionContacts";
+    public static final String HideChatsSectionSelected = "HideChatsSectionSelected";
+    public static final String HideChatsFilterSelected = "HideChatsFilterSelected";
+    public static final String HideChatsSelectAll = "HideChatsSelectAll";
     public static final String HideChatsEmpty = "HideChatsEmpty";
     public static final String HideChatsSavedMessages = "HideChatsSavedMessages";
     public static final String HideChatsDeletedAccount = "HideChatsDeletedAccount";

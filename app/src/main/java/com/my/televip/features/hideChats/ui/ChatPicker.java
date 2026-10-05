@@ -79,10 +79,14 @@ public class ChatPicker {
     private final ArrayList<Object> rows = new ArrayList<>();
     private final RowsAdapter adapter = new RowsAdapter();
     private String query = "";
+    // list only the currently selected chats, to review a selection among many chats
+    private boolean selectedOnly;
 
     private LinearLayout root;
     private TextView clearButton;
     private TextView hintView;
+    private TextView selectedOnlyChip;
+    private TextView selectAllChip;
     private EditText searchField;
 
     private ChatPicker(Activity activity, int account, Set<Long> selection, boolean showOnlyMode, Callback callback) {
@@ -194,6 +198,31 @@ public class ChatPicker {
         searchContainer.addView(searchField, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         root.addView(searchContainer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        // any number of chats can be selected: review them, or take every chat matching the search
+        LinearLayout chips = new LinearLayout(context);
+        chips.setOrientation(LinearLayout.HORIZONTAL);
+        chips.setPadding(AndroidUtilities.dp(14), AndroidUtilities.dp(10), AndroidUtilities.dp(14), 0);
+        selectedOnlyChip = createChip(context);
+        selectedOnlyChip.setOnClickListener(v -> {
+            selectedOnly = !selectedOnly;
+            rebuildRows();
+        });
+        chips.addView(selectedOnlyChip, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        selectAllChip = createChip(context);
+        selectAllChip.setText(Translator.get(Keys.HideChatsSelectAll));
+        styleChip(selectAllChip, false);
+        selectAllChip.setOnClickListener(v -> {
+            for (Object row : rows) {
+                if (row instanceof ChatEntry) selection.add(((ChatEntry) row).id);
+            }
+            adapter.notifyDataSetChanged();
+            updateHeader();
+        });
+        LinearLayout.LayoutParams selectAllParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        selectAllParams.setMarginStart(AndroidUtilities.dp(8));
+        chips.addView(selectAllChip, selectAllParams);
+        root.addView(chips, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
         hintView = new TextView(context);
         hintView.setTextColor(ThemeColors.getTextGrayColor());
         hintView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
@@ -278,30 +307,83 @@ public class ChatPicker {
         rebuildRows();
     }
 
+    /**
+     * Sections: the chats that were selected when the picker opened, then the other chats, then
+     * contacts without a chat. Rows do not move while chats are ticked.
+     */
     private void rebuildRows() {
         rows.clear();
-        boolean chatsHeader = false;
-        boolean contactsHeader = false;
+        ArrayList<ChatEntry> selectedSection = new ArrayList<>();
+        ArrayList<ChatEntry> chatsSection = new ArrayList<>();
+        ArrayList<ChatEntry> contactsSection = new ArrayList<>();
         for (ChatEntry entry : entries) {
             if (!query.isEmpty() && !entry.searchText.contains(query)) continue;
-            if (entry.contactOnly) {
-                if (!contactsHeader) {
-                    rows.add(Translator.get(Keys.HideChatsSectionContacts));
-                    contactsHeader = true;
-                }
-            } else if (!chatsHeader) {
-                rows.add(Translator.get(Keys.HideChatsSectionChats));
-                chatsHeader = true;
+            if (selectedOnly && !selection.contains(entry.id)) continue;
+            if (initialSelection.contains(entry.id)) {
+                selectedSection.add(entry);
+            } else if (entry.contactOnly) {
+                contactsSection.add(entry);
+            } else {
+                chatsSection.add(entry);
             }
-            rows.add(entry);
         }
+        addSection(Keys.HideChatsSectionSelected, selectedSection);
+        addSection(Keys.HideChatsSectionChats, chatsSection);
+        addSection(Keys.HideChatsSectionContacts, contactsSection);
         adapter.notifyDataSetChanged();
+        updateChips();
+    }
+
+    private void addSection(String titleKey, ArrayList<ChatEntry> section) {
+        if (section.isEmpty()) return;
+        rows.add(Translator.get(titleKey));
+        rows.addAll(section);
     }
 
     private void updateHeader() {
         clearButton.setVisibility(selection.isEmpty() ? View.GONE : View.VISIBLE);
         String hint = Translator.get(showOnlyMode ? Keys.HideChatsPickerHintShow : Keys.HideChatsPickerHintHide);
         hintView.setText(hint + "\n" + Translator.get(Keys.HideChatsSelectedCount, selection.size()));
+        updateChips();
+    }
+
+    private void updateChips() {
+        if (selectedOnlyChip == null) return;
+        selectedOnlyChip.setText(Translator.get(Keys.HideChatsFilterSelected) + " (" + selection.size() + ")");
+        styleChip(selectedOnlyChip, selectedOnly);
+        boolean anyUnselected = false;
+        for (Object row : rows) {
+            if (row instanceof ChatEntry && !selection.contains(((ChatEntry) row).id)) {
+                anyUnselected = true;
+                break;
+            }
+        }
+        // only for search results: ticking every chat at once is rarely meant otherwise
+        selectAllChip.setVisibility(!query.isEmpty() && !selectedOnly && anyUnselected ? View.VISIBLE : View.GONE);
+    }
+
+    private TextView createChip(Context context) {
+        TextView chip = new TextView(context);
+        chip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        chip.setGravity(Gravity.CENTER);
+        chip.setSingleLine(true);
+        chip.setPadding(AndroidUtilities.dp(14), AndroidUtilities.dp(6), AndroidUtilities.dp(14), AndroidUtilities.dp(6));
+        return chip;
+    }
+
+    private void styleChip(TextView chip, boolean active) {
+        int color = ThemeColors.getTextBlueColor();
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(AndroidUtilities.dp(16));
+        if (active) {
+            background.setColor(color);
+            chip.setTextColor(Color.WHITE);
+        } else {
+            background.setColor(Color.TRANSPARENT);
+            background.setStroke(AndroidUtilities.dp(1), color);
+            chip.setTextColor(color);
+        }
+        chip.setBackground(background);
     }
 
     private void close(boolean apply) {
