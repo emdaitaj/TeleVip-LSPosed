@@ -28,7 +28,14 @@ public class PhotoViewer {
     }
 
     public void openPhoto(MessageObject messageObject, long l, long l2, long l3, PhotoViewerProvider provider, boolean b){
-        XposedHelpers.callMethod(photoViewer,  Obfuscate.getMethodName("PhotoViewer", "openPhoto"), messageObject.getMessageObject(),l, l2, l3, provider.getPhotoViewerProvider(), b);
+        try {
+            XposedHelpers.callMethod(photoViewer,  Obfuscate.getMethodName("PhotoViewer", "openPhoto"), messageObject.getMessageObject(),l, l2, l3, provider.getPhotoViewerProvider(), b);
+        } catch (NoSuchMethodError e) {
+            // R8 builds inline this overload, call the full one with the arguments it delegated with
+            XposedHelpers.callMethod(photoViewer, Obfuscate.getMethodName("PhotoViewer", "openPhoto",
+                            "MessageObject,TLRPC$FileLocation,ImageLocation,ImageLocation,ArrayList,ArrayList,ArrayList,int,PhotoViewer$PhotoViewerProvider,ChatActivity,long,long,long,boolean,PhotoViewer$PageBlocksAdapter,Integer"),
+                    messageObject.getMessageObject(), null, null, null, null, null, null, 0, provider.getPhotoViewerProvider(), null, l, l2, l3, b, null, null);
+        }
     }
 
     public View getGalleryButton(){

@@ -51,14 +51,14 @@ public class ProfileHook {
             }
         }));
 
-        HMethod.hookMethod(clazz, "onItemClick", int.class, new BaseMethodHook() {
+        HMethod.hookMethod(clazz, Obfuscate.getMethodName("ActionBar$ActionBarMenuOnItemClick", "onItemClick"), int.class, new BaseMethodHook() {
             @Override
             protected void afterMethod(MethodHookParam param) {
 
                 int id = (int) param.args[0];
 
                 if (id == 8353847) {
-                    final Object thisClass = XposedHelpers.getObjectField(param.thisObject, Obfuscate.getFieldName("ProfileActivity", "this$0"));
+                    final Object thisClass = FeatureInitializer.getOuterInstance(param.thisObject, "ProfileActivity", ClassNames.PROFILE_ACTIVITY);
                     ProfileActivity profile = new ProfileActivity(thisClass);
 
                     AlertDialog alertDialog = new AlertDialog(Utils.getCurrentActivity());

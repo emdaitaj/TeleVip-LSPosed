@@ -37,34 +37,48 @@ public class SettingsHook {
         try {
 
             GhostDrawable ghostDrawable = new GhostDrawable();
+            Class<?> UItemClass = ClassLoad.getClass(ClassNames.UITEM);
 
-            HMethod.hookMethod(ClassLoad.getClass(ClassNames.SETTINGS_ACTIVITY_SETTING_CELL), Obfuscate.getMethodName("SettingsActivity$SettingCell", "set"), ArgsResolver.merge("set", new Class[]{int.class, int.class, int.class, CharSequence.class, CharSequence.class, CharSequence.class}, new BaseMethodHook() {
-                @Override
-                protected void afterMethod(MethodHookParam param) {
-                    int id = (int) param.args[2];
-                    if (id == 8353847) {
-                        ImageView iconView = (ImageView) XposedHelpers.getObjectField(param.thisObject, Obfuscate.getFieldName("SettingsActivity$SettingCell", "iconView"));
-                        iconView.setImageDrawable(ghostDrawable);
+            Class<?> settingCellClass = ClassLoad.getClass(ClassNames.SETTINGS_ACTIVITY_SETTING_CELL);
+            Class<?>[] setTypes = ArgsResolver.resolveObject("set", new Class[]{int.class, int.class, int.class, CharSequence.class, CharSequence.class, CharSequence.class});
+            if (settingCellClass == null || XposedHelpers.findMethodExactIfExists(settingCellClass, Obfuscate.getMethodName("SettingsActivity$SettingCell", "set"), (Object[]) setTypes) != null) {
+                HMethod.hookMethod(settingCellClass, Obfuscate.getMethodName("SettingsActivity$SettingCell", "set"), ArgsResolver.merge("set", new Class[]{int.class, int.class, int.class, CharSequence.class, CharSequence.class, CharSequence.class}, new BaseMethodHook() {
+                    @Override
+                    protected void afterMethod(MethodHookParam param) {
+                        int id = (int) param.args[2];
+                        if (id == 8353847) {
+                            ImageView iconView = (ImageView) XposedHelpers.getObjectField(param.thisObject, Obfuscate.getFieldName("SettingsActivity$SettingCell", "iconView"));
+                            iconView.setImageDrawable(ghostDrawable);
+                        }
                     }
-                }
-            }));
+                }));
+            } else {
+                // R8 builds inline set() into the factory's bindView(View, UItem, ...)
+                XposedBridge.hookAllMethods(SettingsActivity$SettingCell$FactoryClass, Obfuscate.getMethodName("SettingsActivity$SettingCell$Factory", "bindView"), new BaseMethodHook() {
+                    @Override
+                    protected void afterMethod(MethodHookParam param) {
+                        Object item = findArg(param.args, UItemClass);
+                        View view = findArg(param.args, settingCellClass);
+                        if (item != null && view != null && new UItem(item).getID() == 8353847) {
+                            ImageView iconView = (ImageView) XposedHelpers.getObjectField(view, Obfuscate.getFieldName("SettingsActivity$SettingCell", "iconView"));
+                            iconView.setImageDrawable(ghostDrawable);
+                        }
+                    }
+                });
+            }
 
+            // in R8 builds fillItems is inlined into a static lambda (SettingsActivity, ArrayList), so arguments are found by type
             HMethod.hookMethod(SettingsActivityClass, Obfuscate.getMethodName("SettingsActivity", "fillItems"),
-                    ArgsResolver.merge("fillItems", new Class[]{java.util.ArrayList.class, ClassLoad.getClass(ClassNames.UNIVERSAL_ADAPTER)}, new BaseMethodHook() {
+                    ArgsResolver.merge("SettingsActivity", "fillItems", new Class[]{java.util.ArrayList.class, ClassLoad.getClass(ClassNames.UNIVERSAL_ADAPTER)}, new BaseMethodHook() {
                         @Override
                         protected void afterMethod(final MethodHookParam param) {
-                            ArrayList<Object> arrayList = (ArrayList<Object>) param.args[0];
+                            ArrayList<Object> arrayList = findArg(param.args, ArrayList.class);
                             if (arrayList != null) {
 
                                 int color1 = 0xFFF46F6F;
                                 int color2 = 0xFFDF5555;
 
-                                Object uItem = XposedHelpers.callStaticMethod(SettingsActivity$SettingCell$FactoryClass, Obfuscate.getMethodName("SettingsActivity$SettingCell$Factory", "of"), 8353847,
-                                        color1,
-                                        color2,
-                                        8353847,
-                                        Translator.get(Keys.GhostMode),
-                                        Translator.get(Keys.ByMustafa));
+                                Object uItem = createSettingItem(SettingsActivity$SettingCell$FactoryClass, color1, color2);
                                 for (int i = 0; i < arrayList.size(); i++) {
                                     UItem item = new UItem(arrayList.get(i));
 
@@ -79,14 +93,12 @@ public class SettingsHook {
                     }));
 
 
-            Class<?> UItemClass = ClassLoad.getClass(ClassNames.UITEM);
-
             HMethod.hookMethod(
                     SettingsActivityClass,
-                    Obfuscate.getMethodName("SettingsActivity", "onClick"), ArgsResolver.merge("onClick", new Class[]{UItemClass, View.class, int.class, float.class, float.class}, new BaseMethodHook() {
+                    Obfuscate.getMethodName("SettingsActivity", "onClick"), ArgsResolver.merge("SettingsActivity", "onClick", new Class[]{UItemClass, View.class, int.class, float.class, float.class}, new BaseMethodHook() {
                         @Override
                         protected void afterMethod(final MethodHookParam param) {
-                            UItem uItem = new UItem(param.args[0]);
+                            UItem uItem = new UItem(findArg(param.args, UItemClass));
                             if (uItem.getUItem() != null) {
                                 if (uItem.getID() == 8353847) {
                                     settingsController.openView();
@@ -96,6 +108,26 @@ public class SettingsHook {
                     }));
         } catch (Throwable t){
             Logger.e(t);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T findArg(Object[] args, Class<?> type) {
+        if (type == null) return null;
+        for (Object arg : args) {
+            if (type.isInstance(arg)) return (T) arg;
+        }
+        return null;
+    }
+
+    private static Object createSettingItem(Class<?> factoryClass, int color1, int color2) {
+        try {
+            // R8 builds only keep the overload with a value parameter
+            return XposedHelpers.callStaticMethod(factoryClass, Obfuscate.getMethodName("SettingsActivity$SettingCell$Factory", "of", "int,int,int,int,CharSequence,CharSequence,CharSequence"),
+                    8353847, color1, color2, 8353847, Translator.get(Keys.GhostMode), Translator.get(Keys.ByMustafa), null);
+        } catch (NoSuchMethodError e) {
+            return XposedHelpers.callStaticMethod(factoryClass, Obfuscate.getMethodName("SettingsActivity$SettingCell$Factory", "of"),
+                    8353847, color1, color2, 8353847, Translator.get(Keys.GhostMode), Translator.get(Keys.ByMustafa));
         }
     }
 

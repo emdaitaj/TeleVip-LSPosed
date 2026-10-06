@@ -9,6 +9,8 @@ import com.my.televip.obfuscate.ArgsResolver;
 import com.my.televip.obfuscate.Obfuscate;
 import com.my.televip.utils.Utils;
 
+import java.lang.reflect.Field;
+
 import de.robv.android.xposed.XposedHelpers;
 
 public class FeatureInitializer {
@@ -36,12 +38,12 @@ public class FeatureInitializer {
 
                                 String name = clazz.getClass().getName();
 
-                                if (name.contains("ChatActivity") && !FeatureStateManager.isChatEnabled()) {
+                                if (isInnerOf(clazz.getClass(), name, "ChatActivity", ClassNames.CHAT_ACTIVITY) && !FeatureStateManager.isChatEnabled()) {
                                     FeatureStateManager.saveChat(name);
                                     ChatHook.init(name);
                                 }
 
-                                if (name.contains("ProfileActivity") && !FeatureStateManager.isProfileEnabled()) {
+                                if (isInnerOf(clazz.getClass(), name, "ProfileActivity", ClassNames.PROFILE_ACTIVITY) && !FeatureStateManager.isProfileEnabled()) {
                                     FeatureStateManager.saveProfile(name);
                                     ProfileHook.init(name);
                                 }
@@ -55,6 +57,38 @@ public class FeatureInitializer {
 
         } catch (Throwable t) {
             Logger.e(t);
+        }
+    }
+
+    // R8 flattens inner class names in obfuscated builds (ChatActivity$9 -> ab1), so fall back to the type of the outer instance field
+    private static boolean isInnerOf(Class<?> cls, String name, String outerSimpleName, String outerClassName) {
+        if (name.contains(outerSimpleName)) return true;
+        Class<?> outer = ClassLoad.getClass(outerClassName);
+        return outer != null && !name.equals(outer.getName()) && findOuterField(cls, outer) != null;
+    }
+
+    static Field findOuterField(Class<?> cls, Class<?> outer) {
+        for (Field field : cls.getDeclaredFields()) {
+            if (field.getType() == outer) {
+                field.setAccessible(true);
+                return field;
+            }
+        }
+        return null;
+    }
+
+    static Object getOuterInstance(Object inner, String classKey, String outerClassName) {
+        Field field = XposedHelpers.findFieldIfExists(inner.getClass(), Obfuscate.getFieldName(classKey, "this$0"));
+        if (field == null) {
+            Class<?> outer = ClassLoad.getClass(outerClassName);
+            if (outer != null) field = findOuterField(inner.getClass(), outer);
+        }
+        if (field == null) return null;
+        try {
+            return field.get(inner);
+        } catch (Throwable t) {
+            Logger.e(t);
+            return null;
         }
     }
 }

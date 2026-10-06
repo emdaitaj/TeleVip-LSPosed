@@ -12,7 +12,6 @@ import com.my.televip.Configs.ConfigItem;
 import com.my.televip.Configs.ConfigManager;
 import com.my.televip.Audio;
 import com.my.televip.features.hideChats.HideChats;
-import com.my.televip.features.hideChats.HideChatsConfig;
 import com.my.televip.language.Keys;
 import com.my.televip.language.Translator;
 import com.my.televip.logging.Logger;
@@ -100,12 +99,18 @@ public class SettingsAdapter {
                                 break;
                         }
                         settingsCell.cell.setTextAndValue(Translator.get(item.getKey()), value, false, false);
-                    } else if (item.getKey().equals(Keys.HideChatsMode)) {
-                        settingsCell.cell.setTextAndValue(Translator.get(item.getKey()), getHideChatsModeName(item.getIntValue()), false, false);
+                    } else if (item.getKey().equals(Keys.HideChatsList)) {
+                        int managed = HideChats.getManagedCount();
+                        settingsCell.cell.setTextAndValue(Translator.get(item.getKey()),
+                                managed == 0 ? Translator.get(Keys.HideChatsNoneSelected) : Translator.get(Keys.HideChatsSelectedCount, managed), false, false);
                         settingsCell.cell.getTextView().setTextColor(ThemeColors.getTextColor());
-                    } else if (item.getKey().equals(Keys.HideChatsSelect)) {
-                        int count = HideChats.getSelectedCount();
-                        settingsCell.cell.setTextAndValue(Translator.get(item.getKey()), count == 0 ? Translator.get(Keys.HideChatsNoneSelected) : Translator.get(Keys.HideChatsSelectedCount, count), false, false);
+                    } else if (item.getKey().equals(Keys.HideChatsVisible)) {
+                        int managed = HideChats.getManagedCount();
+                        int visible = HideChats.getVisibleCount();
+                        String value = managed == 0 ? Translator.get(Keys.HideChatsListEmpty)
+                                : visible == 0 ? Translator.get(Keys.HideChatsAllHidden)
+                                : Translator.get(Keys.HideChatsVisibleCount, visible, managed);
+                        settingsCell.cell.setTextAndValue(Translator.get(item.getKey()), value, false, false);
                         settingsCell.cell.getTextView().setTextColor(ThemeColors.getTextColor());
                     } else {
                         settingsCell.cell.setText(Translator.get(item.getKey()), false);
@@ -137,15 +142,8 @@ public class SettingsAdapter {
 
                 if (viewType == ConfigItem.SWITCH) {
                     TextCheckCellHolder textCheck = new TextCheckCellHolder(holder);
-                    boolean checked = !textCheck.cell.isChecked();
-                    if (checked && item.getKey().equals(Keys.HideChats) && HideChats.needsEnableConfirmation()) {
-                        confirmHideAllChats(settingsController, () -> {
-                            item.setEnable(true);
-                            item.run();
-                            notifyItemChanged(settingsController, position);
-                        });
-                        return;
-                    }
+                    // the switch is bound from item.isEnable(), TextCheckCell.isChecked() is inlined away in R8 builds
+                    boolean checked = !item.isEnable();
                     textCheck.cell.setChecked(checked);
                     item.setEnable(checked);
                     item.run();
@@ -180,28 +178,21 @@ public class SettingsAdapter {
                                     });
                             dlg.show();
                             break;
-                        case Keys.HideChatsMode:
-                            Dialog modeDialog = DialogUtils.createSingleChoiceDialog((Activity) settingsController.getContext(), new String[]{
-                                            getHideChatsModeName(HideChatsConfig.MODE_SHOW_ONLY_SELECTED), getHideChatsModeName(HideChatsConfig.MODE_HIDE_SELECTED)},
-                                    Translator.get(Keys.HideChatsMode), item.getIntValue(), (dialog, which) -> {
-                                        Runnable apply = () -> {
-                                            item.setIntValue(which);
-                                            HideChats.onSettingsChanged();
-                                            notifyItemChanged(settingsController, position);
-                                        };
-                                        boolean hideAll = which == HideChatsConfig.MODE_SHOW_ONLY_SELECTED
-                                                && ConfigManager.hideChats != null && ConfigManager.hideChats.isEnable()
-                                                && HideChats.getSelectedCount() == 0;
-                                        if (hideAll && item.getIntValue() != which) {
-                                            confirmHideAllChats(settingsController, apply);
-                                        } else {
-                                            apply.run();
-                                        }
-                                    });
-                            modeDialog.show();
+                        case Keys.HideChatsList:
+                            HideChats.openManagedPicker((Activity) settingsController.getContext(), () -> {
+                                notifyItemChanged(settingsController, position);
+                                notifyItemChanged(settingsController, ConfigManager.getItems().indexOf(ConfigManager.hideChatsVisible));
+                            });
                             break;
-                        case Keys.HideChatsSelect:
-                            HideChats.openPicker((Activity) settingsController.getContext(), () -> notifyItemChanged(settingsController, position));
+                        case Keys.HideChatsVisible:
+                            if (HideChats.getManagedCount() == 0) {
+                                HideChats.openManagedPicker((Activity) settingsController.getContext(), () -> {
+                                    notifyItemChanged(settingsController, position);
+                                    notifyItemChanged(settingsController, ConfigManager.getItems().indexOf(ConfigManager.hideChatsList));
+                                });
+                            } else {
+                                HideChats.openVisiblePicker((Activity) settingsController.getContext(), () -> notifyItemChanged(settingsController, position));
+                            }
                             break;
                     }
                 }
@@ -258,24 +249,6 @@ public class SettingsAdapter {
         public TextInfoCellHolder(Object obj) {
             text = (TextInfoCell) XposedHelpers.getObjectField(obj, "view");
         }
-    }
-
-    private static String getHideChatsModeName(int mode) {
-        return Translator.get(mode == HideChatsConfig.MODE_HIDE_SELECTED ? Keys.HideChatsModeHide : Keys.HideChatsModeShowOnly);
-    }
-
-    /**
-     * "Show only selected chats" with nothing selected hides every chat: ask first.
-     */
-    private static void confirmHideAllChats(SettingsController settingsController, Runnable onConfirm) {
-        AlertDialog alertDialog = new AlertDialog(settingsController.getContext());
-        alertDialog.setTitle(Translator.get(Keys.HideChats));
-        alertDialog.setMessage(Translator.get(Keys.HideChatsEnableNoSelection));
-        alertDialog.setPositiveButton(Translator.get(Keys.HideChatsEnable), AlertDialog.click(onConfirm::run));
-        alertDialog.setNegativeButton(Translator.get(Keys.Cancel), null);
-        alertDialog.setNeutralButton(Translator.get(Keys.HideChatsSelect), AlertDialog.click(() ->
-                HideChats.openPicker((Activity) settingsController.getContext(), () -> notifyItemChanged(settingsController, ConfigManager.getItems().indexOf(ConfigManager.hideChatsSelect)))));
-        alertDialog.show();
     }
 
     private static void notifyItemChanged(SettingsController settingsController, int position) {

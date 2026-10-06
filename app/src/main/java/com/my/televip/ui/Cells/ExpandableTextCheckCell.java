@@ -75,19 +75,18 @@ public class ExpandableTextCheckCell extends LinearLayout {
             childContainer.addView(row,
                     new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-            ChildRow childRow = new ChildRow(row, textCheckCell1);
+            ChildRow childRow = new ChildRow(row, textCheckCell1, child);
             this.children.add(childRow);
 
             row.setOnClickListener(v -> {
-                boolean newChecked = !textCheckCell1.isChecked();
+                boolean newChecked = !child.isEnable();
                 textCheckCell1.setChecked(newChecked);
                 child.setEnable(newChecked);
                 child.run();
                 updateMainStateFromChildren(item);
             });
-
-            updateMainStateFromChildren(item);
         }
+        updateMainStateFromChildren(item);
     }
 
     public void setExpanded(boolean value, boolean animate) {
@@ -116,21 +115,21 @@ public class ExpandableTextCheckCell extends LinearLayout {
         resIdRow = resid;
     }
 
+    /**
+     * The checked state is read from the config items, not from the cells: TextCheckCell.isChecked()
+     * does not survive R8 in obfuscated Telegram builds.
+     */
     private void updateMainStateFromChildren(ConfigItem item) {
         if (syncing) return;
-        boolean any = false;
+        int checked = 0;
         for (ChildRow c : children) {
-            if (c.textCheckCell.isChecked()) { any = true; break; }
+            if (c.item.isEnable()) checked++;
         }
         syncing = true;
-        textCheckCell.setChecked(any);
-        item.setEnable(any);
+        textCheckCell.setChecked(checked > 0);
+        item.setEnable(checked > 0);
         syncing = false;
-        int i = 0;
-        for (ChildRow c : children) {
-            if (c.textCheckCell.isChecked()) { i++; }
-        }
-        textCheckCell.setTextAndCheck(Translator.get(item.getKey()) + " " +i +"/" + children.size(), item.isEnable(),false);
+        textCheckCell.setTextAndCheck(Translator.get(item.getKey()) + " " + checked + "/" + children.size(), item.isEnable(), false);
     }
 
     private void animateHeight(int from, int to) {
@@ -158,10 +157,12 @@ public class ExpandableTextCheckCell extends LinearLayout {
     public static class ChildRow {
         public final LinearLayout rootView;
         public final TextCheckCell textCheckCell;
+        public final ConfigItem item;
 
-        ChildRow(LinearLayout rootView, TextCheckCell textCheckCell) {
+        ChildRow(LinearLayout rootView, TextCheckCell textCheckCell, ConfigItem item) {
             this.rootView = rootView;
             this.textCheckCell = textCheckCell;
+            this.item = item;
         }
 
     }

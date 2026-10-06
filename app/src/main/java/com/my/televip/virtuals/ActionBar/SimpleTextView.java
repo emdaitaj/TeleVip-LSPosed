@@ -21,11 +21,11 @@ public class SimpleTextView {
     }
 
     public void setText(CharSequence text){
-        XposedHelpers.callMethod(simpleTextView, Obfuscate.getMethodName("SimpleTextView", "setText"), text);
+        XposedHelpers.callMethod(simpleTextView, Obfuscate.getMethodName("SimpleTextView", "setText", "CharSequence"), text);
     }
 
     public void setText(CharSequence text, boolean force){
-        XposedHelpers.callMethod(simpleTextView, Obfuscate.getMethodName("SimpleTextView", "setText"), text, force);
+        XposedHelpers.callMethod(simpleTextView, Obfuscate.getMethodName("SimpleTextView", "setText", "CharSequence,boolean"), text, force);
     }
 
     public void setAlignment(Layout.Alignment alignment){

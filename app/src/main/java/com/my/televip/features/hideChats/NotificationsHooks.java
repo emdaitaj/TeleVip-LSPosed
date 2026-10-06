@@ -6,41 +6,13 @@ import com.my.televip.virtuals.messenger.DispatchQueue;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 /**
  * Optional ("Mute hidden chats"): no notifications, no badge contribution from hidden chats.
  * Installed from Application.onCreate as well, because pushes can start the process without UI.
- *
- * Notifications of chats still being classified (ChatClassifier) are held back instead of dropped and
- * delivered once the chat turns out to be visible.
  */
 final class NotificationsHooks {
-
-    private static final int MAX_HELD_MESSAGES = 100;
-
-    /**
-     * Held back notifications of one pending chat (all its dialogs: a user and its secret chats).
-     */
-    static final class Held {
-        final ArrayList<Object> messages = new ArrayList<>();
-        final ArrayList<Object> pushMessages = new ArrayList<>();
-        // dialog id -> unread count
-        final HashMap<Long, Integer> unread = new HashMap<>();
-
-        boolean isEmpty() {
-            return messages.isEmpty() && pushMessages.isEmpty() && unread.isEmpty();
-        }
-
-        void dropDialog(long dialogId) {
-            unread.remove(dialogId);
-            messages.removeIf(messageObject -> TgAccess.getMessageObjectDialogId(messageObject) == dialogId);
-            pushMessages.removeIf(messageObject -> TgAccess.getMessageObjectDialogId(messageObject) == dialogId);
-        }
-    }
 
     private NotificationsHooks() {}
 
@@ -57,28 +29,11 @@ final class NotificationsHooks {
                 if (filter == null || !(param.args[0] instanceof ArrayList)) return;
                 //noinspection unchecked
                 ArrayList<Object> messages = (ArrayList<Object>) param.args[0];
-                boolean push = (boolean) param.args[2];
                 ArrayList<Object> visible = new ArrayList<>(messages.size());
-                boolean snapshotChanged = false;
                 for (Object messageObject : messages) {
-                    if (messageObject == null) {
-                        visible.add(null);
-                        continue;
-                    }
-                    long dialogId = TgAccess.getMessageObjectDialogId(messageObject);
-                    // the first message of a chat may arrive before any chat list update
-                    if (filter.observeDialog(dialogId, TgAccess.getMessageObjectDate(messageObject))) {
-                        snapshotChanged = true;
-                    }
-                    if (!filter.isHidden(dialogId)) {
+                    if (messageObject == null || !filter.isHidden(TgAccess.getMessageObjectDialogId(messageObject))) {
                         visible.add(messageObject);
-                    } else if (filter.isPending(dialogId)) {
-                        hold(filter, dialogId, messageObject, push);
                     }
-                }
-                if (snapshotChanged) {
-                    HideChatsConfig.markDirty(filter.data);
-                    HideChats.scheduleCountersRefresh(filter.account);
                 }
                 if (visible.size() != messages.size()) {
                     param.args[0] = visible;
@@ -92,7 +47,7 @@ final class NotificationsHooks {
                 protected void beforeMethod(MethodHookParam param) {
                     HiddenFilter filter = mutingFilter(param.thisObject);
                     if (filter == null) return;
-                    // Telegram stores these first thing in the method; classifying needs them now
+                    // Telegram stores these first thing in the method; secret chats have to resolve now
                     Object messagesController = filter.getMessagesController();
                     if (param.args[3] instanceof ArrayList) {
                         TgAccess.callWithTypes(messagesController, "MessagesController", "putUsers", new Class[]{ArrayList.class, boolean.class}, param.args[3], true);
@@ -103,44 +58,21 @@ final class NotificationsHooks {
                     if (param.args[5] instanceof ArrayList) {
                         TgAccess.callWithTypes(messagesController, "MessagesController", "putEncryptedChats", new Class[]{ArrayList.class, boolean.class}, param.args[5], true);
                     }
-                    boolean snapshotChanged = false;
-                    if (param.args[1] instanceof ArrayList) {
-                        for (Object message : (ArrayList<?>) param.args[1]) {
-                            if (message != null && filter.observeDialog(TgAccess.getMessageDialogId(message), TgAccess.getMessageDate(message))) {
-                                snapshotChanged = true;
-                            }
-                        }
-                    }
-                    if (param.args[2] instanceof ArrayList) {
-                        for (Object messageObject : (ArrayList<?>) param.args[2]) {
-                            if (messageObject != null && filter.observeDialog(TgAccess.getMessageObjectDialogId(messageObject), TgAccess.getMessageObjectDate(messageObject))) {
-                                snapshotChanged = true;
-                            }
-                        }
-                    }
-                    if (snapshotChanged) {
-                        HideChatsConfig.markDirty(filter.data);
-                        HideChats.scheduleCountersRefresh(filter.account);
-                    }
-                    // The restored state is rebuilt from the database whenever Telegram reloads it. For chats
-                    // still being classified it is simply dropped, and reloaded (from then current data) if
-                    // they turn out visible: see settleHeld.
+                    // notifications restored from the database at startup
                     Object dialogs = param.args[0];
                     if (dialogs != null) {
                         for (int i = TgAccess.intValue(TgAccess.call(dialogs, "LongSparseArray", "size"), 0) - 1; i >= 0; i--) {
                             long dialogId = TgAccess.longValue(TgAccess.call(dialogs, "LongSparseArray", "keyAt", i), 0);
-                            if (!filter.isHidden(dialogId)) continue;
-                            if (filter.isPending(dialogId)) filter.data.restoreDropped.add(filter.toPeerKey(dialogId));
-                            TgAccess.call(dialogs, "LongSparseArray", "removeAt", i);
+                            if (filter.isHidden(dialogId)) TgAccess.call(dialogs, "LongSparseArray", "remove", dialogId);
                         }
                     }
                     if (param.args[1] instanceof ArrayList) {
                         //noinspection unchecked
-                        ((ArrayList<Object>) param.args[1]).removeIf(message -> message != null && dropRestored(filter, TgAccess.getMessageDialogId(message)));
+                        ((ArrayList<Object>) param.args[1]).removeIf(message -> message != null && filter.isHidden(TgAccess.getMessageDialogId(message)));
                     }
                     if (param.args[2] instanceof ArrayList) {
                         //noinspection unchecked
-                        ((ArrayList<Object>) param.args[2]).removeIf(messageObject -> messageObject != null && dropRestored(filter, TgAccess.getMessageObjectDialogId(messageObject)));
+                        ((ArrayList<Object>) param.args[2]).removeIf(messageObject -> messageObject != null && filter.isHidden(TgAccess.getMessageObjectDialogId(messageObject)));
                     }
                     if (param.args[6] instanceof Collection) {
                         //noinspection unchecked
@@ -174,12 +106,9 @@ final class NotificationsHooks {
     }
 
     /**
-     * Delivers or drops held notifications, then clears notifications that are already shown for
-     * chats that are hidden now and refreshes the badge.
+     * Clears notifications that are already shown for chats that are hidden now, and refreshes the badge.
      */
     static void refresh(int account) {
-        HideChatsConfig.AccountData data = HideChatsConfig.getData(account);
-        if (data != null) settleHeld(account, data);
         Object controller = TgAccess.getNotificationsController(account);
         Object queue = TgAccess.getStatic(TgAccess.notificationsControllerClass, "NotificationsController", "notificationsQueue");
         if (controller == null || queue == null) return;
@@ -202,125 +131,6 @@ final class NotificationsHooks {
     }
 
     /**
-     * Hands held notifications of classified chats back to Telegram when the chat is visible (or
-     * muting is off now) and drops them otherwise. Chats that are still pending stay held.
-     * Must run on the UI thread, like Telegram's own calls into NotificationsController.
-     */
-    static void settleHeld(int account, HideChatsConfig.AccountData data) {
-        HiddenFilter filter = HideChatsConfig.isMuteNotifications() ? HideChatsConfig.filterFor(account) : null;
-        if (filter != null && filter.data != data) return;
-        ArrayList<Held> deliver = new ArrayList<>();
-        synchronized (data.held) {
-            Iterator<Map.Entry<Long, Held>> iterator = data.held.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Long, Held> entry = iterator.next();
-                long key = entry.getKey();
-                if (filter != null && data.pending.contains(key)) continue;
-                iterator.remove();
-                if (filter == null || !filter.isHiddenKey(key)) deliver.add(entry.getValue());
-            }
-        }
-        Object controller = TgAccess.getNotificationsController(account);
-        Class<?>[] newMessagesTypes = {ArrayList.class, boolean.class, boolean.class, CountDownLatch.class};
-        for (Held held : deliver) {
-            if (!held.pushMessages.isEmpty()) {
-                TgAccess.callWithTypes(controller, "NotificationsController", "processNewMessages", newMessagesTypes, held.pushMessages, true, true, null);
-            }
-            if (!held.messages.isEmpty()) {
-                TgAccess.callWithTypes(controller, "NotificationsController", "processNewMessages", newMessagesTypes, held.messages, true, false, null);
-            }
-            // the notification itself is posted when the unread counters change
-            Object unread = held.unread.isEmpty() ? null : TgAccess.newLongSparseIntArray(held.unread);
-            if (unread != null) {
-                TgAccess.callWithTypes(controller, "NotificationsController", "processDialogsUpdateRead", new Class[]{TgAccess.longSparseIntArrayClass}, unread);
-            }
-        }
-        // Restored notifications dropped for chats that turned out visible: let Telegram restore them
-        // again, from the current database state, the way it does after loading dialogs.
-        boolean reload = false;
-        for (Long key : data.restoreDropped) {
-            if (filter != null && data.pending.contains(key)) continue;
-            data.restoreDropped.remove(key);
-            if (filter == null || !filter.isHiddenKey(key)) reload = true;
-        }
-        if (reload) {
-            TgAccess.call(TgAccess.getMessagesStorage(account), "MessagesStorage", "loadUnreadMessages");
-        }
-    }
-
-    private static void hold(HiddenFilter filter, long dialogId, Object messageObject, boolean push) {
-        long key = filter.toPeerKey(dialogId);
-        HashMap<Long, Held> held = filter.data.held;
-        synchronized (held) {
-            Held entry = held.get(key);
-            if (entry == null) {
-                entry = new Held();
-                held.put(key, entry);
-            }
-            ArrayList<Object> messages = push ? entry.pushMessages : entry.messages;
-            if (messages.size() < MAX_HELD_MESSAGES) messages.add(messageObject);
-        }
-        settleIfClassified(filter, key);
-    }
-
-    private static boolean dropRestored(HiddenFilter filter, long dialogId) {
-        if (!filter.isHidden(dialogId)) return false;
-        if (filter.isPending(dialogId)) {
-            long key = filter.toPeerKey(dialogId);
-            filter.data.restoreDropped.add(key);
-            settleIfClassified(filter, key);
-        }
-        return true;
-    }
-
-    /**
-     * Pushes are processed off the UI thread: the chat may have been classified (and its held
-     * notifications settled) between the pending check and the hold.
-     */
-    private static void settleIfClassified(HiddenFilter filter, long key) {
-        if (filter.data.pending.contains(key)) return;
-        int account = filter.account;
-        HideChatsConfig.AccountData data = filter.data;
-        HideChats.post(() -> settleHeld(account, data));
-    }
-
-    /**
-     * Unread changes of a pending chat: increments are kept for later, a read (0) drops what was held
-     * for that dialog, decrements adjust it.
-     */
-    private static void holdUnread(HiddenFilter filter, long dialogId, int count) {
-        long key = filter.toPeerKey(dialogId);
-        HashMap<Long, Held> held = filter.data.held;
-        synchronized (held) {
-            Held entry = held.get(key);
-            if (count > 0) {
-                if (entry == null) {
-                    entry = new Held();
-                    held.put(key, entry);
-                }
-                entry.unread.put(dialogId, count);
-            } else if (entry != null) {
-                if (count == 0) {
-                    // read elsewhere / removed: nothing left to notify about
-                    entry.dropDialog(dialogId);
-                } else {
-                    Integer current = entry.unread.get(dialogId);
-                    if (current != null) {
-                        int value = current + count;
-                        if (value > 0) {
-                            entry.unread.put(dialogId, value);
-                        } else {
-                            entry.unread.remove(dialogId);
-                        }
-                    }
-                }
-                if (entry.isEmpty()) held.remove(key);
-            }
-        }
-        if (count > 0) settleIfClassified(filter, key);
-    }
-
-    /**
      * dialog id -> unread count without the increments of hidden chats. Reads (0) and decrements must
      * pass: they only clear existing state, and removeNotificationsForDialog() works through them.
      * The original array is returned when nothing changes and is never modified.
@@ -333,7 +143,6 @@ final class NotificationsHooks {
             long dialogId = TgAccess.longValue(TgAccess.call(array, "LongSparseIntArray", "keyAt", i), 0);
             if (!filter.isHidden(dialogId)) continue;
             int count = TgAccess.intValue(TgAccess.call(array, "LongSparseIntArray", "valueAt", i), 0);
-            if (filter.isPending(dialogId)) holdUnread(filter, dialogId, count);
             if (count <= 0) continue;
             if (copy == null) {
                 copy = TgAccess.call(array, "LongSparseIntArray", "clone");

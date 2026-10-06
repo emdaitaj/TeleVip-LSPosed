@@ -2,20 +2,12 @@ package com.my.televip.features.hideChats;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.my.televip.Configs.ConfigPreferences;
 import com.my.televip.application.ApplicationLoaderHook;
 import com.my.televip.language.Keys;
-import com.my.televip.logging.Logger;
-import com.my.televip.virtuals.SQLite.SQLiteCursor;
-import com.my.televip.virtuals.SQLite.SQLiteDatabase;
-import com.my.televip.virtuals.messenger.MessagesStorage;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -24,63 +16,55 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Persistent state of the hide chats feature.
  *
- * Selections are stored per Telegram user id (not per account slot) so they survive account
- * re-ordering and never leak onto another logged in account. "known" is the snapshot of chats and
- * contacts that existed when hiding was activated for the account, "newChats" collects the ones that
- * appeared later. Chats first seen after activation are sorted into one of them by ChatClassifier.
+ * Two sets per account: "managed" are the chats the user put under the feature's control, "visible"
+ * are the managed chats that stay visible while hiding is on. A chat that was never added to the
+ * managed list is never touched, so chats appearing later are unaffected.
+ *
+ *   hidden = enabled ? managed \ visible : {}
+ *
+ * Both are stored per Telegram user id (not per account slot) so they survive account re-ordering
+ * and never leak onto another logged in account.
  */
 public class HideChatsConfig {
 
-    public static final int MODE_SHOW_ONLY_SELECTED = 0;
-    public static final int MODE_HIDE_SELECTED = 1;
-
     private static final String PREFS_NAME = "TeleVip_HideChats";
-    private static final String KEY_ACTIVATED_AT = "activated_at";
-    private static final String KEY_ACCOUNT_ACTIVATED_AT = "activated_at_";
-    private static final String KEY_SELECTED = "selected_";
-    private static final String KEY_KNOWN = "known_";
-    private static final String KEY_NEW = "new_";
-    private static final long FLUSH_DELAY_MS = 2000;
+    private static final String KEY_MANAGED = "managed_";
+    private static final String KEY_VISIBLE = "visible_";
+    // selection of the previous (mode based) design, migrated into the managed list once
+    private static final String LEGACY_KEY_SELECTED = "selected_";
+    private static final String LEGACY_KEY_ACTIVATED_AT = "activated_at";
+    // ConfigPreferences key of the removed mode setting, and the value that meant "hide selected"
+    private static final String LEGACY_KEY_MODE = "HideChatsModeInt";
+    private static final int LEGACY_MODE_HIDE_SELECTED = 1;
 
     static final class AccountData {
         final long userId;
-        volatile Set<Long> selected = Collections.emptySet();
-        final Set<Long> known = ConcurrentHashMap.newKeySet();
-        final Set<Long> newChats = ConcurrentHashMap.newKeySet();
-        // first seen after activation and waiting for ChatClassifier; kept in memory only
-        final Set<Long> pending = ConcurrentHashMap.newKeySet();
-        // listed chats we were removed from / left: hidden like old ones, never classified (we may join
-        // again, and then the join date decides); kept in memory only
-        final Set<Long> dead = ConcurrentHashMap.newKeySet();
-        // pending chats whose notifications restored at startup were dropped (NotificationsHooks)
-        final Set<Long> restoreDropped = ConcurrentHashMap.newKeySet();
-        // ChatClassifier requests in flight (UI thread only)
-        final HashMap<Long, ChatClassifier.Probe> probes = new HashMap<>();
-        // notifications of pending chats (guarded by itself)
-        final HashMap<Long, NotificationsHooks.Held> held = new HashMap<>();
-        // When the snapshot of this account was taken: the feature activation, or the first time the
-        // account was seen afterwards (logged in later). 0 = no snapshot yet: everything seen exists.
-        volatile int activatedAt;
-        volatile boolean snapshotRequested;
-        // contacts have no date: never classify them as new before the database snapshot is merged
-        volatile boolean snapshotPending;
+        volatile Set<Long> managed = Collections.emptySet();
+        volatile Set<Long> visible = Collections.emptySet();
 
         AccountData(long userId) {
             this.userId = userId;
         }
+
+        /**
+         * Managed chats that are hidden right now. Computed per read, both sets are immutable.
+         */
+        Set<Long> hiddenKeys() {
+            Set<Long> currentManaged = managed;
+            Set<Long> currentVisible = visible;
+            if (currentManaged.isEmpty()) return Collections.emptySet();
+            if (currentVisible.isEmpty()) return currentManaged;
+            HashSet<Long> hidden = new HashSet<>(currentManaged);
+            hidden.removeAll(currentVisible);
+            return hidden;
+        }
     }
 
     private static final Map<Long, AccountData> accounts = new ConcurrentHashMap<>();
-    private static final Set<Long> dirtyAccounts = ConcurrentHashMap.newKeySet();
-    private static final Handler handler = new Handler(Looper.getMainLooper());
-    private static final Runnable flushRunnable = HideChatsConfig::flush;
 
     private static SharedPreferences preferences;
     private static volatile boolean enabled;
-    private static volatile int mode;
-    private static volatile boolean hideNewChats;
     private static volatile boolean muteNotifications;
-    private static volatile int activatedAt;
 
     public static synchronized boolean load() {
         TgAccess.init();
@@ -92,45 +76,64 @@ public class HideChatsConfig {
         if (context == null) return false;
         ConfigPreferences.ensureInit();
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        activatedAt = prefs.getInt(KEY_ACTIVATED_AT, 0);
         for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
             String key = entry.getKey();
-            Object value = entry.getValue();
-            if (value instanceof Integer) {
-                if (key.startsWith(KEY_ACCOUNT_ACTIVATED_AT)) {
-                    AccountData data = getOrCreate(parseUserId(key, KEY_ACCOUNT_ACTIVATED_AT));
-                    if (data != null) data.activatedAt = (Integer) value;
-                }
-                continue;
-            }
-            if (!(value instanceof String)) continue;
-            String text = (String) value;
-            if (key.startsWith(KEY_SELECTED)) {
-                AccountData data = getOrCreate(parseUserId(key, KEY_SELECTED));
-                if (data != null) data.selected = Collections.unmodifiableSet(decode(text));
-            } else if (key.startsWith(KEY_KNOWN)) {
-                AccountData data = getOrCreate(parseUserId(key, KEY_KNOWN));
-                if (data != null) data.known.addAll(decode(text));
-            } else if (key.startsWith(KEY_NEW)) {
-                AccountData data = getOrCreate(parseUserId(key, KEY_NEW));
-                if (data != null) data.newChats.addAll(decode(text));
-            }
-        }
-        if (activatedAt != 0) {
-            // snapshots stored without their own activation time belong to the feature activation
-            for (AccountData data : accounts.values()) {
-                if (data.activatedAt == 0 && !data.known.isEmpty()) data.activatedAt = activatedAt;
+            if (!(entry.getValue() instanceof String)) continue;
+            String text = (String) entry.getValue();
+            if (key.startsWith(KEY_MANAGED)) {
+                AccountData data = getOrCreate(parseUserId(key, KEY_MANAGED));
+                if (data != null) data.managed = Collections.unmodifiableSet(decode(text));
+            } else if (key.startsWith(KEY_VISIBLE)) {
+                AccountData data = getOrCreate(parseUserId(key, KEY_VISIBLE));
+                if (data != null) data.visible = Collections.unmodifiableSet(decode(text));
             }
         }
         preferences = prefs;
+        migrateLegacySelection(prefs);
         reloadFlags();
         return true;
     }
 
+    /**
+     * Drops the state of the previous (mode based) design.
+     *
+     * Its "hide selected chats" mode maps exactly onto the new one, so that selection becomes the
+     * managed list with nothing visible. Its "show only selected chats" mode hid every chat that was
+     * not selected, which the new design cannot express (only listed chats are ever hidden), and
+     * carrying the selection over would hide exactly the chats the user had kept visible. Those
+     * accounts therefore start with an empty list and the user picks the chats to hide.
+     */
+    private static void migrateLegacySelection(SharedPreferences prefs) {
+        if (!prefs.contains(LEGACY_KEY_ACTIVATED_AT) && !hasLegacySelection(prefs)) return;
+        boolean selectionMeantHidden = ConfigPreferences.getInt(LEGACY_KEY_MODE) == LEGACY_MODE_HIDE_SELECTED;
+        SharedPreferences.Editor editor = prefs.edit();
+        for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
+            String key = entry.getKey();
+            if (key.startsWith(KEY_MANAGED) || key.startsWith(KEY_VISIBLE)) continue;
+            editor.remove(key);
+            if (!selectionMeantHidden || !key.startsWith(LEGACY_KEY_SELECTED) || !(entry.getValue() instanceof String)) continue;
+            long userId = parseUserId(key, LEGACY_KEY_SELECTED);
+            AccountData data = getOrCreate(userId);
+            if (data == null || !data.managed.isEmpty()) continue;
+            Set<Long> selected = Collections.unmodifiableSet(decode((String) entry.getValue()));
+            if (selected.isEmpty()) continue;
+            data.managed = selected;
+            data.visible = Collections.emptySet();
+            editor.putString(KEY_MANAGED + userId, encode(selected));
+            editor.putString(KEY_VISIBLE + userId, "");
+        }
+        editor.apply();
+    }
+
+    private static boolean hasLegacySelection(SharedPreferences prefs) {
+        for (String key : prefs.getAll().keySet()) {
+            if (key.startsWith(LEGACY_KEY_SELECTED)) return true;
+        }
+        return false;
+    }
+
     static void reloadFlags() {
         enabled = ConfigPreferences.getBoolean(Keys.HideChats);
-        mode = ConfigPreferences.getInt(Keys.HideChatsMode + "Int") == MODE_HIDE_SELECTED ? MODE_HIDE_SELECTED : MODE_SHOW_ONLY_SELECTED;
-        hideNewChats = ConfigPreferences.getBoolean(Keys.HideChatsHideNew);
         muteNotifications = ConfigPreferences.getBoolean(Keys.HideChatsMuteNotifications, true);
     }
 
@@ -142,31 +145,12 @@ public class HideChatsConfig {
         return enabled && preferences != null;
     }
 
-    public static int getMode() {
-        return mode;
-    }
-
-    public static boolean isHideNewChats() {
-        return hideNewChats;
-    }
-
     public static boolean isMuteNotifications() {
         return muteNotifications;
     }
 
-    static boolean needsSnapshot() {
-        return activatedAt == 0;
-    }
-
     /**
-     * State of the account in the given slot (also while the feature is off), or null when logged out.
-     */
-    static AccountData getData(int account) {
-        return account < 0 ? null : getOrCreate(TgAccess.getClientUserId(account));
-    }
-
-    /**
-     * Rules for the given account slot, or null when nothing can be hidden there.
+     * Rules for the given account slot, or null when nothing is hidden there.
      */
     static HiddenFilter filterFor(int account) {
         if (!isEnabled() || account < 0) return null;
@@ -174,226 +158,46 @@ public class HideChatsConfig {
         if (userId == 0) return null;
         AccountData data = getOrCreate(userId);
         if (data == null) return null;
-        if (data.activatedAt == 0 && activatedAt != 0) requestSnapshot(account, data);
-        int currentMode = mode;
-        boolean currentHideNew = hideNewChats;
-        if (currentMode == MODE_HIDE_SELECTED && !currentHideNew && data.selected.isEmpty()) return null;
-        return new HiddenFilter(account, data, currentMode, currentHideNew, data.activatedAt);
+        Set<Long> hidden = data.hiddenKeys();
+        if (hidden.isEmpty()) return null;
+        return new HiddenFilter(account, data, hidden);
     }
 
-    public static Set<Long> getSelected(int account) {
+    public static Set<Long> getManaged(int account) {
         AccountData data = getOrCreate(TgAccess.getClientUserId(account));
-        return data == null ? Collections.<Long>emptySet() : data.selected;
+        return data == null ? Collections.<Long>emptySet() : data.managed;
     }
 
-    public static void setSelected(int account, Set<Long> selected) {
+    public static Set<Long> getVisible(int account) {
+        AccountData data = getOrCreate(TgAccess.getClientUserId(account));
+        return data == null ? Collections.<Long>emptySet() : data.visible;
+    }
+
+    /**
+     * Replaces the managed list. Chats that leave it also leave the visible set; chats that join it
+     * start out hidden, which is what the user asked for by adding them.
+     */
+    public static void setManaged(int account, Set<Long> managed) {
         AccountData data = getOrCreate(TgAccess.getClientUserId(account));
         if (data == null || preferences == null) return;
-        data.selected = Collections.unmodifiableSet(new HashSet<>(selected));
-        preferences.edit().putString(KEY_SELECTED + data.userId, encode(data.selected)).apply();
+        HashSet<Long> newManaged = new HashSet<>(managed);
+        HashSet<Long> newVisible = new HashSet<>(data.visible);
+        newVisible.retainAll(newManaged);
+        data.managed = Collections.unmodifiableSet(newManaged);
+        data.visible = Collections.unmodifiableSet(newVisible);
+        preferences.edit()
+                .putString(KEY_MANAGED + data.userId, encode(data.managed))
+                .putString(KEY_VISIBLE + data.userId, encode(data.visible))
+                .apply();
     }
 
-    /**
-     * Activates hiding: snapshot of the existing chats of every logged in account. UI thread only.
-     */
-    static void activate() {
-        if (preferences == null) return;
-        activatedAt = TgAccess.getServerTime(TgAccess.getSelectedAccount());
-        preferences.edit().putInt(KEY_ACTIVATED_AT, activatedAt).apply();
-        for (AccountData data : accounts.values()) {
-            reset(data);
-            markDirty(data);
-        }
-        int count = TgAccess.getMaxAccountCount();
-        for (int account = 0; account < count; account++) {
-            AccountData data = getData(account);
-            if (data != null) captureSnapshot(account, data, activatedAt);
-        }
-    }
-
-    /**
-     * UI thread only, like activate.
-     */
-    static void deactivate() {
-        if (preferences == null) return;
-        activatedAt = 0;
-        handler.removeCallbacks(flushRunnable);
-        dirtyAccounts.clear();
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.remove(KEY_ACTIVATED_AT);
-        for (AccountData data : accounts.values()) {
-            // held notifications stay: the next refresh delivers them
-            reset(data);
-            editor.remove(KEY_ACCOUNT_ACTIVATED_AT + data.userId);
-            editor.remove(KEY_KNOWN + data.userId);
-            editor.remove(KEY_NEW + data.userId);
-        }
-        editor.apply();
-    }
-
-    private static void reset(AccountData data) {
-        synchronized (data) {
-            data.known.clear();
-            data.newChats.clear();
-            data.pending.clear();
-            data.dead.clear();
-            data.activatedAt = 0;
-        }
-        data.snapshotRequested = false;
-        data.snapshotPending = false;
-        data.probes.clear();
-    }
-
-    /**
-     * An account logged in after hiding was activated: its chats existed before it was seen.
-     */
-    private static void requestSnapshot(int account, AccountData data) {
-        if (data.snapshotRequested) return;
-        data.snapshotRequested = true;
-        HideChats.post(() -> {
-            if (data.activatedAt != 0 || activatedAt == 0 || !isEnabled()
-                    || TgAccess.getClientUserId(account) != data.userId) {
-                data.snapshotRequested = false;
-                return;
-            }
-            captureSnapshot(account, data, TgAccess.getServerTime(account));
-            HideChats.refreshAccount(account);
-        });
-    }
-
-    static void markDirty(AccountData data) {
-        if (data == null) return;
-        dirtyAccounts.add(data.userId);
-        handler.removeCallbacks(flushRunnable);
-        handler.postDelayed(flushRunnable, FLUSH_DELAY_MS);
-    }
-
-    private static void flush() {
-        if (preferences == null || dirtyAccounts.isEmpty()) return;
-        SharedPreferences.Editor editor = preferences.edit();
-        for (Long userId : new ArrayList<>(dirtyAccounts)) {
-            dirtyAccounts.remove(userId);
-            AccountData data = accounts.get(userId);
-            if (data == null || activatedAt == 0 || data.activatedAt == 0) continue;
-            editor.putInt(KEY_ACCOUNT_ACTIVATED_AT + userId, data.activatedAt);
-            editor.putString(KEY_KNOWN + userId, encode(data.known));
-            editor.putString(KEY_NEW + userId, encode(data.newChats));
-        }
-        editor.apply();
-    }
-
-    /**
-     * Everything the account has right now is "known": chats in memory, contacts and (asynchronously)
-     * the chats and contacts cached in its database. UI thread only.
-     */
-    private static void captureSnapshot(int account, AccountData data, int time) {
-        Object messagesController = TgAccess.getMessagesController(account);
-        synchronized (data) {
-            data.activatedAt = time;
-            data.known.add(data.userId);
-            ArrayList<Object> dialogs = TgAccess.getAllDialogs(messagesController);
-            if (dialogs != null) {
-                for (Object dialog : new ArrayList<>(dialogs)) {
-                    if (dialog == null || TgAccess.isDialogFolder(dialog)) continue;
-                    long key = TgAccess.toPeerKey(messagesController, TgAccess.getDialogId(dialog));
-                    if (key != 0) data.known.add(key);
-                }
-            }
-            ArrayList<Object> contacts = TgAccess.getList(TgAccess.getContactsController(account), "ContactsController", "contacts");
-            if (contacts != null) {
-                for (Object contact : new ArrayList<>(contacts)) {
-                    long contactId = TgAccess.getContactUserId(contact);
-                    if (contactId != 0) data.known.add(contactId);
-                }
-            }
-        }
-        markDirty(data);
-        data.snapshotPending = true;
-        loadSnapshotFromDatabase(account, data);
-    }
-
-    /**
-     * Dialogs that are cached locally but not loaded into memory yet belong to the snapshot too.
-     */
-    private static void loadSnapshotFromDatabase(int account, AccountData data) {
-        Object storage = TgAccess.getMessagesStorage(account);
-        if (storage == null) {
-            data.snapshotPending = false;
-            return;
-        }
-        int snapshotActivatedAt = data.activatedAt;
-        String dialogsQuery = "SELECT did FROM dialogs WHERE date <= " + snapshotActivatedAt;
-        MessagesStorage messagesStorage = new MessagesStorage(storage);
-        try {
-            messagesStorage.getStorageQueue().postRunnable(() -> {
-                HashSet<Long> keys = new HashSet<>();
-                try {
-                    SQLiteDatabase database = messagesStorage.getDatabase();
-                    HashMap<Integer, Long> encryptedChatUsers = readEncryptedChatUsers(database);
-                    // the query may run seconds later: chats active since then are classified as they show up
-                    SQLiteCursor cursor = database.queryFinalized(dialogsQuery, new Object[0]);
-                    try {
-                        while (cursor.next()) {
-                            long dialogId = cursor.longValue(0);
-                            if (DialogIds.isFolderDialogId(dialogId)) continue;
-                            if (DialogIds.isEncryptedDialog(dialogId)) {
-                                Long peerUserId = encryptedChatUsers.get(DialogIds.getEncryptedChatId(dialogId));
-                                keys.add(peerUserId != null && peerUserId != 0 ? peerUserId : dialogId);
-                            } else {
-                                keys.add(dialogId);
-                            }
-                        }
-                    } finally {
-                        cursor.dispose();
-                    }
-                    cursor = database.queryFinalized("SELECT uid FROM contacts", new Object[0]);
-                    try {
-                        while (cursor.next()) {
-                            keys.add(cursor.longValue(0));
-                        }
-                    } finally {
-                        cursor.dispose();
-                    }
-                } catch (Throwable t) {
-                    Logger.e(t);
-                }
-                handler.post(() -> {
-                    if (data.activatedAt != snapshotActivatedAt) return;
-                    data.snapshotPending = false;
-                    if (!isEnabled() || keys.isEmpty()) return;
-                    // Cached when the snapshot was taken, so it existed: this beats any classification
-                    // made in the meantime (e.g. by message date while this query was running).
-                    synchronized (data) {
-                        for (Long key : keys) {
-                            data.newChats.remove(key);
-                            data.pending.remove(key);
-                            data.known.add(key);
-                        }
-                    }
-                    markDirty(data);
-                    HideChats.refreshAccount(account);
-                });
-            });
-        } catch (Throwable t) {
-            data.snapshotPending = false;
-            Logger.e(t);
-        }
-    }
-
-    /**
-     * Secret chat id -> user id, straight from the database. Storage thread only.
-     */
-    static HashMap<Integer, Long> readEncryptedChatUsers(SQLiteDatabase database) throws Exception {
-        HashMap<Integer, Long> encryptedChatUsers = new HashMap<>();
-        SQLiteCursor cursor = database.queryFinalized("SELECT uid, user FROM enc_chats", new Object[0]);
-        try {
-            while (cursor.next()) {
-                encryptedChatUsers.put(cursor.intValue(0), cursor.longValue(1));
-            }
-        } finally {
-            cursor.dispose();
-        }
-        return encryptedChatUsers;
+    public static void setVisible(int account, Set<Long> visible) {
+        AccountData data = getOrCreate(TgAccess.getClientUserId(account));
+        if (data == null || preferences == null) return;
+        HashSet<Long> newVisible = new HashSet<>(visible);
+        newVisible.retainAll(data.managed);
+        data.visible = Collections.unmodifiableSet(newVisible);
+        preferences.edit().putString(KEY_VISIBLE + data.userId, encode(data.visible)).apply();
     }
 
     private static AccountData getOrCreate(long userId) {

@@ -60,13 +60,14 @@ public class ChatHook {
                 }
             }));
 
-            XposedHelpers.findAndHookMethod(clazz, "onItemClick", int.class, new BaseMethodHook() {
+            XposedHelpers.findAndHookMethod(clazz, Obfuscate.getMethodName("ActionBar$ActionBarMenuOnItemClick", "onItemClick"), int.class, new BaseMethodHook() {
                 @Override
                 protected void afterMethod(MethodHookParam param) {
                     try {
                         int id = (int) param.args[0];
+                        if (id != 8353847 && id != 8353848) return;
 
-                        final Object thisClass = XposedHelpers.getObjectField(param.thisObject, Obfuscate.getFieldName("ChatActivity", "this$0"));
+                        final Object thisClass = FeatureInitializer.getOuterInstance(param.thisObject, "ChatActivity", ClassNames.CHAT_ACTIVITY);
                         ChatActivity chat = new ChatActivity(thisClass);
 
                         if (id == 8353847) {

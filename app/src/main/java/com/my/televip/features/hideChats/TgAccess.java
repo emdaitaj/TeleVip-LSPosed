@@ -114,7 +114,12 @@ final class TgAccess {
             found = XposedHelpers.findFieldIfExists(cls, resolved);
         } catch (Throwable ignored) {}
         if (found == null) {
-            missingFields.add(cacheKey);
+            // Logged once per field: a name the mapping does not cover resolves to the unobfuscated
+            // one and the read silently returns nothing, which would hide nothing instead of failing.
+            if (missingFields.add(cacheKey)) {
+                Logger.w("HideChats: field " + classKey + "#" + name + " not found on " + cls.getName()
+                        + (name.equals(resolved) ? " (no mapping for it)" : " as " + resolved));
+            }
         } else {
             fieldCache.put(cacheKey, found);
         }

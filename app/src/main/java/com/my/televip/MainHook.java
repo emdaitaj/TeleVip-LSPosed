@@ -29,6 +29,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
         Utils.classLoader = lpparam.classLoader;
         Utils.pkgName = lpparam.packageName;
+        Utils.versionCode = Utils.readVersionCode(lpparam.appInfo, lpparam.packageName);
 
         if (HideChats.isPotentiallySupported()) {
             HMethod.hookMethod(ClassLoad.getClass(ClassNames.APPLICATION_LOADER), "onCreate", new BaseMethodHook() {

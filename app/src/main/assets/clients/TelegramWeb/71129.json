@@ -1,0 +1,1671 @@
+{
+  "meta": {
+    "versionCode": 71129,
+    "versionName": "12.10.6",
+    "generator": "tools/telegram-mapping/generate_mapping.py"
+  },
+  "classes": [
+    {
+      "o": "androidx.collection.LongSparseArray",
+      "r": "z.f"
+    },
+    {
+      "o": "androidx.recyclerview.widget.RecyclerView$Adapter",
+      "r": "n4.n0"
+    },
+    {
+      "o": "org.telegram.messenger.browser.Browser",
+      "r": "he.f"
+    },
+    {
+      "o": "org.telegram.ui.ActionBar.ActionBar",
+      "r": "org.telegram.ui.ActionBar.l"
+    },
+    {
+      "o": "org.telegram.ui.ActionBar.ActionBar$ActionBarMenuOnItemClick",
+      "r": "org.telegram.ui.ActionBar.k"
+    },
+    {
+      "o": "org.telegram.ui.ActionBar.AlertDialog$OnButtonClickListener",
+      "r": "org.telegram.ui.ActionBar.f2"
+    },
+    {
+      "o": "org.telegram.ui.ActionBar.AlertDialog.Builder",
+      "r": "org.telegram.ui.ActionBar.AlertDialog$Builder"
+    },
+    {
+      "o": "org.telegram.ui.ActionBar.Theme",
+      "r": "org.telegram.ui.ActionBar.o6"
+    },
+    {
+      "o": "org.telegram.ui.Adapters.ContactsAdapter",
+      "r": "af.j"
+    },
+    {
+      "o": "org.telegram.ui.Adapters.DialogsAdapter",
+      "r": "af.w"
+    },
+    {
+      "o": "org.telegram.ui.Adapters.DialogsSearchAdapter",
+      "r": "af.c1"
+    },
+    {
+      "o": "org.telegram.ui.Adapters.DialogsSearchAdapter$OnRecentSearchLoaded",
+      "r": "af.a1"
+    },
+    {
+      "o": "org.telegram.ui.Adapters.SearchAdapter",
+      "r": "af.a3"
+    },
+    {
+      "o": "org.telegram.ui.Adapters.SearchAdapterHelper",
+      "r": "af.i3"
+    },
+    {
+      "o": "org.telegram.ui.Cells.ChatMessageCell",
+      "r": "org.telegram.ui.Cells.u1"
+    },
+    {
+      "o": "org.telegram.ui.Cells.HeaderCell",
+      "r": "org.telegram.ui.Cells.n4"
+    },
+    {
+      "o": "org.telegram.ui.Cells.ShadowSectionCell",
+      "r": "org.telegram.ui.Cells.a7"
+    },
+    {
+      "o": "org.telegram.ui.Cells.TextCheckCell",
+      "r": "org.telegram.ui.Cells.u8"
+    },
+    {
+      "o": "org.telegram.ui.Cells.TextSettingsCell",
+      "r": "org.telegram.ui.Cells.ca"
+    },
+    {
+      "o": "org.telegram.ui.ChatActivity",
+      "r": "org.telegram.ui.bo"
+    },
+    {
+      "o": "org.telegram.ui.ChatActivity$ChatMessageCellDelegate",
+      "r": "org.telegram.ui.nn"
+    },
+    {
+      "o": "org.telegram.ui.Components.AvatarDrawable",
+      "r": "org.telegram.ui.Components.f9"
+    },
+    {
+      "o": "org.telegram.ui.Components.BackupImageView",
+      "r": "org.telegram.ui.Components.u9"
+    },
+    {
+      "o": "org.telegram.ui.Components.DialogsChannelsAdapter",
+      "r": "org.telegram.ui.Components.zs"
+    },
+    {
+      "o": "org.telegram.ui.Components.ShareAlert$ShareDialogsAdapter",
+      "r": "org.telegram.ui.Components.zq0"
+    },
+    {
+      "o": "org.telegram.ui.Components.UItem",
+      "r": "org.telegram.ui.Components.o61"
+    },
+    {
+      "o": "org.telegram.ui.Components.UniversalAdapter",
+      "r": "org.telegram.ui.Components.c71"
+    },
+    {
+      "o": "org.telegram.ui.Components.quickforward.QuickShareSelectorOverlayLayout",
+      "r": "pg.j"
+    },
+    {
+      "o": "org.telegram.ui.GroupCreateActivity",
+      "r": "org.telegram.ui.f70"
+    },
+    {
+      "o": "org.telegram.ui.GroupCreateActivity$GroupCreateAdapter",
+      "r": "org.telegram.ui.d70"
+    },
+    {
+      "o": "org.telegram.ui.PhotoViewer$PhotoViewerProvider",
+      "r": "org.telegram.ui.xu0"
+    },
+    {
+      "o": "org.telegram.ui.SettingsActivity",
+      "r": "org.telegram.ui.v91"
+    },
+    {
+      "o": "org.telegram.ui.SettingsActivity$SettingCell",
+      "r": "org.telegram.ui.s91"
+    },
+    {
+      "o": "org.telegram.ui.SettingsActivity$SettingCell$Factory",
+      "r": "org.telegram.ui.r91"
+    },
+    {
+      "o": "org.telegram.ui.Stories.DialogStoriesCell",
+      "r": "vg.m"
+    },
+    {
+      "o": "org.telegram.ui.Stories.PeerStoriesView$StoryItemHolder",
+      "r": "vg.j3"
+    },
+    {
+      "o": "org.telegram.ui.Stories.StoriesController",
+      "r": "vg.s5"
+    },
+    {
+      "o": "org.telegram.ui.UsersSelectActivity$GroupCreateAdapter",
+      "r": "org.telegram.ui.oi1"
+    }
+  ],
+  "fields": [
+    {
+      "c": "AdapterWithDiffUtils$Item",
+      "o": "viewType",
+      "r": "a"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "alertDialog",
+      "r": "a"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "dialog_id",
+      "r": "S5"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "headerItem",
+      "r": "g0"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "pinnedMessageView",
+      "r": "w2"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "selectedObject",
+      "r": "c5"
+    },
+    {
+      "c": "ChatMessageCell",
+      "o": "currentTimeString",
+      "r": "sb"
+    },
+    {
+      "c": "ChatMessageCell",
+      "o": "timeTextWidth",
+      "r": "pb"
+    },
+    {
+      "c": "ChatMessageCell",
+      "o": "timeWidth",
+      "r": "ob"
+    },
+    {
+      "c": "ContactsAdapter",
+      "o": "currentAccount",
+      "r": "r"
+    },
+    {
+      "c": "ContactsAdapter",
+      "o": "onlineContacts",
+      "r": "y"
+    },
+    {
+      "c": "DialogStoriesCell",
+      "o": "currentAccount",
+      "r": "f"
+    },
+    {
+      "c": "DialogsAdapter",
+      "o": "currentAccount",
+      "r": "E"
+    },
+    {
+      "c": "DialogsAdapter",
+      "o": "itemInternals",
+      "r": "L"
+    },
+    {
+      "c": "DialogsAdapter",
+      "o": "onlineContacts",
+      "r": "d"
+    },
+    {
+      "c": "DialogsAdapter$ItemInternal",
+      "o": "contact",
+      "r": "e"
+    },
+    {
+      "c": "DialogsAdapter$ItemInternal",
+      "o": "dialog",
+      "r": "c"
+    },
+    {
+      "c": "DialogsAdapter$ItemInternal",
+      "o": "emptyType",
+      "r": "j"
+    },
+    {
+      "c": "DialogsChannelsAdapter",
+      "o": "currentAccount",
+      "r": "M"
+    },
+    {
+      "c": "DialogsChannelsAdapter",
+      "o": "myChannels",
+      "r": "U"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "currentAccount",
+      "r": "r0"
+    },
+    {
+      "c": "DialogsSearchAdapter$RecentSearchObject",
+      "o": "did",
+      "r": "c"
+    },
+    {
+      "c": "GroupCreateActivity$GroupCreateAdapter",
+      "o": "contacts",
+      "r": "r"
+    },
+    {
+      "c": "LaunchActivity",
+      "o": "drawerLayoutContainer",
+      "r": "y0"
+    },
+    {
+      "c": "LaunchActivity",
+      "o": "frameLayout",
+      "r": "v0"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "size",
+      "r": "d"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "galleryButton",
+      "r": "s0"
+    },
+    {
+      "c": "PhotoViewer$PlaceProviderObject",
+      "o": "imageReceiver",
+      "r": "a"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "chatId",
+      "r": "e1"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "nameTextView",
+      "r": "f"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "onlineTextView",
+      "r": "r"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "otherItem",
+      "r": "S0"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "userId",
+      "r": "d1"
+    },
+    {
+      "c": "QuickShareSelectorOverlayLayout",
+      "o": "currentAccount",
+      "r": "d"
+    },
+    {
+      "c": "QuickShareSelectorOverlayLayout",
+      "o": "dialogs",
+      "r": "c"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "currentAccount",
+      "r": "m"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "phonesSearch",
+      "r": "j"
+    },
+    {
+      "c": "SecretMediaViewer",
+      "o": "onClose",
+      "r": "o1"
+    },
+    {
+      "c": "SettingsActivity$SettingCell",
+      "o": "iconView",
+      "r": "d"
+    },
+    {
+      "c": "ShareAlert$ShareDialogsAdapter",
+      "o": "dialogs",
+      "r": "d"
+    },
+    {
+      "c": "ShareAlert$ShareDialogsAdapter",
+      "o": "dialogsMap",
+      "r": "e"
+    },
+    {
+      "c": "ShareAlert$ShareDialogsAdapter",
+      "o": "this$0",
+      "r": "f"
+    },
+    {
+      "c": "StoriesController",
+      "o": "currentAccount",
+      "r": "a"
+    },
+    {
+      "c": "StoriesController",
+      "o": "dialogListStories",
+      "r": "g"
+    },
+    {
+      "c": "StoriesController",
+      "o": "hiddenListStories",
+      "r": "h"
+    },
+    {
+      "c": "TextCheckCell",
+      "o": "textView",
+      "r": "c"
+    },
+    {
+      "c": "TextSettingsCell",
+      "o": "textView",
+      "r": "b"
+    },
+    {
+      "c": "Theme",
+      "o": "chat_timePaint",
+      "r": "T2"
+    },
+    {
+      "c": "UItem",
+      "o": "id",
+      "r": "d"
+    },
+    {
+      "c": "UItem",
+      "o": "subtext",
+      "r": "m"
+    },
+    {
+      "c": "UItem",
+      "o": "text",
+      "r": "l"
+    },
+    {
+      "c": "UsersSelectActivity$GroupCreateAdapter",
+      "o": "contacts",
+      "r": "r"
+    }
+  ],
+  "methods": [
+    {
+      "c": "ActionBar$ActionBarMenuOnItemClick",
+      "o": "onItemClick",
+      "r": "b"
+    },
+    {
+      "c": "ActionBar$ActionBarMenuOnItemClick",
+      "o": "onItemClick(int)",
+      "r": "b"
+    },
+    {
+      "c": "ActionBar$ActionBarMenuOnItemClick",
+      "o": "onItemClickI",
+      "r": "b"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItem(int,CharSequence)",
+      "r": "g"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItem(int,View,int,int)",
+      "r": "h"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItem(int,int,CharSequence)",
+      "r": "e"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItem(int,int,CharSequence,Theme$ResourcesProvider)",
+      "r": "f"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItem(int,int,Drawable,CharSequence,boolean,boolean,Theme$ResourcesProvider)",
+      "r": "d"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItemIC",
+      "r": "g"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItemIIC",
+      "r": "e"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItemIICO",
+      "r": "f"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItemIIDCZZO",
+      "r": "d"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "addSubItemIVII",
+      "r": "h"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "lazilyAddSubItem(int,Drawable,CharSequence)",
+      "r": "v"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "lazilyAddSubItem(int,int,CharSequence)",
+      "r": "u"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "lazilyAddSubItemIDC",
+      "r": "v"
+    },
+    {
+      "c": "ActionBarMenuItem",
+      "o": "lazilyAddSubItemIIC",
+      "r": "u"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "create",
+      "r": "a"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "create()",
+      "r": "a"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setMessage",
+      "r": "g"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setMessage(CharSequence)",
+      "r": "g"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setMessageC",
+      "r": "g"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setNegativeButton",
+      "r": "h"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setNegativeButton(CharSequence,AlertDialog$OnButtonClickListener)",
+      "r": "h"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setNegativeButtonCO",
+      "r": "h"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setNeutralButton",
+      "r": "i"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setNeutralButton(CharSequence,AlertDialog$OnButtonClickListener)",
+      "r": "i"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setNeutralButtonCO",
+      "r": "i"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setPositiveButton",
+      "r": "k"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setPositiveButton(CharSequence,AlertDialog$OnButtonClickListener)",
+      "r": "k"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setPositiveButtonCO",
+      "r": "k"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setTitle",
+      "r": "l"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setTitle(CharSequence)",
+      "r": "l"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setTitleC",
+      "r": "l"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setView",
+      "r": "n"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setView(View)",
+      "r": "n"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "setViewV",
+      "r": "n"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "show",
+      "r": "o"
+    },
+    {
+      "c": "AlertDialog$Builder",
+      "o": "show()",
+      "r": "o"
+    },
+    {
+      "c": "AlertDialog$OnButtonClickListener",
+      "o": "onClick",
+      "r": "k"
+    },
+    {
+      "c": "AlertDialog$OnButtonClickListener",
+      "o": "onClick(AlertDialog,int)",
+      "r": "k"
+    },
+    {
+      "c": "AlertDialog$OnButtonClickListener",
+      "o": "onClickOI",
+      "r": "k"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setAvatarType",
+      "r": "g"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setAvatarType(int)",
+      "r": "g"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setAvatarTypeI",
+      "r": "g"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(TLObject)",
+      "r": "p"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(TLRPC$Chat)",
+      "r": "q"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(TLRPC$User)",
+      "r": "r"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(int,TLObject)",
+      "r": "j"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(int,TLRPC$Chat)",
+      "r": "k"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(int,TLRPC$ChatInvite)",
+      "r": "l"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(int,TLRPC$User)",
+      "r": "m"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(long,String,String)",
+      "r": "n"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfo(long,String,String,String,Integer,MessagesController$PeerColor,boolean)",
+      "r": "o"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfoJSS",
+      "r": "n"
+    },
+    {
+      "c": "AvatarDrawable",
+      "o": "setInfoJSSSIOZ",
+      "r": "o"
+    },
+    {
+      "c": "BackupImageView",
+      "o": "setForUserOrChat",
+      "r": "e"
+    },
+    {
+      "c": "BackupImageView",
+      "o": "setForUserOrChat(TLObject,AvatarDrawable)",
+      "r": "e"
+    },
+    {
+      "c": "BackupImageView",
+      "o": "setForUserOrChatOO",
+      "r": "e"
+    },
+    {
+      "c": "BackupImageView",
+      "o": "setRoundRadius(int)",
+      "r": "setRoundRadius"
+    },
+    {
+      "c": "BackupImageView",
+      "o": "setRoundRadius(int,int,int,int)",
+      "r": "r"
+    },
+    {
+      "c": "BackupImageView",
+      "o": "setRoundRadiusI",
+      "r": "setRoundRadius"
+    },
+    {
+      "c": "BackupImageView",
+      "o": "setRoundRadiusIIII",
+      "r": "r"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrl(Context,String)",
+      "r": "s"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrl(Context,String,boolean)",
+      "r": "o"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrl(Context,Uri)",
+      "r": "t"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrl(Context,Uri,boolean,boolean)",
+      "r": "p"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrl(Context,Uri,boolean,boolean,Browser$Progress)",
+      "r": "q"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrl(Context,Uri,boolean,boolean,boolean,Browser$Progress,String,boolean,boolean,boolean)",
+      "r": "r"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrlCS",
+      "r": "s"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrlCSZ",
+      "r": "o"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrlCU",
+      "r": "t"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrlCUZZ",
+      "r": "p"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrlCUZZO",
+      "r": "q"
+    },
+    {
+      "c": "Browser",
+      "o": "openUrlCUZZZOSZZZ",
+      "r": "r"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "createPinnedMessageView",
+      "r": "K7"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "createPinnedMessageView()",
+      "r": "K7"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "fillMessageMenu",
+      "r": "n8"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "fillMessageMenu(MessageObject,ArrayList,ArrayList,ArrayList)",
+      "r": "n8"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "fillMessageMenuOAAA",
+      "r": "n8"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "hasSelectedNoforwardsMessage",
+      "r": "a9"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "hasSelectedNoforwardsMessage()",
+      "r": "a9"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "processSelectedOption",
+      "r": "Ba"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "processSelectedOption(int)",
+      "r": "Ba"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "processSelectedOptionI",
+      "r": "Ba"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "scrollToMessageId(int,int,boolean,int,boolean,int)",
+      "r": "F"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "scrollToMessageId(int,int,boolean,int,boolean,int,Integer,byte[],Runnable)",
+      "r": "Xa"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "scrollToMessageIdIIZIZI",
+      "r": "F"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "scrollToMessageIdIIZIZIIBR",
+      "r": "Xa"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "sendSecretMediaDelete",
+      "r": "O4"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "sendSecretMediaDelete(MessageObject)",
+      "r": "O4"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "sendSecretMediaDeleteO",
+      "r": "O4"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "sendSecretMessageRead",
+      "r": "fb"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "sendSecretMessageRead(MessageObject,boolean)",
+      "r": "fb"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "sendSecretMessageReadOZ",
+      "r": "fb"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "updatePinnedMessageView",
+      "r": "yc"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "updatePinnedMessageView(int,boolean)",
+      "r": "yc"
+    },
+    {
+      "c": "ChatActivity",
+      "o": "updatePinnedMessageViewIZ",
+      "r": "yc"
+    },
+    {
+      "c": "ChatActivity$ChatMessageCellDelegate",
+      "o": "didPressImage",
+      "r": "t0"
+    },
+    {
+      "c": "ChatActivity$ChatMessageCellDelegate",
+      "o": "didPressImage(ChatMessageCell,float,float,boolean)",
+      "r": "t0"
+    },
+    {
+      "c": "ChatActivity$ChatMessageCellDelegate",
+      "o": "didPressImageOFFZ",
+      "r": "t0"
+    },
+    {
+      "c": "ChatActivity$ChatMessageCellDelegate",
+      "o": "didQuickShareStart",
+      "r": "h0"
+    },
+    {
+      "c": "ChatActivity$ChatMessageCellDelegate",
+      "o": "didQuickShareStart(ChatMessageCell,float,float)",
+      "r": "h0"
+    },
+    {
+      "c": "ChatActivity$ChatMessageCellDelegate",
+      "o": "didQuickShareStartOFF",
+      "r": "h0"
+    },
+    {
+      "c": "ChatMessageCell",
+      "o": "measureTime",
+      "r": "x3"
+    },
+    {
+      "c": "ChatMessageCell",
+      "o": "measureTime(MessageObject)",
+      "r": "x3"
+    },
+    {
+      "c": "ChatMessageCell",
+      "o": "measureTimeO",
+      "r": "x3"
+    },
+    {
+      "c": "ContactsAdapter",
+      "o": "sortOnlineContacts",
+      "r": "Z"
+    },
+    {
+      "c": "ContactsAdapter",
+      "o": "sortOnlineContacts()",
+      "r": "Z"
+    },
+    {
+      "c": "DialogStoriesCell",
+      "o": "updateItems",
+      "r": "p"
+    },
+    {
+      "c": "DialogStoriesCell",
+      "o": "updateItems(boolean,boolean)",
+      "r": "p"
+    },
+    {
+      "c": "DialogStoriesCell",
+      "o": "updateItemsZZ",
+      "r": "p"
+    },
+    {
+      "c": "DialogsAdapter",
+      "o": "updateItemList",
+      "r": "V"
+    },
+    {
+      "c": "DialogsAdapter",
+      "o": "updateItemList()",
+      "r": "V"
+    },
+    {
+      "c": "DialogsChannelsAdapter",
+      "o": "updateMyChannels",
+      "r": "W"
+    },
+    {
+      "c": "DialogsChannelsAdapter",
+      "o": "updateMyChannels()",
+      "r": "W"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "filter",
+      "r": "F"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "filter(Object)",
+      "r": "F"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "filterO",
+      "r": "F"
+    },
+    {
+      "c": "HeaderCell",
+      "o": "setText(CharSequence)",
+      "r": "setText"
+    },
+    {
+      "c": "HeaderCell",
+      "o": "setText(CharSequence,boolean)",
+      "r": "c"
+    },
+    {
+      "c": "HeaderCell",
+      "o": "setTextC",
+      "r": "setText"
+    },
+    {
+      "c": "HeaderCell",
+      "o": "setTextCZ",
+      "r": "c"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "get(long)",
+      "r": "f"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "get(long,Object)",
+      "r": "g"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "getJ",
+      "r": "f"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "getJO",
+      "r": "g"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "keyAt",
+      "r": "j"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "keyAt(int)",
+      "r": "j"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "keyAtI",
+      "r": "j"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "remove",
+      "r": "l"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "remove(long)",
+      "r": "l"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "removeJ",
+      "r": "l"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "size",
+      "r": "m"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "size()",
+      "r": "m"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "valueAt",
+      "r": "n"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "valueAt(int)",
+      "r": "n"
+    },
+    {
+      "c": "LongSparseArray",
+      "o": "valueAtI",
+      "r": "n"
+    },
+    {
+      "c": "PeerStoriesView$StoryItemHolder",
+      "o": "allowScreenshots",
+      "r": "d"
+    },
+    {
+      "c": "PeerStoriesView$StoryItemHolder",
+      "o": "allowScreenshots()",
+      "r": "d"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "getInstance",
+      "r": "t1"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "getInstance()",
+      "r": "t1"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhoto(ArrayList,int,PhotoViewer$PhotoViewerProvider)",
+      "r": "b2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhoto(ArrayList,int,long,long,long,PhotoViewer$PhotoViewerProvider)",
+      "r": "a2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhoto(MessageObject,ChatActivity,long,long,long,PhotoViewer$PhotoViewerProvider)",
+      "r": "c2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhoto(MessageObject,TLRPC$FileLocation,ImageLocation,ImageLocation,ArrayList,ArrayList,ArrayList,int,PhotoViewer$PhotoViewerProvider,ChatActivity,long,long,long,boolean,PhotoViewer$PageBlocksAdapter,Integer)",
+      "r": "e2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhoto(TLRPC$FileLocation,ImageLocation,PhotoViewer$PhotoViewerProvider)",
+      "r": "d2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhotoAIJJJO",
+      "r": "a2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhotoAIO",
+      "r": "b2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhotoOOJJJO",
+      "r": "c2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhotoOOO",
+      "r": "d2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "openPhotoOOOOAAAIOOJJJZOI",
+      "r": "e2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "setIsAboutToSwitchToIndex",
+      "r": "F2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "setIsAboutToSwitchToIndex(int,boolean,boolean,boolean)",
+      "r": "F2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "setIsAboutToSwitchToIndexIZZZ",
+      "r": "F2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "setParentActivity",
+      "r": "J2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "setParentActivity(Activity,BaseFragment,Theme$ResourcesProvider)",
+      "r": "J2"
+    },
+    {
+      "c": "PhotoViewer",
+      "o": "setParentActivityAOO",
+      "r": "J2"
+    },
+    {
+      "c": "PhotoViewer$PhotoViewerProvider",
+      "o": "getPlaceForPhoto",
+      "r": "E"
+    },
+    {
+      "c": "PhotoViewer$PhotoViewerProvider",
+      "o": "getPlaceForPhoto(MessageObject,TLRPC$FileLocation,int,boolean,boolean)",
+      "r": "E"
+    },
+    {
+      "c": "PhotoViewer$PhotoViewerProvider",
+      "o": "getPlaceForPhotoOOIZZ",
+      "r": "E"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "createActionBarMenu",
+      "r": "D3"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "createActionBarMenu(boolean)",
+      "r": "D3"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "createActionBarMenuZ",
+      "r": "D3"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "updateProfileData",
+      "r": "i5"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "updateProfileData(boolean)",
+      "r": "i5"
+    },
+    {
+      "c": "ProfileActivity",
+      "o": "updateProfileDataZ",
+      "r": "i5"
+    },
+    {
+      "c": "RecyclerView$Adapter",
+      "o": "notifyDataSetChanged",
+      "r": "l"
+    },
+    {
+      "c": "RecyclerView$Adapter",
+      "o": "notifyDataSetChanged()",
+      "r": "l"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "filter",
+      "r": "d"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "filter(TLObject)",
+      "r": "d"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "filterO",
+      "r": "d"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "queryServerSearch(String,boolean,boolean,boolean,boolean,boolean,long,boolean,int,int)",
+      "r": "g"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "queryServerSearch(String,boolean,boolean,boolean,boolean,boolean,long,boolean,int,int,long,Runnable)",
+      "r": "h"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "queryServerSearchSZZZZZJZII",
+      "r": "g"
+    },
+    {
+      "c": "SearchAdapterHelper",
+      "o": "queryServerSearchSZZZZZJZIIJR",
+      "r": "h"
+    },
+    {
+      "c": "SecretMediaViewer",
+      "o": "closePhoto",
+      "r": "e"
+    },
+    {
+      "c": "SecretMediaViewer",
+      "o": "closePhoto(boolean,boolean)",
+      "r": "e"
+    },
+    {
+      "c": "SecretMediaViewer",
+      "o": "closePhotoZZ",
+      "r": "e"
+    },
+    {
+      "c": "SettingsActivity",
+      "o": "fillItems",
+      "r": "b0"
+    },
+    {
+      "c": "SettingsActivity",
+      "o": "fillItems(ArrayList,UniversalAdapter)",
+      "r": "b0"
+    },
+    {
+      "c": "SettingsActivity",
+      "o": "fillItemsAO",
+      "r": "b0"
+    },
+    {
+      "c": "SettingsActivity",
+      "o": "onClick",
+      "r": "f0"
+    },
+    {
+      "c": "SettingsActivity",
+      "o": "onClick(UItem,View,int,float,float)",
+      "r": "f0"
+    },
+    {
+      "c": "SettingsActivity",
+      "o": "onClickOVIFF",
+      "r": "f0"
+    },
+    {
+      "c": "SettingsActivity$SettingCell$Factory",
+      "o": "of",
+      "r": "a"
+    },
+    {
+      "c": "SettingsActivity$SettingCell$Factory",
+      "o": "of(int,int,int,int,CharSequence,CharSequence,CharSequence)",
+      "r": "a"
+    },
+    {
+      "c": "SettingsActivity$SettingCell$Factory",
+      "o": "ofIIIICCC",
+      "r": "a"
+    },
+    {
+      "c": "ShareAlert$ShareDialogsAdapter",
+      "o": "fetchDialogs",
+      "r": "E"
+    },
+    {
+      "c": "ShareAlert$ShareDialogsAdapter",
+      "o": "fetchDialogs()",
+      "r": "E"
+    },
+    {
+      "c": "SimpleTextView",
+      "o": "setText(CharSequence)",
+      "r": "k"
+    },
+    {
+      "c": "SimpleTextView",
+      "o": "setText(CharSequence,boolean)",
+      "r": "l"
+    },
+    {
+      "c": "SimpleTextView",
+      "o": "setTextC",
+      "r": "k"
+    },
+    {
+      "c": "SimpleTextView",
+      "o": "setTextCZ",
+      "r": "l"
+    },
+    {
+      "c": "StoriesController",
+      "o": "getTotalStoriesCount",
+      "r": "C"
+    },
+    {
+      "c": "StoriesController",
+      "o": "getTotalStoriesCount(boolean)",
+      "r": "C"
+    },
+    {
+      "c": "StoriesController",
+      "o": "getTotalStoriesCountZ",
+      "r": "C"
+    },
+    {
+      "c": "StoriesController",
+      "o": "hasSelfStories",
+      "r": "H"
+    },
+    {
+      "c": "StoriesController",
+      "o": "hasSelfStories()",
+      "r": "H"
+    },
+    {
+      "c": "StoriesController",
+      "o": "hasStories",
+      "r": "I"
+    },
+    {
+      "c": "StoriesController",
+      "o": "hasStories(long)",
+      "r": "I"
+    },
+    {
+      "c": "StoriesController",
+      "o": "hasStoriesJ",
+      "r": "I"
+    },
+    {
+      "c": "TextCheckCell",
+      "o": "setTextAndCheck",
+      "r": "f"
+    },
+    {
+      "c": "TextCheckCell",
+      "o": "setTextAndCheck(CharSequence,boolean,boolean)",
+      "r": "f"
+    },
+    {
+      "c": "TextCheckCell",
+      "o": "setTextAndCheckCZZ",
+      "r": "f"
+    },
+    {
+      "c": "TextCheckCell",
+      "o": "setTextAndValueAndCheck",
+      "r": "g"
+    },
+    {
+      "c": "TextCheckCell",
+      "o": "setTextAndValueAndCheck(String,String,boolean,boolean,boolean)",
+      "r": "g"
+    },
+    {
+      "c": "TextCheckCell",
+      "o": "setTextAndValueAndCheckSSZZZ",
+      "r": "g"
+    },
+    {
+      "c": "TextSettingsCell",
+      "o": "setText",
+      "r": "b"
+    },
+    {
+      "c": "TextSettingsCell",
+      "o": "setText(CharSequence,boolean)",
+      "r": "b"
+    },
+    {
+      "c": "TextSettingsCell",
+      "o": "setTextAndValue",
+      "r": "c"
+    },
+    {
+      "c": "TextSettingsCell",
+      "o": "setTextAndValue(CharSequence,CharSequence,boolean,boolean)",
+      "r": "c"
+    },
+    {
+      "c": "TextSettingsCell",
+      "o": "setTextAndValueCCZZ",
+      "r": "c"
+    },
+    {
+      "c": "TextSettingsCell",
+      "o": "setTextCZ",
+      "r": "b"
+    },
+    {
+      "c": "Theme",
+      "o": "isCurrentThemeDark",
+      "r": "e1"
+    },
+    {
+      "c": "Theme",
+      "o": "isCurrentThemeDark()",
+      "r": "e1"
+    }
+  ],
+  "methodAlias": {
+    "AlertDialog$Builder#setView": "setViewV",
+    "Browser#openUrl": "openUrlCS",
+    "HeaderCell#setText": "setTextC",
+    "LongSparseArray#get": "getJ",
+    "PhotoViewer#setIsAboutToSwitchToIndex": "setIsAboutToSwitchToIndexIZZZ",
+    "TextSettingsCell#setTextAndValue": "setTextAndValueCCZZ"
+  },
+  "params": {
+    "ActionBarMenuItem#addSubItem(int,View,int,int)": [
+      "org.telegram.ui.Cells.k",
+      "int"
+    ],
+    "ActionBarMenuItem#addSubItem(int,int,CharSequence)": [
+      "int",
+      "int",
+      "java.lang.String"
+    ],
+    "ActionBarMenuItem#addSubItem(int,int,CharSequence,Theme$ResourcesProvider)": [
+      "int",
+      "int",
+      "java.lang.String",
+      "org.telegram.ui.ActionBar.k6"
+    ],
+    "ActionBarMenuItem#lazilyAddSubItem(int,Drawable,CharSequence)": [
+      "org.telegram.ui.Components.zj0",
+      "java.lang.String"
+    ],
+    "ActionBarMenuItem#lazilyAddSubItem(int,int,CharSequence)": [
+      "int",
+      "int",
+      "java.lang.String"
+    ],
+    "AlertDialog$Builder#setNegativeButton": [
+      "java.lang.String",
+      "org.telegram.ui.ActionBar.f2"
+    ],
+    "AlertDialog$Builder#setNegativeButton(CharSequence,AlertDialog$OnButtonClickListener)": [
+      "java.lang.String",
+      "org.telegram.ui.ActionBar.f2"
+    ],
+    "AlertDialog$Builder#setNeutralButton": [
+      "java.lang.String",
+      "org.telegram.ui.ActionBar.f2"
+    ],
+    "AlertDialog$Builder#setNeutralButton(CharSequence,AlertDialog$OnButtonClickListener)": [
+      "java.lang.String",
+      "org.telegram.ui.ActionBar.f2"
+    ],
+    "AvatarDrawable#setInfo(long,String,String,String,Integer,MessagesController$PeerColor,boolean)": [
+      "long",
+      "java.lang.String",
+      "java.lang.String",
+      "java.lang.Integer",
+      "org.telegram.messenger.MessagesController$PeerColor"
+    ],
+    "Browser#openUrl(Context,String,boolean)": [
+      "android.app.Activity",
+      "java.lang.String",
+      "boolean"
+    ],
+    "Browser#openUrl(Context,Uri)": [
+      "org.telegram.ui.LaunchActivity",
+      "android.net.Uri"
+    ],
+    "ChatActivity#scrollToMessageId(int,int,boolean,int,boolean,int)": [
+      "int",
+      "int",
+      "int",
+      "int",
+      "boolean",
+      "boolean"
+    ],
+    "ChatActivity#sendSecretMediaDelete": [
+      "org.telegram.ui.bo",
+      "org.telegram.messenger.MessageObject"
+    ],
+    "ChatActivity#sendSecretMediaDelete(MessageObject)": [
+      "org.telegram.ui.bo",
+      "org.telegram.messenger.MessageObject"
+    ],
+    "ChatActivity$ChatMessageCellDelegate#didQuickShareStart": [
+      "org.telegram.ui.Cells.u1"
+    ],
+    "ChatActivity$ChatMessageCellDelegate#didQuickShareStart(ChatMessageCell,float,float)": [
+      "org.telegram.ui.Cells.u1"
+    ],
+    "LongSparseArray#get(long,Object)": [
+      "java.lang.Object",
+      "long"
+    ],
+    "MessagesController#sortDialogs": [
+      "z.f"
+    ],
+    "MessagesController#sortDialogs(LongSparseArray)": [
+      "z.f"
+    ],
+    "PhotoViewer#openPhoto(MessageObject,ChatActivity,long,long,long,PhotoViewer$PhotoViewerProvider)": [
+      "org.telegram.messenger.MessageObject",
+      "org.telegram.ui.bo",
+      "long",
+      "long",
+      "long",
+      "org.telegram.ui.pu0"
+    ],
+    "PhotoViewer#openPhoto(TLRPC$FileLocation,ImageLocation,PhotoViewer$PhotoViewerProvider)": [
+      "org.telegram.tgnet.TLRPC$FileLocation",
+      "org.telegram.messenger.ImageLocation",
+      "org.telegram.ui.pu0"
+    ],
+    "SearchAdapterHelper#queryServerSearch(String,boolean,boolean,boolean,boolean,boolean,long,boolean,int,int)": [
+      "java.lang.String",
+      "boolean",
+      "boolean",
+      "boolean",
+      "boolean",
+      "long",
+      "boolean",
+      "int",
+      "int"
+    ],
+    "SearchAdapterHelper#queryServerSearch(String,boolean,boolean,boolean,boolean,boolean,long,boolean,int,int,long,Runnable)": [
+      "java.lang.String",
+      "boolean",
+      "boolean",
+      "boolean",
+      "boolean",
+      "boolean",
+      "long",
+      "boolean",
+      "int",
+      "int",
+      "long",
+      "org.telegram.ui.rg"
+    ],
+    "SettingsActivity#fillItems": [
+      "org.telegram.ui.v91",
+      "java.util.ArrayList"
+    ],
+    "SettingsActivity#fillItems(ArrayList,UniversalAdapter)": [
+      "org.telegram.ui.v91",
+      "java.util.ArrayList"
+    ],
+    "SettingsActivity#onClick": [
+      "org.telegram.ui.v91",
+      "org.telegram.ui.Components.o61"
+    ],
+    "SettingsActivity#onClick(UItem,View,int,float,float)": [
+      "org.telegram.ui.v91",
+      "org.telegram.ui.Components.o61"
+    ]
+  },
+  "argOrder": {
+    "ChatActivity#scrollToMessageId(int,int,boolean,int,boolean,int)": [
+      0,
+      1,
+      3,
+      5,
+      2,
+      4
+    ],
+    "LongSparseArray#get(long,Object)": [
+      1,
+      0
+    ]
+  }
+}

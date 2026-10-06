@@ -100,7 +100,7 @@ public class ChatPickerSource {
                 ArrayList<Object> chats = new ArrayList<>();
                 try {
                     SQLiteDatabase database = storage.getDatabase();
-                    HashMap<Integer, Long> encryptedChatUsers = HideChatsConfig.readEncryptedChatUsers(database);
+                    HashMap<Integer, Long> encryptedChatUsers = readEncryptedChatUsers(database);
                     SQLiteCursor cursor = database.queryFinalized("SELECT did, folder_id FROM dialogs ORDER BY date DESC", new Object[0]);
                     try {
                         while (cursor.next()) {
@@ -230,5 +230,21 @@ public class ChatPickerSource {
     private static String join(String first, String second) {
         if (first == null || first.isEmpty()) return second;
         return first + " · " + second;
+    }
+
+    /**
+     * Secret chat id -> user id, straight from the database. Storage thread only.
+     */
+    private static HashMap<Integer, Long> readEncryptedChatUsers(SQLiteDatabase database) throws Exception {
+        HashMap<Integer, Long> encryptedChatUsers = new HashMap<>();
+        SQLiteCursor cursor = database.queryFinalized("SELECT uid, user FROM enc_chats", new Object[0]);
+        try {
+            while (cursor.next()) {
+                encryptedChatUsers.put(cursor.intValue(0), cursor.longValue(1));
+            }
+        } finally {
+            cursor.dispose();
+        }
+        return encryptedChatUsers;
     }
 }

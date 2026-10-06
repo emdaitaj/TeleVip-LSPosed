@@ -12,10 +12,12 @@ import com.my.televip.logging.Logger;
 import com.my.televip.obfuscate.Obfuscate;
 import com.my.televip.obfuscate.ObfuscationManager;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 /**
@@ -29,23 +31,9 @@ import de.robv.android.xposed.XposedHelpers;
 public class HideChats {
 
     private static final long REFRESH_DELAY_MS = 150;
-    private static final long COUNTERS_REFRESH_DELAY_MS = 1000;
 
     private static final Handler handler = new Handler(Looper.getMainLooper());
     private static final Runnable refreshAllRunnable = HideChats::refreshAll;
-    // UI thread only
-    private static final Set<Integer> accountsToRefresh = new HashSet<>();
-    private static final Set<Integer> countersToRefresh = new HashSet<>();
-    private static final Runnable refreshAccountsRunnable = () -> {
-        ArrayList<Integer> accounts = new ArrayList<>(accountsToRefresh);
-        accountsToRefresh.clear();
-        for (int account : accounts) refreshAccount(account);
-    };
-    private static final Runnable refreshCountersRunnable = () -> {
-        ArrayList<Integer> accounts = new ArrayList<>(countersToRefresh);
-        countersToRefresh.clear();
-        for (int account : accounts) refreshStep(() -> UnreadCountersHooks.refresh(account));
-    };
     private static boolean hooksInstalled;
     private static boolean notificationHooksInstalled;
     private static Boolean supported;
@@ -72,7 +60,7 @@ public class HideChats {
     }
 
     public static boolean isPotentiallySupported() {
-        return ObfuscationManager.current() == null && !ClientManager.isTgnetObfuscated();
+        return (ObfuscationManager.current() == null || ObfuscationManager.isVersionMapped()) && !ClientManager.isTgnetObfuscated();
     }
 
     private static boolean isOfficialClient() {
@@ -131,12 +119,7 @@ public class HideChats {
                 if (!HideChatsConfig.load()) return;
                 if (HideChatsConfig.isEnabled()) {
                     installHooks();
-                    if (HideChatsConfig.needsSnapshot()) {
-                        HideChatsConfig.activate();
-                    }
                     forEachAccount(DialogsHooks::filterNow);
-                } else if (!HideChatsConfig.needsSnapshot()) {
-                    HideChatsConfig.deactivate();
                 }
                 scheduleRefreshAll();
             } catch (Throwable t) {
@@ -146,7 +129,7 @@ public class HideChats {
     }
 
     /**
-     * Mode, "hide new chats", notification or selection changes.
+     * The managed list, the visible selection or the notification switch changed.
      */
     public static void onSettingsChanged() {
         if (!isSupported()) return;
@@ -169,50 +152,53 @@ public class HideChats {
     }
 
     /**
-     * A chat got classified in the background: refresh everything that shows it (coalesced).
+     * Number of chats on the managed list of the current account.
      */
-    static void scheduleRefreshAccount(int account) {
-        runOnUiThread(() -> {
-            if (!hooksInstalled) return;
-            accountsToRefresh.add(account);
-            handler.removeCallbacks(refreshAccountsRunnable);
-            handler.postDelayed(refreshAccountsRunnable, REFRESH_DELAY_MS);
-        });
+    public static int getManagedCount() {
+        if (!HideChatsConfig.load()) return 0;
+        return HideChatsConfig.getManaged(TgAccess.getSelectedAccount()).size();
     }
 
     /**
-     * Chats got classified after the storage thread may have counted them as unread (coalesced).
+     * Managed chats that stay visible while hiding is on.
      */
-    static void scheduleCountersRefresh(int account) {
-        runOnUiThread(() -> {
-            if (!hooksInstalled) return;
-            countersToRefresh.add(account);
-            handler.removeCallbacks(refreshCountersRunnable);
-            handler.postDelayed(refreshCountersRunnable, COUNTERS_REFRESH_DELAY_MS);
-        });
-    }
-
-    public static boolean needsEnableConfirmation() {
-        if (!HideChatsConfig.load()) return false;
-        return HideChatsConfig.getMode() == HideChatsConfig.MODE_SHOW_ONLY_SELECTED
-                && HideChatsConfig.getSelected(TgAccess.getSelectedAccount()).isEmpty();
-    }
-
-    public static int getSelectedCount() {
+    public static int getVisibleCount() {
         if (!HideChatsConfig.load()) return 0;
-        return HideChatsConfig.getSelected(TgAccess.getSelectedAccount()).size();
+        return HideChatsConfig.getVisible(TgAccess.getSelectedAccount()).size();
     }
 
-    public static void openPicker(Activity activity, Runnable onChanged) {
+    /**
+     * Picks the chats the feature is allowed to hide, out of every chat of the account.
+     */
+    public static void openManagedPicker(Activity activity, Runnable onChanged) {
+        openPicker(activity, onChanged, true);
+    }
+
+    /**
+     * Picks which of the managed chats stay visible; the rest of them are hidden.
+     */
+    public static void openVisiblePicker(Activity activity, Runnable onChanged) {
+        openPicker(activity, onChanged, false);
+    }
+
+    private static void openPicker(Activity activity, Runnable onChanged, boolean managedList) {
         if (!HideChatsConfig.load()) return;
         int account = TgAccess.getSelectedAccount();
         if (TgAccess.getClientUserId(account) == 0) return;
-        Set<Long> selected = HideChatsConfig.getSelected(account);
-        ChatPicker.show(activity, account, selected, HideChatsConfig.getMode() == HideChatsConfig.MODE_SHOW_ONLY_SELECTED, result -> {
-            HideChatsConfig.setSelected(account, result);
-            onSettingsChanged();
-            if (onChanged != null) onChanged.run();
-        });
+        Set<Long> managed = HideChatsConfig.getManaged(account);
+        ChatPicker.show(activity, account,
+                managedList ? managed : HideChatsConfig.getVisible(account),
+                managedList ? null : managed,
+                managedList ? ChatPicker.MODE_MANAGED : ChatPicker.MODE_VISIBLE,
+                result -> {
+                    if (managedList) {
+                        HideChatsConfig.setManaged(account, result);
+                    } else {
+                        HideChatsConfig.setVisible(account, result);
+                    }
+                    onSettingsChanged();
+                    if (onChanged != null) onChanged.run();
+                });
     }
 
     private static void installHooks() {
@@ -226,6 +212,7 @@ public class HideChats {
         SearchHooks.install();
         StoriesHooks.install();
         UnreadCountersHooks.install();
+        ChatGuardHooks.install();
     }
 
     private static void installNotificationHooks() {
@@ -296,6 +283,69 @@ public class HideChats {
         } catch (Throwable t) {
             Logger.e(t);
         }
+    }
+
+    /**
+     * Hooks every overload of the method, for call sites that only read state back and so do not
+     * care about the parameters R8 may have rewritten.
+     */
+    static boolean hookAll(Class<?> cls, String classKey, String method, BaseMethodHook callback) {
+        if (cls == null) {
+            Logger.w("HideChats: class for " + classKey + "#" + method + " not found");
+            return false;
+        }
+        try {
+            Set<de.robv.android.xposed.XC_MethodHook.Unhook> hooks =
+                    XposedBridge.hookAllMethods(cls, Obfuscate.getMethodName(classKey, method), callback);
+            if (hooks.isEmpty()) {
+                Logger.w("HideChats: no method " + cls.getName() + "#" + method + " to hook");
+                return false;
+            }
+            return true;
+        } catch (Throwable t) {
+            Logger.w("HideChats: unable to hook " + cls.getName() + "#" + method + ": " + t);
+            return false;
+        }
+    }
+
+    /**
+     * Hooks the overloads of one signature of a method. R8 may rename each overload differently and
+     * may turn a method into a static helper that takes its receiver as the first parameter, so the
+     * name is resolved for that signature and every declared method carrying it is hooked.
+     *
+     * @param tail parameter types the real method must end with, empty to accept any
+     */
+    static boolean hookBySignature(Class<?> cls, String classKey, String method, String signature,
+                                   BaseMethodHook callback, Class<?>... tail) {
+        if (cls == null) {
+            Logger.w("HideChats: class for " + classKey + "#" + method + " not found");
+            return false;
+        }
+        String resolved = Obfuscate.getMethodName(classKey, method, signature);
+        boolean hooked = false;
+        try {
+            for (Method candidate : cls.getDeclaredMethods()) {
+                if (!candidate.getName().equals(resolved) || !endsWith(candidate.getParameterTypes(), tail)) continue;
+                XposedBridge.hookMethod(candidate, callback);
+                hooked = true;
+            }
+        } catch (Throwable t) {
+            Logger.w("HideChats: unable to hook " + cls.getName() + "#" + method + ": " + t);
+            return false;
+        }
+        if (!hooked) {
+            Logger.w("HideChats: no method " + cls.getName() + "#" + resolved + " (" + method + ") to hook");
+        }
+        return hooked;
+    }
+
+    private static boolean endsWith(Class<?>[] parameterTypes, Class<?>[] tail) {
+        if (parameterTypes.length < tail.length) return false;
+        int offset = parameterTypes.length - tail.length;
+        for (int i = 0; i < tail.length; i++) {
+            if (tail[i] == null || parameterTypes[offset + i] != tail[i]) return false;
+        }
+        return true;
     }
 
     static boolean hook(Class<?> cls, String classKey, String method, Object... parameterTypesAndCallback) {

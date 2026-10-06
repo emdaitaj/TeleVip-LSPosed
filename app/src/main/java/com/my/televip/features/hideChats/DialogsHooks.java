@@ -20,6 +20,8 @@ final class DialogsHooks {
 
     private static final String KEY_ARCHIVE_SUPPRESSED = "televipHideChatsArchiveSuppressed";
     private static final String EXTRA_FOLDER_SWAP = "televipHideChatsFolderSwap";
+    private static final String QUICK_SHARE_CONTROLLER = "televipHideChatsQuickShareController";
+    private static final String QUICK_SHARE_DIALOGS = "televipHideChatsQuickShareDialogs";
 
     private static final String[] DIALOG_LISTS = {
             "dialogsForward", "dialogsServerOnly", "dialogsCanAddUsers", "dialogsMyChannels", "dialogsMyGroups",
@@ -122,7 +124,40 @@ final class DialogsHooks {
             }
         });
 
-        // Long press on "share": quick share row built from top peers + all chats (ids)
+        // Long press on "share": the quick share row is built from top peers + all chats in the
+        // overlay's constructor, which R8 inlines into didQuickShareStart together with the rest of
+        // the overlay. Nothing of it is left to hook, so the chat list it reads is filtered for the
+        // duration of that one call (it runs on the UI thread and returns before the row is drawn).
+        HideChats.hookAll(TgAccess.findClass(ClassNames.CHAT_MESSAGE_CELL_DELEGATE), "ChatActivity$ChatMessageCellDelegate", "didQuickShareStart", new BaseMethodHook() {
+            @Override
+            protected void beforeMethod(MethodHookParam param) {
+                int account = TgAccess.getSelectedAccount();
+                HiddenFilter filter = HideChatsConfig.filterFor(account);
+                if (filter == null) return;
+                Object messagesController = TgAccess.getMessagesController(account);
+                ArrayList<Object> all = TgAccess.getAllDialogs(messagesController);
+                if (all == null) return;
+                ArrayList<Object> visible = new ArrayList<>(all.size());
+                for (Object dialog : all) {
+                    if (dialog != null && !TgAccess.isDialogFolder(dialog) && filter.isHidden(TgAccess.getDialogId(dialog))) continue;
+                    visible.add(dialog);
+                }
+                if (visible.size() == all.size()) return;
+                param.setObjectExtra(QUICK_SHARE_CONTROLLER, messagesController);
+                param.setObjectExtra(QUICK_SHARE_DIALOGS, all);
+                TgAccess.set(messagesController, "MessagesController", "allDialogs", visible);
+            }
+
+            @Override
+            protected void afterMethod(MethodHookParam param) {
+                Object messagesController = param.getObjectExtra(QUICK_SHARE_CONTROLLER);
+                Object original = param.getObjectExtra(QUICK_SHARE_DIALOGS);
+                if (messagesController != null && original != null) {
+                    TgAccess.set(messagesController, "MessagesController", "allDialogs", original);
+                }
+            }
+        });
+
         HideChats.hook(TgAccess.findClass(ClassNames.QUICK_SHARE_SELECTOR), "QuickShareSelectorOverlayLayout", "fetchDialogs", new BaseMethodHook() {
             @Override
             protected void afterMethod(MethodHookParam param) {
@@ -177,27 +212,17 @@ final class DialogsHooks {
         if (allDialogs == null) return;
 
         IdentityHashMap<Object, Boolean> hiddenCache = new IdentityHashMap<>();
-        boolean snapshotChanged = false;
         int archived = 0;
         int visibleArchived = 0;
         for (int i = 0, size = allDialogs.size(); i < size; i++) {
             Object dialog = allDialogs.get(i);
             if (dialog == null || TgAccess.isDialogFolder(dialog)) continue;
-            long dialogId = TgAccess.getDialogId(dialog);
-            if (filter.observeDialog(dialogId, TgAccess.getDialogLastMessageDate(dialog))) {
-                snapshotChanged = true;
-            }
-            boolean isHidden = filter.isHidden(dialogId);
+            boolean isHidden = filter.isHidden(TgAccess.getDialogId(dialog));
             hiddenCache.put(dialog, isHidden);
             if (TgAccess.getDialogFolderId(dialog) == 1) {
                 archived++;
                 if (!isHidden) visibleArchived++;
             }
-        }
-        if (snapshotChanged) {
-            HideChatsConfig.markDirty(filter.data);
-            // the storage thread may have counted these chats as unread before they were classified
-            HideChats.scheduleCountersRefresh(account);
         }
 
         Predicate<Object> hidden = dialog -> {
@@ -420,7 +445,7 @@ final class DialogsHooks {
             return true;
         });
         if (removed) {
-            TgAccess.call(adapter, "RecyclerListView", "notifyDataSetChanged");
+            TgAccess.call(adapter, "RecyclerView$Adapter", "notifyDataSetChanged");
         }
     }
 }

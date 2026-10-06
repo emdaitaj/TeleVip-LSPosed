@@ -1,8 +1,25 @@
 apply plugin: 'com.android.application'
 
+def keystorePropsFile = rootProject.file("keystore.properties")
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) {
+    keystoreProps.load(new FileInputStream(keystorePropsFile))
+}
+
 android {
     namespace 'com.my.televip'
     compileSdk 36
+
+    signingConfigs {
+        release {
+            if (keystorePropsFile.exists()) {
+                storeFile rootProject.file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "com.my.televip"
@@ -21,6 +38,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (keystorePropsFile.exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
     compileOptions {
@@ -44,7 +64,7 @@ tasks.register("copyLargestDexAsJava") {
     dependsOn(":settingsadapter:assembleDebug")
 
     doLast {
-        def apkFile = fileTree("$rootDir/settingsadapter/build/intermediates/apk/debug")
+        def apkFile = fileTree("$rootDir/settingsadapter/build/outputs/apk/debug")
                 .matching { include "*.apk" }
                 .singleFile
 

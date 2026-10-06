@@ -14,10 +14,10 @@ public class ActionBarMenuItem {
     }
 
     public void lazilyAddSubItem(int id, int resId, String name){
-        XposedHelpers.callMethod(actionBarMenuItem, Obfuscate.getMethodName("ActionBarMenuItem", "lazilyAddSubItem"), id, resId, name);
+        XposedHelpers.callMethod(actionBarMenuItem, Obfuscate.getMethodName("ActionBarMenuItem", "lazilyAddSubItem", "int,int,CharSequence"), id, resId, name);
     }
     public void addSubItem(int id, int resId, String name){
-        XposedHelpers.callMethod(actionBarMenuItem, Obfuscate.getMethodName("ActionBarMenuItem", "addSubItem"), id, resId, name);
+        XposedHelpers.callMethod(actionBarMenuItem, Obfuscate.getMethodName("ActionBarMenuItem", "addSubItem", "int,int,CharSequence"), id, resId, name);
     }
 
     public Object getActionBarMenuItem(){

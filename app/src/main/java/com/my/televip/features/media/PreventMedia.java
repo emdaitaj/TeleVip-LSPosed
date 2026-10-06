@@ -28,7 +28,7 @@ public class PreventMedia {
                             if (ConfigManager.preventMedia.isEnable()) param.setResult(null);
                         }
                     }));
-                    HMethod.hookMethod(ClassLoad.getClass(ClassNames.CHAT_ACTIVITY), Obfuscate.getMethodName("ChatActivity", "sendSecretMediaDelete"), ArgsResolver.merge("sendSecretMediaDelete", new Class[]{ClassLoad.getClass(ClassNames.MESSAGE_OBJECT)}, new BaseMethodHook() {
+                    HMethod.hookMethod(ClassLoad.getClass(ClassNames.CHAT_ACTIVITY), Obfuscate.getMethodName("ChatActivity", "sendSecretMediaDelete"), ArgsResolver.merge("ChatActivity", "sendSecretMediaDelete", new Class[]{ClassLoad.getClass(ClassNames.MESSAGE_OBJECT)}, new BaseMethodHook() {
                         @Override
                         protected void beforeMethod(MethodHookParam param) {
                             if (ConfigManager.preventMedia.isEnable()) param.setResult(null);

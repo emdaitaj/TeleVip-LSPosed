@@ -13,6 +13,9 @@ public class ClientObfuscationData {
     private final Map<String, String> fieldMap = new HashMap<>();
     private final Map<String, String> methodMap = new HashMap<>();
     private final Map<String, String> methodAliasMap = new HashMap<>();
+    // generated per-version mappings only: real parameter types / argument order where R8 changed a method
+    private final Map<String, String[]> paramsMap = new HashMap<>();
+    private final Map<String, int[]> argOrderMap = new HashMap<>();
 
     public static ClientObfuscationData parse(String clientJson, String clientAliasJson) {
         ClientObfuscationData data = new ClientObfuscationData();
@@ -21,6 +24,8 @@ public class ClientObfuscationData {
             data.parseClasses(root.optJSONArray("classes"));
             data.parseFields(root.optJSONArray("fields"));
             data.parseMethods(root.optJSONArray("methods"));
+            data.parseParams(root.optJSONObject("params"));
+            data.parseArgOrder(root.optJSONObject("argOrder"));
             JSONObject aliasRoot = new JSONObject(clientAliasJson);
             data.parseMethodAlias(aliasRoot.optJSONObject("methodAlias"));
         } catch (Throwable t) {
@@ -64,6 +69,32 @@ public class ClientObfuscationData {
         }
     }
 
+    private void parseParams(JSONObject obj) {
+        if (obj == null) return;
+        Iterator<String> keys = obj.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            JSONArray arr = obj.optJSONArray(key);
+            if (arr == null) continue;
+            String[] types = new String[arr.length()];
+            for (int i = 0; i < types.length; i++) types[i] = arr.optString(i);
+            paramsMap.put(key, types);
+        }
+    }
+
+    private void parseArgOrder(JSONObject obj) {
+        if (obj == null) return;
+        Iterator<String> keys = obj.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            JSONArray arr = obj.optJSONArray(key);
+            if (arr == null) continue;
+            int[] order = new int[arr.length()];
+            for (int i = 0; i < order.length; i++) order[i] = arr.optInt(i);
+            argOrderMap.put(key, order);
+        }
+    }
+
     private void parseMethodAlias(JSONObject obj) {
         if (obj == null) return;
         Iterator<String> keys = obj.keys();
@@ -85,5 +116,20 @@ public class ClientObfuscationData {
     public String resolveMethod(String className, String original) {
         String aliased = methodAliasMap.getOrDefault(className + "#" + original, original);
         return methodMap.getOrDefault(className + "#" + aliased, aliased);
+    }
+
+    public String resolveMethod(String className, String original, String signature) {
+        String exact = methodMap.get(className + "#" + original + "(" + signature + ")");
+        return exact != null ? exact : resolveMethod(className, original);
+    }
+
+    public String[] resolveParams(String className, String method, String signature) {
+        String[] exact = signature != null ? paramsMap.get(className + "#" + method + "(" + signature + ")") : null;
+        return exact != null ? exact : paramsMap.get(className + "#" + method);
+    }
+
+    public int[] resolveArgOrder(String className, String method, String signature) {
+        int[] exact = signature != null ? argOrderMap.get(className + "#" + method + "(" + signature + ")") : null;
+        return exact != null ? exact : argOrderMap.get(className + "#" + method);
     }
 }

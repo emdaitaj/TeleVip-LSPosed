@@ -235,23 +235,15 @@ final class SearchPager {
             int size = messages != null ? messages.size() : 0;
             int start = results.size();
             int removed = 0;
-            boolean snapshotChanged = false;
             for (int i = 0; i < size; i++) {
                 Object message = messages.get(i);
                 if (message == null) continue;
-                if (filter != null) {
-                    long dialogId = TgAccess.getMessageDialogId(message);
-                    // results come from all of our chats, including ones never loaded on this device
-                    Object chat = dialogId < 0 ? chatsById.get(-dialogId) : null;
-                    if (filter.observeDialog(dialogId, TgAccess.getMessageDate(message), chat)) snapshotChanged = true;
-                    if (filter.isHidden(dialogId)) {
-                        removed++;
-                        continue;
-                    }
+                if (filter != null && filter.isHidden(TgAccess.getMessageDialogId(message))) {
+                    removed++;
+                    continue;
                 }
                 results.add(message);
             }
-            if (snapshotChanged) HideChatsConfig.markDirty(filter.data);
             if (results.size() > start) segments.add(new Segment(start, pageUsers, pageChats));
             users.addAll(pageUsers);
             chats.addAll(pageChats);

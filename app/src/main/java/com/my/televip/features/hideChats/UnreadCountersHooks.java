@@ -91,14 +91,13 @@ final class UnreadCountersHooks {
         HiddenFilter filter = HideChatsConfig.filterFor(TgAccess.getAccount(messagesStorage));
         if (filter == null) return null;
         StringBuilder builder = null;
-        boolean snapshotChanged = false;
+
         try {
             SQLiteCursor cursor = new MessagesStorage(messagesStorage).getDatabase()
                     .queryFinalized("SELECT did, date FROM dialogs WHERE unread_count > 0 OR flags > 0 OR unread_count_i > 0", new Object[0]);
             try {
                 while (cursor.next()) {
                     long dialogId = cursor.longValue(0);
-                    if (filter.observeDialog(dialogId, cursor.intValue(1))) snapshotChanged = true;
                     if (!filter.isHidden(dialogId)) continue;
                     if (builder == null) {
                         builder = new StringBuilder();
@@ -113,7 +112,6 @@ final class UnreadCountersHooks {
         } catch (Throwable t) {
             Logger.e(t);
         }
-        if (snapshotChanged) HideChatsConfig.markDirty(filter.data);
         return builder == null ? null : builder.toString();
     }
 

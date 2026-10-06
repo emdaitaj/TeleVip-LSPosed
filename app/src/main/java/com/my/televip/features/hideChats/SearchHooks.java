@@ -4,6 +4,7 @@ import com.my.televip.Class.ClassNames;
 import com.my.televip.base.BaseMethodHook;
 import com.my.televip.logging.Logger;
 import com.my.televip.obfuscate.ArgsResolver;
+import com.my.televip.obfuscate.Obfuscate;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -64,7 +65,8 @@ final class SearchHooks {
         });
 
         Class<?> recentLoaded = TgAccess.findClass(ClassNames.DIALOGS_SEARCH_ADAPTER_RECENT_LOADED);
-        if (recentLoaded != null) {
+        if (recentLoaded != null && dialogsSearchAdapter != null
+                && XposedHelpers.findMethodExactIfExists(dialogsSearchAdapter, Obfuscate.getMethodName("DialogsSearchAdapter", "loadRecentSearch"), int.class, int.class, recentLoaded) != null) {
             HideChats.hook(dialogsSearchAdapter, "DialogsSearchAdapter", "loadRecentSearch", int.class, int.class, recentLoaded, new BaseMethodHook() {
                 @Override
                 protected void beforeMethod(MethodHookParam param) {
@@ -73,17 +75,37 @@ final class SearchHooks {
                     param.args[2] = wrapRecentSearchCallback(recentLoaded, (int) param.args[0], callback);
                 }
             });
+        } else if (dialogsSearchAdapter != null) {
+            // R8 builds inline the static loader into its callers, filter where the chats search receives the list
+            Object[] parameterTypes = ArgsResolver.merge("DialogsSearchAdapter", "setRecentSearch", new Class[]{ArrayList.class, TgAccess.findClass(ClassNames.LONG_SPARES_ARRAY)}, new BaseMethodHook() {
+                @Override
+                @SuppressWarnings("unchecked")
+                protected void beforeMethod(MethodHookParam param) {
+                    if (!HideChatsConfig.isEnabled()) return;
+                    for (int i = 0; i < param.args.length; i++) {
+                        if (param.args[i] instanceof ArrayList) {
+                            filterRecentSearch(getAdapterAccount(param.thisObject), (ArrayList<Object>) param.args[i], i + 1 < param.args.length ? param.args[i + 1] : null);
+                            return;
+                        }
+                    }
+                }
+            });
+            if (parameterTypes != null) {
+                HideChats.hookBySignature(dialogsSearchAdapter, "DialogsSearchAdapter", "setRecentSearch",
+                        "ArrayList,LongSparseArray", (BaseMethodHook) parameterTypes[parameterTypes.length - 1],
+                        ArrayList.class, TgAccess.findClass(ClassNames.LONG_SPARES_ARRAY));
+            }
         }
 
         Class<?> searchAdapterHelper = TgAccess.findClass(ClassNames.SEARCH_ADAPTER_HELPER);
-        // "+phone" searches list matching contacts without going through filter()
-        HideChats.hook(searchAdapterHelper, "SearchAdapterHelper", "getPhoneSearch", new BaseMethodHook() {
+        // "+phone" searches list matching contacts without going through filter(). getPhoneSearch()
+        // is inlined away in R8 builds, so the list it returns is filtered where it is built.
+        BaseMethodHook filterPhoneSearch = new BaseMethodHook() {
             @Override
             protected void afterMethod(MethodHookParam param) {
-                if (!(param.getResult() instanceof ArrayList)) return;
-                //noinspection unchecked
-                ArrayList<Object> phoneSearch = (ArrayList<Object>) param.getResult();
-                if (phoneSearch.isEmpty() || !HideChatsConfig.isEnabled()) return;
+                if (!HideChatsConfig.isEnabled()) return;
+                ArrayList<Object> phoneSearch = TgAccess.getList(param.thisObject, "SearchAdapterHelper", "phonesSearch");
+                if (phoneSearch == null || phoneSearch.isEmpty()) return;
                 int account = TgAccess.intValue(TgAccess.get(param.thisObject, "SearchAdapterHelper", "currentAccount"), TgAccess.getSelectedAccount());
                 HiddenFilter filter = HideChatsConfig.filterFor(account);
                 if (filter == null) return;
@@ -95,7 +117,11 @@ final class SearchHooks {
                     phoneSearch.remove(0);
                 }
             }
-        });
+        };
+        HideChats.hookBySignature(searchAdapterHelper, "SearchAdapterHelper", "queryServerSearch",
+                "String,boolean,boolean,boolean,boolean,boolean,long,boolean,int,int", filterPhoneSearch);
+        HideChats.hookBySignature(searchAdapterHelper, "SearchAdapterHelper", "queryServerSearch",
+                "String,boolean,boolean,boolean,boolean,boolean,long,boolean,int,int,long,Runnable", filterPhoneSearch);
         Class<?> tlObject = TgAccess.findClass(ClassNames.TL_OBJECT);
         if (tlObject != null) {
             HideChats.hook(searchAdapterHelper, "SearchAdapterHelper", "filter", tlObject, new BaseMethodHook() {
@@ -370,16 +396,6 @@ final class SearchHooks {
         HiddenFilter filter = HideChatsConfig.filterFor(account);
         if (filter == null || !isInstance(contactsFoundClass, response)) return;
         // my_results are our own contacts and chats, including ones never loaded on this device
-        ArrayList<Object> myResults = TgAccess.getList(response, "TLRPC$TL_contacts_found", "my_results");
-        if (myResults != null) {
-            HashMap<Long, Object> chats = chatsById(TgAccess.getList(response, "TLRPC$TL_contacts_found", "chats"));
-            boolean snapshotChanged = false;
-            for (Object peer : myResults) {
-                long dialogId = TgAccess.getPeerDialogId(peer);
-                if (filter.observeDialog(dialogId, 0, dialogId < 0 ? chats.get(-dialogId) : null)) snapshotChanged = true;
-            }
-            if (snapshotChanged) HideChatsConfig.markDirty(filter.data);
-        }
         for (String field : new String[]{"my_results", "results"}) {
             ArrayList<Object> peers = TgAccess.getList(response, "TLRPC$TL_contacts_found", field);
             if (peers != null) {

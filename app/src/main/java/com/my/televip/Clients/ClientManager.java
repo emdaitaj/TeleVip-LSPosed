@@ -89,6 +89,12 @@ public class ClientManager {
         return null;
     }
 
+    public static boolean isOfficial(Client client) {
+
+        return client == Client.Telegram || client == Client.TelegramWeb || client == Client.TelegramBeta;
+
+    }
+
     public static boolean isTgnetObfuscated() {
 
         Client client = getCurrent();

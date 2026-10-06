@@ -28,7 +28,9 @@ public class ChatActivity {
     }
 
     public void scrollToMessageId(int id, int fromMessageId, boolean select, int loadIndex, boolean forceScroll, int forcePinnedMessageId){
-        XposedHelpers.callMethod(chatActivity, Obfuscate.getMethodName("ChatActivity", "scrollToMessageId"), id, fromMessageId, select, loadIndex, forceScroll, forcePinnedMessageId);
+        String signature = "int,int,boolean,int,boolean,int";
+        XposedHelpers.callMethod(chatActivity, Obfuscate.getMethodName("ChatActivity", "scrollToMessageId", signature),
+                Obfuscate.arrangeArgs("ChatActivity", "scrollToMessageId", signature, id, fromMessageId, select, loadIndex, forceScroll, forcePinnedMessageId));
     }
 
 }

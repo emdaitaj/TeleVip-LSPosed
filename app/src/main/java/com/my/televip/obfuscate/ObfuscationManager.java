@@ -1,11 +1,15 @@
 package com.my.televip.obfuscate;
 
 import com.my.televip.Clients.ClientManager;
+import com.my.televip.logging.Logger;
 import com.my.televip.obfuscate.struct.ClientObfuscationData;
 import com.my.televip.utils.JsonAssetReader;
+import com.my.televip.utils.Utils;
 
 import java.util.EnumMap;
 import java.util.Map;
+
+import de.robv.android.xposed.XposedHelpers;
 
 public class ObfuscationManager {
 
@@ -14,6 +18,7 @@ public class ObfuscationManager {
 
     private static volatile ClientObfuscationData currentClientData;
     private static volatile boolean attemptedLoad = false;
+    private static volatile boolean versionMapped = false;
 
     public static ClientObfuscationData current() {
         if (currentClientData != null) return currentClientData;
@@ -31,22 +36,53 @@ public class ObfuscationManager {
         }
     }
 
+    /**
+     * True when the mapping was generated for this exact build (assets/clients/&lt;Client&gt;/&lt;versionCode&gt;.json),
+     * it then covers every name TeleVip uses, unlike the hand-made per-client mappings.
+     */
+    public static boolean isVersionMapped() {
+        current();
+        return versionMapped;
+    }
+
     private static ClientObfuscationData load(ClientManager.Client type) {
         if (cache.containsKey(type)) return cache.get(type);
 
-        ClientObfuscationData data = null;
-        String clientPath = "assets/clients/" + type.name() + ".json";
-        String clientJson = JsonAssetReader.readRaw(clientPath, false);
+        ClientObfuscationData data = loadVersioned(type);
 
-        String clientAliasPath = "assets/clients/Alias/" + type.name() + ".json";
-        String clientAliasJson = JsonAssetReader.readRaw(clientAliasPath, false);
+        if (data == null) {
+            String clientPath = "assets/clients/" + type.name() + ".json";
+            String clientJson = JsonAssetReader.readRaw(clientPath, false);
 
-        if (clientJson != null && clientAliasJson != null)
-            data = ClientObfuscationData.parse(clientJson, clientAliasJson);
+            String clientAliasPath = "assets/clients/Alias/" + type.name() + ".json";
+            String clientAliasJson = JsonAssetReader.readRaw(clientAliasPath, false);
+
+            if (clientJson != null && clientAliasJson != null)
+                data = ClientObfuscationData.parse(clientJson, clientAliasJson);
+        }
 
         if (data != null)
             cache.put(type, data);
         return data;
+    }
+
+    // Official Telegram is R8-obfuscated since 12.10.2 and the names change with every release.
+    private static ClientObfuscationData loadVersioned(ClientManager.Client type) {
+        if (Utils.versionCode > 0) {
+            String path = "assets/clients/" + type.name() + "/" + Utils.versionCode + ".json";
+            String json = JsonAssetReader.readRaw(path, false);
+            if (json != null) {
+                versionMapped = true;
+                Logger.l("Using obfuscation mapping " + path);
+                return ClientObfuscationData.parse(json, json);
+            }
+        }
+
+        if (ClientManager.isOfficial(type) && XposedHelpers.findClassIfExists("org.telegram.ui.ActionBar.Theme", Utils.classLoader) == null) {
+            Logger.w("This " + type.name() + " build (versionCode " + Utils.versionCode + ") is obfuscated and TeleVip has no mapping for it. "
+                    + "Generate one with tools/telegram-mapping, see its README. " + Utils.issue);
+        }
+        return null;
     }
 
 }

@@ -36,6 +36,7 @@ import com.my.televip.features.hideChats.ChatPickerSource;
 import com.my.televip.language.Keys;
 import com.my.televip.language.Translator;
 import com.my.televip.logging.Logger;
+import com.my.televip.obfuscate.Obfuscate;
 import com.my.televip.ui.ThemeColors;
 import com.my.televip.ui.toolBar.MainToolBar;
 import com.my.televip.utils.Utils;
@@ -59,6 +60,11 @@ public class ChatPicker {
         void onDone(Set<Long> selected);
     }
 
+    /** picking which chats the feature may hide, out of every chat of the account */
+    public static final int MODE_MANAGED = 0;
+    /** picking which of the managed chats stay visible */
+    public static final int MODE_VISIBLE = 1;
+
     private static final int VIEW_TYPE_HEADER = 0;
     private static final int VIEW_TYPE_CHAT = 1;
 
@@ -71,7 +77,9 @@ public class ChatPicker {
 
     private final Activity activity;
     private final int account;
-    private final boolean showOnlyMode;
+    private final int mode;
+    // when set, only these chats can be picked (the managed list)
+    private final Set<Long> restrictTo;
     private final Callback callback;
     private final Set<Long> initialSelection;
     private final Set<Long> selection;
@@ -89,19 +97,20 @@ public class ChatPicker {
     private TextView selectAllChip;
     private EditText searchField;
 
-    private ChatPicker(Activity activity, int account, Set<Long> selection, boolean showOnlyMode, Callback callback) {
+    private ChatPicker(Activity activity, int account, Set<Long> selection, Set<Long> restrictTo, int mode, Callback callback) {
         this.activity = activity;
         this.account = account;
-        this.showOnlyMode = showOnlyMode;
+        this.mode = mode;
+        this.restrictTo = restrictTo == null ? null : new HashSet<>(restrictTo);
         this.callback = callback;
         this.initialSelection = new HashSet<>(selection);
         this.selection = new HashSet<>(selection);
     }
 
-    public static void show(Activity activity, int account, Set<Long> selection, boolean showOnlyMode, Callback callback) {
+    public static void show(Activity activity, int account, Set<Long> selection, Set<Long> restrictTo, int mode, Callback callback) {
         if (activity == null) return;
         if (current != null) current.close(false);
-        ChatPicker picker = new ChatPicker(activity, account, selection, showOnlyMode, callback);
+        ChatPicker picker = new ChatPicker(activity, account, selection, restrictTo, mode, callback);
         try {
             picker.open();
             current = picker;
@@ -143,7 +152,7 @@ public class ChatPicker {
         MainToolBar toolbar = new MainToolBar(context);
         toolbar.setColorTitle(ThemeColors.getTextToolBarColor());
         toolbar.setRippleColor(ThemeColors.getToolBarRippleColor());
-        toolbar.setTextTitle(Translator.get(showOnlyMode ? Keys.HideChatsPickerTitleShow : Keys.HideChatsPickerTitleHide));
+        toolbar.setTextTitle(Translator.get(mode == MODE_MANAGED ? Keys.HideChatsPickerTitleManaged : Keys.HideChatsPickerTitleVisible));
         toolbar.setImageDrawable(new ArrowDrawable());
         toolbar.getImage().setOnClickListener(v -> close(true));
 
@@ -280,7 +289,8 @@ public class ChatPicker {
             }
         });
 
-        entries.addAll(ChatPickerSource.loadInMemory(account, selection));
+        entries.addAll(ChatPickerSource.loadInMemory(account, restrictTo != null ? restrictTo : selection));
+        applyRestriction(entries);
         rebuildRows();
         updateHeader();
 
@@ -291,8 +301,17 @@ public class ChatPicker {
         ChatPickerSource.loadCached(account, loadedChats, this::mergeCached);
     }
 
+    /**
+     * In visible mode only the managed chats can be ticked, so nothing else is listed.
+     */
+    private void applyRestriction(ArrayList<ChatEntry> list) {
+        if (restrictTo != null) list.removeIf(entry -> !restrictTo.contains(entry.id));
+    }
+
     private void mergeCached(ArrayList<ChatEntry> cached) {
-        if (current != this || cached.isEmpty()) return;
+        if (current != this) return;
+        applyRestriction(cached);
+        if (cached.isEmpty()) return;
         HashSet<Long> ids = new HashSet<>();
         for (ChatEntry entry : cached) ids.add(entry.id);
         entries.removeIf(entry -> entry.contactOnly && ids.contains(entry.id));
@@ -342,7 +361,7 @@ public class ChatPicker {
 
     private void updateHeader() {
         clearButton.setVisibility(selection.isEmpty() ? View.GONE : View.VISIBLE);
-        String hint = Translator.get(showOnlyMode ? Keys.HideChatsPickerHintShow : Keys.HideChatsPickerHintHide);
+        String hint = Translator.get(mode == MODE_MANAGED ? Keys.HideChatsPickerHintManaged : Keys.HideChatsPickerHintVisible);
         hintView.setText(hint + "\n" + Translator.get(Keys.HideChatsSelectedCount, selection.size()));
         updateChips();
     }
@@ -427,7 +446,7 @@ public class ChatPicker {
         if (backupImageViewClass != null && avatarDrawableClass != null && tlObjectClass != null) {
             try {
                 Object view = XposedHelpers.newInstance(backupImageViewClass, context);
-                XposedHelpers.callMethod(view, "setRoundRadius", AndroidUtilities.dp(23));
+                XposedHelpers.callMethod(view, Obfuscate.getMethodName("BackupImageView", "setRoundRadius", "int"), AndroidUtilities.dp(23));
                 return (View) view;
             } catch (Throwable t) {
                 backupImageViewClass = null;
@@ -450,23 +469,23 @@ public class ChatPicker {
         try {
             Object avatarDrawable = XposedHelpers.newInstance(avatarDrawableClass);
             if (entry.peer != null) {
-                XposedHelpers.callMethod(avatarDrawable, "setInfo", new Class[]{int.class, tlObjectClass}, account, entry.peer);
+                XposedHelpers.callMethod(avatarDrawable, Obfuscate.getMethodName("AvatarDrawable", "setInfo", "int,TLObject"), new Class[]{int.class, tlObjectClass}, account, entry.peer);
             } else {
-                XposedHelpers.callMethod(avatarDrawable, "setInfo", new Class[]{long.class, String.class, String.class}, entry.id, entry.title, null);
+                XposedHelpers.callMethod(avatarDrawable, Obfuscate.getMethodName("AvatarDrawable", "setInfo", "long,String,String"), new Class[]{long.class, String.class, String.class}, entry.id, entry.title, null);
             }
             if (entry.self) {
-                XposedHelpers.callMethod(avatarDrawable, "setAvatarType", 1);
+                XposedHelpers.callMethod(avatarDrawable, Obfuscate.getMethodName("AvatarDrawable", "setAvatarType"), 1);
             }
             if (entry.peer != null && !entry.self) {
-                XposedHelpers.callMethod(view, "setForUserOrChat", new Class[]{tlObjectClass, avatarDrawableClass}, entry.peer, avatarDrawable);
+                XposedHelpers.callMethod(view, Obfuscate.getMethodName("BackupImageView", "setForUserOrChat"), new Class[]{tlObjectClass, avatarDrawableClass}, entry.peer, avatarDrawable);
             } else {
-                XposedHelpers.callMethod(view, "setImageDrawable", new Class[]{Drawable.class}, avatarDrawable);
+                XposedHelpers.callMethod(view, Obfuscate.getMethodName("BackupImageView", "setImageDrawable"), new Class[]{Drawable.class}, avatarDrawable);
             }
         } catch (Throwable t) {
             LetterAvatarDrawable fallback = new LetterAvatarDrawable();
             fallback.setInfo(entry.id, entry.title);
             try {
-                XposedHelpers.callMethod(view, "setImageDrawable", new Class[]{Drawable.class}, fallback);
+                XposedHelpers.callMethod(view, Obfuscate.getMethodName("BackupImageView", "setImageDrawable"), new Class[]{Drawable.class}, fallback);
             } catch (Throwable ignored) {}
         }
     }

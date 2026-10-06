@@ -56,15 +56,15 @@ final class ContactsHooks {
         }
 
         // New group / new call, and folder include-exclude / privacy exception pickers.
-        hookPickerAdapter(ClassNames.GROUP_CREATE_ADAPTER, ClassNames.GROUP_CREATE_ACTIVITY);
-        hookPickerAdapter(ClassNames.USERS_SELECT_ADAPTER, ClassNames.USERS_SELECT_ACTIVITY);
+        hookPickerAdapter(ClassNames.GROUP_CREATE_ADAPTER, ClassNames.GROUP_CREATE_ACTIVITY, "GroupCreateActivity$GroupCreateAdapter", "contacts");
+        hookPickerAdapter(ClassNames.USERS_SELECT_ADAPTER, ClassNames.USERS_SELECT_ACTIVITY, "UsersSelectActivity$GroupCreateAdapter", "contacts");
     }
 
     /**
      * Both adapters are inner classes (outer fragment = first constructor parameter) that build a
      * "contacts" list of users / chats (plus section letters) in their constructor.
      */
-    private static void hookPickerAdapter(String adapterClassName, String fragmentClassName) {
+    private static void hookPickerAdapter(String adapterClassName, String fragmentClassName, String adapterKey, String contactsField) {
         Class<?> adapterClass = TgAccess.findClass(adapterClassName);
         Class<?> fragmentClass = TgAccess.findClass(fragmentClassName);
         if (adapterClass == null || fragmentClass == null) return;
@@ -72,7 +72,7 @@ final class ContactsHooks {
             XposedHelpers.findAndHookConstructor(adapterClass, fragmentClass, Context.class, new BaseMethodHook() {
                 @Override
                 protected void afterMethod(MethodHookParam param) {
-                    filterPickerContacts(param.thisObject);
+                    filterPickerContacts(param.thisObject, param.args[0], adapterKey, contactsField);
                 }
             });
         } catch (Throwable t) {
@@ -129,7 +129,6 @@ final class ContactsHooks {
         ArrayList<String> visibleSorted = new ArrayList<>();
         HashMap<String, ArrayList<Object>> mutualDict = new HashMap<>();
         ArrayList<String> mutualSorted = new ArrayList<>();
-        boolean snapshotChanged = false;
 
         for (int i = 0, size = sorted.size(); i < size; i++) {
             String key = sorted.get(i);
@@ -140,10 +139,7 @@ final class ContactsHooks {
             for (int j = 0, count = contacts.size(); j < count; j++) {
                 Object contact = contacts.get(j);
                 long userId = TgAccess.getContactUserId(contact);
-                if (filter != null) {
-                    if (filter.observeContact(userId)) snapshotChanged = true;
-                    if (filter.isHidden(userId)) continue;
-                }
+                if (filter != null && filter.isHidden(userId)) continue;
                 visible.add(contact);
                 Object user = TgAccess.getUser(messagesController, userId);
                 if (TgAccess.boolValue(TgAccess.get(user, "TLRPC$User", "mutual_contact"), false)) {
@@ -159,9 +155,6 @@ final class ContactsHooks {
                 mutualSorted.add(key);
             }
         }
-        if (snapshotChanged) {
-            HideChatsConfig.markDirty(filter.data);
-        }
         if (filter != null) {
             TgAccess.set(contactsController, "ContactsController", "usersSectionsDict", visibleDict);
             TgAccess.set(contactsController, "ContactsController", "sortedUsersSectionsArray", visibleSorted);
@@ -170,12 +163,11 @@ final class ContactsHooks {
         TgAccess.set(contactsController, "ContactsController", "sortedUsersMutualSectionsArray", mutualSorted);
     }
 
-    private static void filterPickerContacts(Object adapter) {
-        Object fragment = TgAccess.get(adapter, "GroupCreateAdapter", "this$0");
+    private static void filterPickerContacts(Object adapter, Object fragment, String adapterKey, String contactsField) {
         int account = TgAccess.intValue(TgAccess.get(fragment, "BaseFragment", "currentAccount"), TgAccess.getSelectedAccount());
         HiddenFilter filter = HideChatsConfig.filterFor(account);
         if (filter == null) return;
-        ArrayList<Object> contacts = TgAccess.getList(adapter, "GroupCreateAdapter", "contacts");
+        ArrayList<Object> contacts = TgAccess.getList(adapter, adapterKey, contactsField);
         if (contacts == null || contacts.isEmpty()) return;
         Class<?> letterClass = TgAccess.findClass(ClassNames.TL_CONTACT);
         boolean removed = contacts.removeIf(object -> {

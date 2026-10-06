@@ -89,9 +89,8 @@ public class ConfigManager {
     // Hide Chats
     public static ConfigItem hideChatsSettings;
     public static ConfigItem hideChats;
-    public static ConfigItem hideChatsMode;
-    public static ConfigItem hideChatsSelect;
-    public static ConfigItem hideChatsHideNew;
+    public static ConfigItem hideChatsList;
+    public static ConfigItem hideChatsVisible;
     public static ConfigItem hideChatsMuteNotifications;
     public static ConfigItem hideChatsInfo;
 
@@ -239,14 +238,11 @@ public class ConfigManager {
             hideChats = new ConfigItem(ConfigItem.SWITCH, Keys.HideChats, ConfigPreferences.getBoolean(Keys.HideChats), HideChats::onToggle);
             items.add(hideChats);
 
-            hideChatsMode = new ConfigItem(ConfigItem.TEXT, Keys.HideChatsMode);
-            items.add(hideChatsMode);
+            hideChatsList = new ConfigItem(ConfigItem.TEXT, Keys.HideChatsList);
+            items.add(hideChatsList);
 
-            hideChatsSelect = new ConfigItem(ConfigItem.TEXT, Keys.HideChatsSelect);
-            items.add(hideChatsSelect);
-
-            hideChatsHideNew = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsHideNew, Translator.get(Keys.HideChatsHideNewInfo), ConfigPreferences.getBoolean(Keys.HideChatsHideNew), HideChats::onSettingsChanged);
-            items.add(hideChatsHideNew);
+            hideChatsVisible = new ConfigItem(ConfigItem.TEXT, Keys.HideChatsVisible);
+            items.add(hideChatsVisible);
 
             hideChatsMuteNotifications = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsMuteNotifications, Translator.get(Keys.HideChatsMuteNotificationsInfo), ConfigPreferences.getBoolean(Keys.HideChatsMuteNotifications, true), HideChats::onSettingsChanged);
             items.add(hideChatsMuteNotifications);
