@@ -114,6 +114,8 @@ public class Keys {
     public static final String HideChatsListEmpty = "HideChatsListEmpty";
     public static final String HideChatsVisibleCount = "HideChatsVisibleCount";
     public static final String HideChatsAllHidden = "HideChatsAllHidden";
+    public static final String HideChatsHideNew = "HideChatsHideNew";
+    public static final String HideChatsHideNewInfo = "HideChatsHideNewInfo";
     public static final String HideChatsMuteNotifications = "HideChatsMuteNotifications";
     public static final String HideChatsMuteNotificationsInfo = "HideChatsMuteNotificationsInfo";
     public static final String HideChatsInfo = "HideChatsInfo";

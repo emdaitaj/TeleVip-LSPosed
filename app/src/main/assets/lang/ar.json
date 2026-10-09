@@ -110,6 +110,8 @@
   "HideChats": "إخفاء المحادثات",
   "HideChatsList": "الدردشات المدارة",
   "HideChatsVisible": "الإظهار أثناء الإخفاء",
+  "HideChatsHideNew": "إخفاء الدردشات الجديدة",
+  "HideChatsHideNewInfo": "الدردشات وجهات الاتصال التي تظهر من الآن تُضاف إلى القائمة مخفية",
   "HideChatsSelectedCount": "%d محددة",
   "HideChatsNoneSelected": "لا شيء",
   "HideChatsMuteNotifications": "كتم المحادثات المخفية",

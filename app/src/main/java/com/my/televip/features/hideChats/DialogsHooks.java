@@ -201,8 +201,25 @@ final class DialogsHooks {
         if (messagesController != null) filterDialogLists(messagesController);
     }
 
+    /**
+     * Runs before the hide rules, and whether or not anything is hidden yet: "hide new chats" has to
+     * notice a chat the first time it shows up, which may be before the list has anything in it.
+     */
+    private static void observeNewDialogs(int account, Object messagesController) {
+        if (!HideChatsConfig.isHideNewChats()) return;
+        HideChats.ensureKnownSnapshot(account);
+        ArrayList<Object> dialogs = TgAccess.getAllDialogs(messagesController);
+        if (dialogs == null) return;
+        for (int i = 0, size = dialogs.size(); i < size; i++) {
+            Object dialog = dialogs.get(i);
+            if (dialog == null || TgAccess.isDialogFolder(dialog)) continue;
+            HideChatsConfig.observeDialog(account, TgAccess.toPeerKey(messagesController, TgAccess.getDialogId(dialog)));
+        }
+    }
+
     private static void filterDialogLists(Object messagesController) {
         int account = TgAccess.getAccount(messagesController);
+        observeNewDialogs(account, messagesController);
         HiddenFilter filter = HideChatsConfig.filterFor(account);
         if (filter == null) {
             setArchiveSuppressed(messagesController, false);

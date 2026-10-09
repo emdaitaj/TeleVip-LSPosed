@@ -18,6 +18,8 @@ import de.robv.android.xposed.XposedHelpers;
 final class ContactsHooks {
 
     private static final String KEY_SECTIONS_FILTERED = "televipHideChatsSectionsFiltered";
+    // the section map we produced, to tell our own filtered copy from one Telegram rebuilt
+    private static final String KEY_FILTERED_SECTIONS = "televipHideChatsFilteredSections";
 
     private ContactsHooks() {}
 
@@ -54,6 +56,28 @@ final class ContactsHooks {
                 }
             });
         }
+
+        // Telegram rebuilds the section maps from several places, not all of which are hookable in
+        // R8 builds. The contacts list therefore checks on every row count that it is still looking
+        // at the filtered maps, and rebuilds them when Telegram has replaced them.
+        HideChats.hook(TgAccess.findClass(ClassNames.CONTACTS_ADAPTER), "ContactsAdapter", "getItemCount", new BaseMethodHook() {
+            @Override
+            protected void beforeMethod(MethodHookParam param) {
+                int account = TgAccess.intValue(TgAccess.get(param.thisObject, "ContactsAdapter", "currentAccount"), TgAccess.getSelectedAccount());
+                HiddenFilter filter = HideChatsConfig.filterFor(account);
+                if (filter == null) return;
+                Object contactsController = TgAccess.getContactsController(account);
+                if (contactsController == null) return;
+                Object current = TgAccess.get(contactsController, "ContactsController", "usersSectionsDict");
+                if (current == null || current != XposedHelpers.getAdditionalInstanceField(contactsController, KEY_FILTERED_SECTIONS)) {
+                    onSectionsRebuilt(contactsController);
+                }
+                ArrayList<Object> onlineContacts = TgAccess.getList(param.thisObject, "ContactsAdapter", "onlineContacts");
+                if (onlineContacts != null) {
+                    onlineContacts.removeIf(contact -> filter.isHidden(TgAccess.getContactUserId(contact)));
+                }
+            }
+        });
 
         // New group / new call, and folder include-exclude / privacy exception pickers.
         hookPickerAdapter(ClassNames.GROUP_CREATE_ADAPTER, ClassNames.GROUP_CREATE_ACTIVITY, "GroupCreateActivity$GroupCreateAdapter", "contacts");
@@ -99,6 +123,7 @@ final class ContactsHooks {
 
     private static void onSectionsRebuilt(Object contactsController) {
         int account = TgAccess.getAccount(contactsController);
+        observeNewContacts(account, contactsController);
         HiddenFilter filter = HideChatsConfig.filterFor(account);
         if (filter == null) {
             if (Boolean.TRUE.equals(XposedHelpers.getAdditionalInstanceField(contactsController, KEY_SECTIONS_FILTERED))) {
@@ -110,6 +135,19 @@ final class ContactsHooks {
         }
         rebuildSections(contactsController, filter);
         XposedHelpers.setAdditionalInstanceField(contactsController, KEY_SECTIONS_FILTERED, true);
+    }
+
+    /**
+     * "Hide new chats" covers contacts too: a contact added after the option went on is new.
+     */
+    private static void observeNewContacts(int account, Object contactsController) {
+        if (!HideChatsConfig.isHideNewChats()) return;
+        HideChats.ensureKnownSnapshot(account);
+        ArrayList<Object> contacts = TgAccess.getList(contactsController, "ContactsController", "contacts");
+        if (contacts == null) return;
+        for (int i = 0, size = contacts.size(); i < size; i++) {
+            HideChatsConfig.observeDialog(account, TgAccess.getContactUserId(contacts.get(i)));
+        }
     }
 
     /**
@@ -156,6 +194,7 @@ final class ContactsHooks {
             }
         }
         if (filter != null) {
+            XposedHelpers.setAdditionalInstanceField(contactsController, KEY_FILTERED_SECTIONS, visibleDict);
             TgAccess.set(contactsController, "ContactsController", "usersSectionsDict", visibleDict);
             TgAccess.set(contactsController, "ContactsController", "sortedUsersSectionsArray", visibleSorted);
         }

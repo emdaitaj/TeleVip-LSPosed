@@ -1,0 +1,3744 @@
+{
+ "version": "12.10.6",
+ "shapes": {
+  "androidx.collection.LongSparseArray": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    4,
+    18
+   ],
+   "fields": {
+    "Z": 1,
+    "[J": 1,
+    "[Ljava/lang/Object;": 1,
+    "I": 1
+   },
+   "methods": {
+    "()V": 2,
+    "(I)V": 1,
+    "(Ljava/lang/Long;J)V": 1,
+    "()L?;": 1,
+    "()Ljava/lang/Object;": 1,
+    "(J)Z": 1,
+    "(J)V": 2,
+    "(J)Ljava/lang/Object;": 1,
+    "(Ljava/lang/Object;J)Ljava/lang/Object;": 1,
+    "(J)I": 1,
+    "()Z": 1,
+    "(I)J": 1,
+    "(Ljava/lang/Object;J)V": 1,
+    "()I": 1,
+    "(I)Ljava/lang/Object;": 1,
+    "()Ljava/lang/String;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "androidx.recyclerview.widget.RecyclerView$Adapter": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    2,
+    24
+   ],
+   "fields": {
+    "L?;": 1,
+    "Z": 1
+   },
+   "methods": {
+    "()V": 2,
+    "(L?;)V": 4,
+    "(Z)V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 2,
+    "()I": 2,
+    "(I)J": 1,
+    "(I)I": 1,
+    "(I)V": 3,
+    "(ILjava/lang/Object;)V": 1,
+    "(II)V": 4,
+    "(IILjava/lang/Object;)V": 1,
+    "(L?;I)V": 1,
+    "(L?;ILjava/util/List;)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.messenger.browser.Browser": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    6,
+    25
+   ],
+   "fields": {
+    "L?;": 3,
+    "Ljava/lang/String;": 1,
+    "Ljava/lang/ref/WeakReference;": 1,
+    "Ljava/util/regex/Pattern;": 1
+   },
+   "methods": {
+    "(Ljava/lang/String;)Ljava/lang/String;": 2,
+    "()L?;": 1,
+    "(Landroid/content/Context;Ljava/lang/String;)Z": 1,
+    "()Z": 1,
+    "(Landroid/net/Uri;Z[Z)Z": 1,
+    "(Ljava/lang/String;)Z": 4,
+    "(Ljava/lang/String;ZZ)Z": 1,
+    "(Landroid/content/Context;Ljava/lang/String;ZZL?;)Z": 1,
+    "(Landroid/content/Context;Ljava/lang/String;Z)Z": 1,
+    "(Landroid/content/Context;Ljava/lang/String;ZLjava/lang/String;)Z": 1,
+    "(Ljava/lang/String;)V": 1,
+    "(Landroid/app/Activity;Ljava/lang/String;Z)V": 1,
+    "(Landroid/content/Context;Landroid/net/Uri;ZZ)V": 1,
+    "(Landroid/content/Context;Landroid/net/Uri;ZZL?;)V": 1,
+    "(Landroid/content/Context;Landroid/net/Uri;ZZZL?;Ljava/lang/String;ZZZ)V": 1,
+    "(Landroid/content/Context;Ljava/lang/String;)V": 2,
+    "(Lorg/telegram/ui/LaunchActivity;Landroid/net/Uri;)V": 1,
+    "(Landroid/net/Uri;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;": 1,
+    "(Landroid/net/Uri;Ljava/lang/String;)Ljava/lang/String;": 1,
+    "(Landroid/app/Activity;)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.ActionBar.ActionBar": {
+   "super": "Landroid/widget/FrameLayout;",
+   "counts": [
+    104,
+    122
+   ],
+   "fields": {
+    "Z": 38,
+    "L?;": 24,
+    "Ljava/lang/String;": 2,
+    "Landroid/view/View$OnTouchListener;": 1,
+    "Landroid/graphics/Paint;": 1,
+    "Landroid/graphics/Rect;": 2,
+    "I": 16,
+    "Landroid/animation/AnimatorSet;": 2,
+    "[Landroid/view/View;": 1,
+    "Ljava/lang/Runnable;": 3,
+    "Landroid/graphics/Paint$FontMetricsInt;": 1,
+    "F": 3,
+    "Ljava/lang/CharSequence;": 2,
+    "Landroid/graphics/drawable/Drawable;": 2,
+    "Landroid/view/View$OnClickListener;": 1,
+    "Landroid/widget/ImageView;": 1,
+    "[Ljava/lang/Object;": 1,
+    "[L?;": 1,
+    "Landroid/animation/ValueAnimator;": 1,
+    "Landroid/view/View;": 1
+   },
+   "methods": {
+    "(Landroid/content/Context;L?;)V": 1,
+    "()I": 3,
+    "(L?;FFLandroid/view/View;)Landroid/view/View;": 1,
+    "(L?;Z)V": 1,
+    "(FI)V": 1,
+    "(IZ)V": 5,
+    "(IZZ)V": 1,
+    "(Ljava/lang/CharSequence;L?;)V": 1,
+    "(Ljava/lang/CharSequence;ZJLandroid/view/animation/Interpolator;)V": 1,
+    "(Ljava/lang/String;ILjava/lang/Runnable;)V": 1,
+    "()V": 16,
+    "(L?;L?;Z)V": 1,
+    "(Landroid/view/View;)Z": 1,
+    "([Landroid/view/View;[Z)V": 1,
+    "(Ljava/lang/String;)Z": 2,
+    "(Z)V": 17,
+    "(Landroid/graphics/Canvas;)V": 1,
+    "(Landroid/view/MotionEvent;)Z": 3,
+    "(Landroid/graphics/Canvas;Landroid/view/View;J)Z": 1,
+    "()L?;": 10,
+    "()F": 1,
+    "()Landroid/widget/FrameLayout;": 2,
+    "()Landroid/widget/ImageView;": 1,
+    "()Landroid/graphics/drawable/Drawable;": 1,
+    "()Z": 5,
+    "()[I": 1,
+    "()Ljava/lang/String;": 2,
+    "()Landroid/graphics/Paint$FontMetricsInt;": 1,
+    "(Ljava/lang/String;)L?;": 1,
+    "(ZIIII)V": 1,
+    "(II)V": 1,
+    "(I)V": 15,
+    "(L?;)V": 6,
+    "(Landroidx/recyclerview/widget/RecyclerView;)V": 1,
+    "(Ljava/lang/CharSequence;)V": 3,
+    "(Landroid/graphics/drawable/Drawable;)V": 1,
+    "(Landroid/view/View$OnTouchListener;)V": 1,
+    "(Ljava/lang/Runnable;)V": 2,
+    "(Landroid/view/View$OnClickListener;)V": 1,
+    "(F)V": 2,
+    "(Ljava/lang/String;)V": 2,
+    "(IFFL?;)V": 1,
+    "(Landroidx/recyclerview/widget/RecyclerView;ZII)V": 1
+   },
+   "chain": [
+    "android.widget.FrameLayout",
+    1
+   ]
+  },
+  "org.telegram.ui.ActionBar.ActionBar$ActionBarMenuOnItemClick": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    0,
+    2
+   ],
+   "fields": {},
+   "methods": {
+    "()Z": 1,
+    "(I)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.ActionBar.AlertDialog$OnButtonClickListener": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    0,
+    1
+   ],
+   "fields": {},
+   "methods": {
+    "(L?;I)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.ActionBar.Theme": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    1182,
+    137
+   ],
+   "fields": {
+    "I": 849,
+    "Landroid/graphics/Paint;": 44,
+    "Z": 18,
+    "Landroid/text/TextPaint;": 58,
+    "Landroid/graphics/drawable/Drawable;": 103,
+    "L?;": 41,
+    "[Landroid/text/TextPaint;": 5,
+    "[I": 8,
+    "Ljava/lang/reflect/Method;": 1,
+    "[Z": 1,
+    "[F": 1,
+    "[J": 1,
+    "Ljava/util/ArrayList;": 2,
+    "J": 3,
+    "Ljava/lang/ref/WeakReference;": 1,
+    "[Landroid/graphics/drawable/Drawable;": 11,
+    "Landroid/graphics/Bitmap;": 2,
+    "Ljava/util/HashMap;": 6,
+    "[[Landroid/graphics/drawable/Drawable;": 1,
+    "Landroid/graphics/BitmapShader;": 1,
+    "[Landroid/graphics/Path;": 2,
+    "Landroid/graphics/Matrix;": 1,
+    "Ljava/lang/Object;": 1,
+    "Landroid/hardware/SensorManager;": 1,
+    "Landroid/hardware/Sensor;": 1,
+    "F": 2,
+    "Ljava/lang/String;": 2,
+    "Landroid/util/SparseIntArray;": 4,
+    "Ljava/util/HashSet;": 1,
+    "[L?;": 1,
+    "Ljava/lang/ThreadLocal;": 5,
+    "Landroid/graphics/PorterDuffColorFilter;": 2,
+    "D": 2
+   },
+   "methods": {
+    "()V": 8,
+    "()L?;": 4,
+    "(L?;II)V": 1,
+    "(L?;II)I": 1,
+    "(I)I": 5,
+    "(Landroid/graphics/drawable/Drawable;IZ)Z": 1,
+    "(ZIIII)I": 1,
+    "(L?;L?;Lorg/telegram/tgnet/TLRPC$TL_theme;IZ)V": 1,
+    "([F[FIZI)I": 1,
+    "(L?;)V": 2,
+    "(Z)V": 6,
+    "(Landroid/util/SparseIntArray;)I": 1,
+    "(Landroid/util/SparseIntArray;I)I": 1,
+    "(Landroid/util/SparseIntArray;L?;)V": 1,
+    "(II)L?;": 5,
+    "(Lorg/telegram/messenger/MessageObject;)V": 1,
+    "(L?;Landroid/util/SparseIntArray;Ljava/lang/String;IZ)L?;": 1,
+    "()Ljava/lang/String;": 2,
+    "(L?;L?;Landroid/util/SparseIntArray;Ljava/io/File;Ljava/lang/String;IIIZZZZLorg/telegram/tgnet/TLRPC$Document;Z)L?;": 1,
+    "(IIL?;)L?;": 1,
+    "(Landroid/content/Context;Z)V": 1,
+    "(L?;Z)L?;": 1,
+    "(II)Landroid/graphics/drawable/ShapeDrawable;": 2,
+    "(Z)L?;": 1,
+    "(ILandroid/graphics/drawable/Drawable;)Landroid/graphics/drawable/Drawable;": 1,
+    "(III)L?;": 4,
+    "(I)[F": 1,
+    "(Ljava/lang/String;)L?;": 1,
+    "(Ljava/lang/String;)Landroid/graphics/drawable/Drawable;": 1,
+    "(Landroid/content/Context;)V": 3,
+    "(Ljava/lang/String;L?;)Landroid/graphics/drawable/Drawable;": 1,
+    "(Ljava/io/File;Ljava/lang/String;[Ljava/lang/String;)Landroid/util/SparseIntArray;": 1,
+    "(F)F": 1,
+    "(Landroid/content/Context;)L?;": 1,
+    "(Ljava/lang/String;)Landroid/graphics/Paint;": 1,
+    "(Landroid/content/Context;II)L?;": 1,
+    "(Ljava/lang/String;L?;)Landroid/graphics/Paint;": 1,
+    "(Landroid/content/Context;III)L?;": 1,
+    "(Landroid/content/Context;II)Landroid/graphics/drawable/Drawable;": 2,
+    "(FII)L?;": 1,
+    "(FIIIII)L?;": 1,
+    "(Landroid/view/View;Z)Landroid/graphics/drawable/Drawable;": 1,
+    "(L?;)Ljava/lang/String;": 1,
+    "(IIII)L?;": 1,
+    "()Z": 5,
+    "(II)Z": 1,
+    "(IIIII)L?;": 1,
+    "(FFI)I": 1,
+    "(I)Z": 2,
+    "(II)I": 2,
+    "(III)Landroid/graphics/drawable/ShapeDrawable;": 1,
+    "(ILjava/lang/String;Landroid/graphics/drawable/Drawable;)V": 1,
+    "(II)Landroid/graphics/drawable/InsetDrawable;": 1,
+    "(ILandroid/graphics/Paint;Ljava/lang/String;)V": 1,
+    "(Landroid/util/SparseIntArray;Landroid/util/SparseIntArray;Z)V": 2,
+    "(L?;)Z": 1,
+    "(Landroid/graphics/drawable/Drawable;)V": 2,
+    "(IZ)V": 1,
+    "(IIIIIII)L?;": 1,
+    "(Ljava/io/FileInputStream;I)Landroid/graphics/Bitmap;": 1,
+    "(ZZ)V": 3,
+    "(L?;L?;Z)Z": 1,
+    "(Ljava/io/File;Ljava/lang/String;Lorg/telegram/tgnet/TLRPC$TL_theme;)L?;": 1,
+    "(L?;Ljava/io/File;IZLorg/telegram/tgnet/TLRPC$Document;Z)Landroid/graphics/drawable/Drawable;": 1,
+    "(I)Landroid/graphics/Paint;": 1,
+    "(FI)I": 1,
+    "(Landroid/graphics/Paint;)V": 1,
+    "()I": 1,
+    "(L?;)Landroid/graphics/ColorFilter;": 1,
+    "(Lorg/telegram/messenger/MessageObject;)L?;": 1,
+    "(Ljava/lang/String;)Ljava/io/File;": 1,
+    "(FFII)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$ThemeSettings;)Ljava/lang/String;": 1,
+    "(Landroid/graphics/Bitmap;Landroid/graphics/BitmapShader;Landroid/graphics/Matrix;IIFF)V": 1,
+    "()Landroid/graphics/drawable/Drawable;": 3,
+    "(L?;ZZZ)V": 1,
+    "(Landroid/view/View;Landroid/view/View;L?;)V": 1,
+    "(L?;ZZ)V": 1,
+    "(I)L?;": 1,
+    "(L?;ZZZZZ)V": 1,
+    "(Ljava/io/File;Ljava/lang/String;Lorg/telegram/tgnet/TLRPC$TL_theme;Z)L?;": 1,
+    "(IIZ)V": 1,
+    "(IL?;)I": 1,
+    "(Landroid/graphics/drawable/Drawable;IZ)V": 2,
+    "(IZZ)I": 3,
+    "([ZIZ)I": 1,
+    "(ILandroid/graphics/drawable/Drawable;)V": 2,
+    "(IZZZ)I": 1,
+    "(L?;FFFF)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.Adapters.ContactsAdapter": {
+   "super": "L?;",
+   "counts": [
+    13,
+    13
+   ],
+   "fields": {
+    "Z": 7,
+    "I": 3,
+    "Landroid/content/Context;": 1,
+    "L?;": 1,
+    "Ljava/util/ArrayList;": 1
+   },
+   "methods": {
+    "(Landroid/content/Context;IZL?;I)V": 1,
+    "(I)Ljava/lang/String;": 1,
+    "(L?;F[I)V": 1,
+    "(I)I": 1,
+    "(II)I": 2,
+    "(II)Ljava/lang/Object;": 1,
+    "(ILandroid/view/View;)Landroid/view/View;": 1,
+    "(IIL?;)Z": 1,
+    "(IIL?;)V": 1,
+    "(IZ)V": 1,
+    "()V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    5
+   ]
+  },
+  "org.telegram.ui.Adapters.DialogsAdapter": {
+   "super": "L?;",
+   "counts": [
+    37,
+    34
+   ],
+   "fields": {
+    "Z": 14,
+    "I": 7,
+    "J": 3,
+    "L?;": 4,
+    "Ljava/util/ArrayList;": 4,
+    "Landroid/graphics/drawable/Drawable;": 1,
+    "Lorg/telegram/tgnet/TLRPC$RequestPeerType;": 1,
+    "Lorg/telegram/messenger/support/LongSparseIntArray;": 1,
+    "Ljava/util/HashMap;": 1,
+    "Landroid/content/Context;": 1
+   },
+   "methods": {
+    "(L?;Landroid/content/Context;IIZLjava/util/ArrayList;ILorg/telegram/tgnet/TLRPC$RequestPeerType;)V": 1,
+    "(L?;)Z": 1,
+    "()I": 2,
+    "(J)I": 1,
+    "(I)I": 2,
+    "()Lorg/telegram/messenger/MessagesController$DialogFilter;": 1,
+    "(I)Ljava/lang/Object;": 1,
+    "()V": 6,
+    "(Lorg/telegram/tgnet/TLRPC$User;)V": 1,
+    "(Z)V": 3,
+    "(L?;)V": 7,
+    "(L?;Z)V": 1,
+    "(J)V": 1,
+    "()Z": 2,
+    "(Ljava/lang/Runnable;)V": 1,
+    "(I)J": 1,
+    "(L?;I)V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    3
+   ]
+  },
+  "org.telegram.ui.Adapters.DialogsSearchAdapter": {
+   "super": "L?;",
+   "counts": [
+    68,
+    28
+   ],
+   "fields": {
+    "I": 22,
+    "Ljava/util/ArrayList;": 14,
+    "L?;": 13,
+    "Z": 8,
+    "Ljava/util/HashSet;": 1,
+    "Ljava/lang/String;": 6,
+    "Landroid/content/Context;": 1,
+    "J": 2,
+    "Landroid/view/View;": 1
+   },
+   "methods": {
+    "(Landroid/content/Context;L?;IIL?;Z)V": 1,
+    "(Ljava/lang/String;Ljava/lang/String;)Z": 1,
+    "(L?;)Z": 1,
+    "()V": 3,
+    "(Ljava/lang/Object;)Z": 1,
+    "(Ljava/lang/String;)V": 2,
+    "(L?;)Landroid/text/SpannableStringBuilder;": 1,
+    "()L?;": 1,
+    "(I)Ljava/lang/Object;": 1,
+    "()I": 3,
+    "()Z": 4,
+    "(I)Z": 1,
+    "(JLorg/telegram/tgnet/TLObject;)V": 1,
+    "(ILjava/lang/String;)V": 3,
+    "(I)J": 1,
+    "(I)I": 1,
+    "(L?;I)V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    3
+   ]
+  },
+  "org.telegram.ui.Adapters.DialogsSearchAdapter$OnRecentSearchLoaded": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    0,
+    1
+   ],
+   "fields": {},
+   "methods": {
+    "(Ljava/util/ArrayList;L?;)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.Adapters.SearchAdapter": {
+   "super": "L?;",
+   "counts": [
+    18,
+    8
+   ],
+   "fields": {
+    "I": 3,
+    "Ljava/util/ArrayList;": 4,
+    "Ljava/lang/String;": 1,
+    "Landroid/content/Context;": 1,
+    "L?;": 2,
+    "Ljava/util/Timer;": 1,
+    "Z": 5,
+    "J": 1
+   },
+   "methods": {
+    "(L?;)Z": 1,
+    "(I)Ljava/lang/Object;": 1,
+    "()V": 1,
+    "(Ljava/lang/String;)V": 1,
+    "()I": 1,
+    "(I)I": 1,
+    "(L?;I)V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    3
+   ]
+  },
+  "org.telegram.ui.Adapters.SearchAdapterHelper": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    19,
+    10
+   ],
+   "fields": {
+    "L?;": 4,
+    "Ljava/util/ArrayList;": 8,
+    "Ljava/lang/String;": 2,
+    "I": 1,
+    "Z": 3,
+    "Ljava/util/HashMap;": 1
+   },
+   "methods": {
+    "(Z)V": 1,
+    "(Ljava/lang/CharSequence;)V": 1,
+    "()V": 3,
+    "(Lorg/telegram/tgnet/TLObject;)Z": 1,
+    "()Z": 1,
+    "(Ljava/util/ArrayList;Ljava/util/ArrayList;)V": 1,
+    "(Ljava/lang/String;ZZZZJZII)V": 1,
+    "(Ljava/lang/String;ZZZZZJZIIJL?;)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.Cells.ChatMessageCell": {
+   "super": "L?;",
+   "counts": [
+    788,
+    434
+   ],
+   "fields": {
+    "[F": 7,
+    "Landroid/graphics/Rect;": 2,
+    "I": 196,
+    "Landroid/text/StaticLayout;": 27,
+    "F": 82,
+    "L?;": 121,
+    "Z": 196,
+    "Lorg/telegram/ui/Components/CheckBoxBase;": 3,
+    "Landroid/graphics/RectF;": 8,
+    "Landroid/text/SpannableStringBuilder;": 1,
+    "Ljava/util/ArrayList;": 10,
+    "Landroid/graphics/Path;": 11,
+    "[Landroid/graphics/ColorFilter;": 1,
+    "Landroid/text/style/CharacterStyle;": 1,
+    "[I": 5,
+    "Ljava/lang/String;": 13,
+    "Ljava/util/concurrent/atomic/AtomicReference;": 1,
+    "Lorg/telegram/tgnet/tl/TL_stars$StarGift;": 1,
+    "J": 19,
+    "Lorg/telegram/messenger/WebFile;": 1,
+    "Lorg/telegram/messenger/ImageReceiver;": 4,
+    "Landroid/animation/AnimatorSet;": 1,
+    "Ljava/lang/Integer;": 1,
+    "Landroid/graphics/Paint;": 11,
+    "Lorg/telegram/messenger/MessageObject$GroupedMessages;": 2,
+    "Lorg/telegram/messenger/ChatMessageSharedResources;": 1,
+    "Lorg/telegram/messenger/MessageObject$GroupedMessagePosition;": 1,
+    "Lorg/telegram/tgnet/TLRPC$Document;": 1,
+    "[B": 2,
+    "Ljava/util/Stack;": 1,
+    "Lorg/telegram/ui/Components/RadialProgress2;": 2,
+    "Lorg/telegram/tgnet/TLRPC$Poll;": 1,
+    "Lorg/telegram/messenger/BotForumHelper$BotDraftAnimationsPool;": 1,
+    "D": 1,
+    "[Lorg/telegram/ui/Components/CheckBoxBase;": 1,
+    "Landroid/graphics/CornerPathEffect;": 2,
+    "Landroid/graphics/ColorMatrixColorFilter;": 1,
+    "[Lorg/telegram/messenger/ImageReceiver;": 1,
+    "Lorg/telegram/tgnet/TLRPC$PhotoSize;": 3,
+    "Landroid/graphics/drawable/GradientDrawable;": 1,
+    "Landroid/graphics/drawable/Drawable;": 7,
+    "[L?;": 2,
+    "[Z": 1,
+    "Lorg/telegram/tgnet/TLRPC$User;": 3,
+    "Lorg/telegram/tgnet/TLRPC$Chat;": 2,
+    "Lorg/telegram/tgnet/TLRPC$FileLocation;": 1,
+    "Ljava/lang/CharSequence;": 4,
+    "Lorg/telegram/messenger/MessageObject$TextLayoutBlocks;": 4,
+    "Ljava/lang/Object;": 1,
+    "Lorg/telegram/tgnet/TLObject;": 1,
+    "Lorg/telegram/messenger/FlagSecureReason;": 1,
+    "[Landroid/text/StaticLayout;": 1,
+    "Lorg/telegram/messenger/NotificationCenter$ObserversGroup;": 1,
+    "Landroid/graphics/drawable/BitmapDrawable;": 1,
+    "Lorg/telegram/tgnet/TLRPC$Message;": 1,
+    "Landroid/graphics/LinearGradient;": 1,
+    "Landroid/animation/ValueAnimator;": 1,
+    "Ljava/lang/Runnable;": 2,
+    "Ljava/util/HashMap;": 2,
+    "Landroid/util/SparseArray;": 1,
+    "[Landroid/graphics/drawable/Drawable;": 2,
+    "Lorg/telegram/messenger/MessageObject$TextLayoutBlock;": 1,
+    "Lorg/telegram/messenger/MessageObject;": 2
+   },
+   "methods": {
+    "(Landroid/content/Context;I)V": 1,
+    "(Landroid/content/Context;IZLorg/telegram/messenger/ChatMessageSharedResources;L?;)V": 1,
+    "(L?;)I": 10,
+    "(ILjava/util/ArrayList;Z)V": 1,
+    "(IIII)Landroid/graphics/PointF;": 1,
+    "(L?;)Z": 18,
+    "(L?;)L?;": 1,
+    "(L?;)Ljava/util/ArrayList;": 1,
+    "(Landroid/text/Spannable;Landroid/text/style/CharacterStyle;)[I": 1,
+    "(L?;)Landroid/text/StaticLayout;": 2,
+    "(L?;)Landroid/util/SparseArray;": 1,
+    "(L?;Lorg/telegram/messenger/MessageObject;)Z": 1,
+    "(L?;)Landroid/graphics/Rect;": 1,
+    "(FFFF)Z": 1,
+    "(L?;)Lorg/telegram/messenger/MessageObject;": 1,
+    "(L?;Z)V": 2,
+    "(L?;)J": 2,
+    "(Lorg/telegram/messenger/ImageReceiver;)V": 2,
+    "(L?;J)V": 1,
+    "()Ljava/lang/CharSequence;": 1,
+    "()J": 2,
+    "()Ljava/lang/String;": 2,
+    "()Ljava/lang/Object;": 1,
+    "()L?;": 9,
+    "()I": 38,
+    "()Landroid/graphics/ColorMatrixColorFilter;": 1,
+    "()F": 31,
+    "()Ljava/util/ArrayList;": 2,
+    "(L?;)Lorg/telegram/tgnet/TLRPC$User;": 1,
+    "(L?;)Ljava/lang/CharSequence;": 1,
+    "(L?;)[Landroid/text/StaticLayout;": 1,
+    "(ILjava/lang/String;IF)L?;": 1,
+    "(Ljava/lang/String;)Z": 1,
+    "(Z)V": 18,
+    "(Lorg/telegram/messenger/MessageObject;)V": 4,
+    "(Ljava/lang/CharSequence;Landroid/text/TextPaint;IIII)Landroid/text/StaticLayout;": 1,
+    "(L?;)Lorg/telegram/tgnet/TLRPC$Poll;": 1,
+    "()Z": 38,
+    "(Lorg/telegram/messenger/MessageObject$GroupedMessagePosition;)I": 1,
+    "(Lorg/telegram/messenger/MessageObject;ZZZ)Ljava/lang/String;": 1,
+    "(L?;)Lorg/telegram/ui/Components/RadialProgress2;": 1,
+    "(Landroid/view/MotionEvent;)Z": 28,
+    "(Landroid/graphics/Canvas;F)V": 6,
+    "(Lorg/telegram/messenger/MessageObject;)Ljava/lang/String;": 1,
+    "(FI)V": 1,
+    "(Landroid/graphics/Canvas;IIIIZZZI)V": 1,
+    "(Z)F": 2,
+    "()V": 39,
+    "(Landroid/graphics/Canvas;ZZ)Z": 1,
+    "(J)Ljava/lang/String;": 1,
+    "(Landroid/graphics/Canvas;)V": 13,
+    "(I)Lorg/telegram/messenger/ImageReceiver;": 1,
+    "(I)V": 6,
+    "(Landroid/graphics/Canvas;Ljava/util/ArrayList;I)V": 1,
+    "(I)F": 2,
+    "(Lorg/telegram/tgnet/tl/TL_keyboard$KeyboardButtonProto;)Z": 1,
+    "(FLandroid/graphics/Canvas;Z)V": 2,
+    "([B)I": 1,
+    "(IILjava/lang/String;)V": 1,
+    "(Landroid/graphics/Canvas;Lorg/telegram/messenger/MessageObject$TextLayoutBlocks;ZZF)V": 1,
+    "(ZZ)V": 3,
+    "(I)I": 3,
+    "(Landroid/graphics/Canvas;ZZFFFFFZ)V": 1,
+    "(Ljava/lang/String;)Landroid/graphics/drawable/Drawable;": 1,
+    "(ZZZ)V": 2,
+    "(Lorg/telegram/messenger/MessageObject;)Z": 3,
+    "(Ljava/lang/String;)Landroid/graphics/Paint;": 1,
+    "(Z)Z": 1,
+    "(F)F": 1,
+    "(Landroid/graphics/drawable/Drawable;IIII)V": 1,
+    "(Landroid/graphics/Canvas;Z)V": 2,
+    "([B)V": 1,
+    "(Landroid/text/style/CharacterStyle;)V": 1,
+    "(Ljava/lang/String;)V": 2,
+    "(Ljava/lang/String;ZZI)Z": 1,
+    "(ILandroid/view/MotionEvent;)Z": 1,
+    "(FFLandroid/graphics/Canvas;Ljava/util/ArrayList;FZFZZZZ)V": 1,
+    "(FFFF)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;Lorg/telegram/messenger/MessageObject$GroupedMessages;ZZZZ)V": 2,
+    "(Lorg/telegram/messenger/MessageObject;Z)V": 1,
+    "(IILjava/util/ArrayList;)V": 1,
+    "(Landroid/graphics/Canvas;Landroid/graphics/RectF;)V": 1,
+    "(II)V": 3,
+    "(Landroid/graphics/Canvas;)Z": 2,
+    "(FFZ)V": 1,
+    "(F)V": 8,
+    "(Landroid/graphics/Canvas;I)V": 2,
+    "(IIIFFIIIII)V": 1,
+    "(FI)Z": 1,
+    "(Landroid/graphics/Canvas;FLjava/lang/Integer;)V": 1,
+    "(II[Ljava/lang/Object;)V": 1,
+    "(Lorg/telegram/messenger/ImageReceiver;ZZZ)V": 1,
+    "(ILjava/lang/String;Landroid/graphics/drawable/Drawable;)V": 1,
+    "(Landroid/graphics/Bitmap;Z)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$ReactionCount;ZFF)V": 1,
+    "(Landroid/graphics/Canvas;Lorg/telegram/messenger/RichMessageLayout;FLandroid/graphics/ColorFilter;)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;Lorg/telegram/messenger/MessageObject$GroupedMessages;Z)I": 1,
+    "(IZZ)V": 1,
+    "()Landroid/view/accessibility/AccessibilityNodeProvider;": 1,
+    "()[L?;": 1,
+    "()Lorg/telegram/messenger/ImageReceiver;": 3,
+    "()Lorg/telegram/messenger/MessageObject$TextLayoutBlocks;": 2,
+    "()Lorg/telegram/tgnet/TLRPC$Chat;": 1,
+    "()Lorg/telegram/messenger/MessageObject$GroupedMessages;": 1,
+    "()Lorg/telegram/messenger/MessageObject$GroupedMessagePosition;": 1,
+    "()Lorg/telegram/tgnet/TLRPC$User;": 1,
+    "()Landroid/text/StaticLayout;": 2,
+    "()Lorg/telegram/tgnet/TLRPC$TL_availableEffect;": 1,
+    "()Lorg/telegram/messenger/MessageObject;": 2,
+    "()Lorg/telegram/ui/Components/RadialProgress2;": 1,
+    "()Lorg/telegram/tgnet/TLRPC$Document;": 1,
+    "(L?;)V": 5,
+    "(Landroid/graphics/Canvas;Ljava/lang/Integer;FZ)V": 1,
+    "(L?;Landroid/graphics/Canvas;ILjava/lang/Integer;F)V": 1,
+    "(F)Z": 1,
+    "(FF)V": 1,
+    "(IIII)V": 1,
+    "(Landroid/graphics/drawable/Drawable;)V": 1,
+    "(Landroid/graphics/Canvas;Landroid/graphics/RectF;F)V": 1,
+    "(IZ)V": 1,
+    "(Landroid/graphics/Canvas;ZZZZFZFFFZZ)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;I)I": 1,
+    "(Landroid/graphics/Canvas;FZFLandroid/text/StaticLayout;FZ)V": 1,
+    "(Ljava/lang/String;Z)V": 1,
+    "(ZIIII)V": 1,
+    "(Ljava/lang/String;JJ)V": 1,
+    "(Ljava/lang/String;JJZ)V": 1,
+    "(Landroid/view/ViewStructure;)V": 1,
+    "(JJ)V": 1,
+    "(Landroid/graphics/Canvas;FFFFZ)V": 1,
+    "(ILandroid/os/Bundle;)Z": 1,
+    "(FFII)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$Document;)V": 1,
+    "(Landroid/graphics/Canvas;FLjava/lang/Runnable;)V": 1,
+    "(III)V": 1,
+    "(L?;L?;Landroid/text/Layout;I)Z": 1,
+    "(J)V": 1,
+    "(L?;L?;Ljava/util/ArrayList;)Z": 1,
+    "(Landroid/graphics/RectF;)V": 1,
+    "(Ljava/lang/Runnable;)V": 2,
+    "(Ljava/lang/Integer;)V": 1,
+    "(IIZ)V": 1,
+    "(II)Landroid/graphics/ColorFilter;": 1,
+    "(Landroid/graphics/drawable/Drawable;)Z": 1,
+    "(IFFL?;)V": 1,
+    "(Z)L?;": 1,
+    "(FFLandroid/graphics/Canvas;Ljava/util/ArrayList;L?;ZFFZ)V": 1,
+    "(Landroid/view/MotionEvent;)F": 1
+   },
+   "chain": [
+    "android.view.ViewGroup",
+    2
+   ]
+  },
+  "org.telegram.ui.Cells.DialogCell": {
+   "super": "L?;",
+   "counts": [
+    284,
+    93
+   ],
+   "fields": {
+    "Z": 82,
+    "F": 22,
+    "I": 80,
+    "L?;": 36,
+    "Landroid/graphics/Paint;": 10,
+    "J": 4,
+    "Landroid/graphics/RectF;": 3,
+    "Ljava/lang/String;": 3,
+    "Landroid/graphics/drawable/GradientDrawable;": 1,
+    "Lorg/telegram/tgnet/TLRPC$TL_forumTopic;": 1,
+    "Landroid/text/StaticLayout;": 12,
+    "Landroid/animation/ValueAnimator;": 3,
+    "Landroid/graphics/drawable/Drawable;": 3,
+    "[Landroid/graphics/ColorFilter;": 1,
+    "[Z": 3,
+    "[I": 1,
+    "[Lorg/telegram/messenger/ImageReceiver;": 1,
+    "Ljava/lang/Runnable;": 1,
+    "Landroid/text/TextPaint;": 1,
+    "Lorg/telegram/messenger/ImageReceiver;": 1,
+    "Lorg/telegram/messenger/MessageObject;": 1,
+    "Lorg/telegram/tgnet/TLRPC$User;": 1,
+    "Ljava/util/ArrayList;": 3,
+    "Lorg/telegram/tgnet/TLRPC$Chat;": 1,
+    "[Landroid/graphics/drawable/Drawable;": 1,
+    "Lorg/telegram/tgnet/TLRPC$EncryptedChat;": 1,
+    "Ljava/lang/CharSequence;": 2,
+    "Ljava/util/Stack;": 2,
+    "Lorg/telegram/tgnet/TLRPC$DraftMessage;": 1,
+    "Landroid/graphics/Path;": 2
+   },
+   "methods": {
+    "(Landroid/content/Context;Z)V": 1,
+    "(L?;Landroid/content/Context;ZIL?;)V": 1,
+    "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;I)Landroid/text/SpannableStringBuilder;": 1,
+    "()Lorg/telegram/messenger/MessageObject;": 2,
+    "()I": 5,
+    "()Landroid/graphics/Paint;": 1,
+    "()Landroid/text/TextPaint;": 1,
+    "(L?;)I": 1,
+    "(II)V": 2,
+    "(Landroid/graphics/Canvas;)Z": 1,
+    "(Landroid/graphics/Canvas;ZZZZF)V": 1,
+    "(Landroid/graphics/Canvas;ZIIIFZ)V": 1,
+    "()Z": 10,
+    "()Ljava/lang/CharSequence;": 3,
+    "(II)Landroid/graphics/ColorFilter;": 1,
+    "(ILjava/lang/CharSequence;Ljava/lang/String;Z)Landroid/text/SpannableStringBuilder;": 1,
+    "(F)Z": 1,
+    "(ZZ)V": 2,
+    "()V": 14,
+    "(JLorg/telegram/messenger/MessageObject;IZZ)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$Dialog;II)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$TL_forumTopic;JLorg/telegram/messenger/MessageObject;ZZ)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;I)V": 1,
+    "(IZ)Z": 1,
+    "(Z)V": 8,
+    "(Landroid/view/MotionEvent;)Z": 3,
+    "()F": 2,
+    "()[I": 1,
+    "()J": 2,
+    "()Ljava/lang/String;": 1,
+    "(IIII)V": 1,
+    "(Landroid/graphics/drawable/Drawable;)V": 1,
+    "(Landroid/graphics/Canvas;)V": 1,
+    "(Landroid/view/accessibility/AccessibilityNodeInfo;)V": 1,
+    "(ZIIII)V": 1,
+    "(Landroid/view/accessibility/AccessibilityEvent;)V": 1,
+    "(ILandroid/os/Bundle;)Z": 1,
+    "(Ljava/lang/CharSequence;)Ljava/lang/CharSequence;": 1,
+    "(L?;)V": 4,
+    "(I)V": 2,
+    "(F)V": 3,
+    "(J)V": 1,
+    "(Ljava/lang/String;)V": 3
+   },
+   "chain": [
+    "android.view.ViewGroup",
+    2
+   ]
+  },
+  "org.telegram.ui.Cells.HeaderCell": {
+   "super": "Landroid/widget/FrameLayout;",
+   "counts": [
+    8,
+    21
+   ],
+   "fields": {
+    "I": 4,
+    "Landroid/widget/TextView;": 1,
+    "L?;": 2,
+    "Z": 1
+   },
+   "methods": {
+    "(Landroid/content/Context;)V": 1,
+    "(Landroid/content/Context;I)V": 1,
+    "(Landroid/content/Context;IIIIZZL?;)V": 1,
+    "(Landroid/content/Context;IIIZL?;)V": 1,
+    "(Landroid/content/Context;L?;)V": 1,
+    "(Ljava/util/ArrayList;Z)V": 1,
+    "(Z)V": 1,
+    "(Ljava/lang/CharSequence;Z)V": 1,
+    "()F": 1,
+    "()Landroid/widget/TextView;": 1,
+    "()L?;": 1,
+    "(Landroid/view/accessibility/AccessibilityNodeInfo;)V": 1,
+    "(II)V": 1,
+    "(I)V": 4,
+    "(Ljava/lang/Runnable;)V": 1,
+    "(Ljava/lang/CharSequence;)V": 2,
+    "(F)V": 1
+   },
+   "chain": [
+    "android.widget.FrameLayout",
+    1
+   ]
+  },
+  "org.telegram.ui.Cells.ShadowSectionCell": {
+   "super": "Landroid/view/View;",
+   "counts": [
+    4,
+    7
+   ],
+   "fields": {
+    "I": 2,
+    "Z": 2
+   },
+   "methods": {
+    "(Landroid/content/Context;)V": 1,
+    "(Landroid/content/Context;II)V": 1,
+    "(Landroid/content/Context;Ljava/lang/Object;)V": 1,
+    "(Landroid/content/Context;L?;)V": 1,
+    "()I": 1,
+    "(II)V": 1,
+    "(I)V": 1
+   },
+   "chain": [
+    "android.view.View",
+    1
+   ]
+  },
+  "org.telegram.ui.Cells.TextCheckCell": {
+   "super": "Landroid/widget/FrameLayout;",
+   "counts": [
+    20,
+    31
+   ],
+   "fields": {
+    "L?;": 3,
+    "I": 4,
+    "Z": 6,
+    "Landroid/widget/TextView;": 2,
+    "Lorg/telegram/ui/Components/Switch;": 1,
+    "F": 2,
+    "Landroid/graphics/Paint;": 1,
+    "Landroid/animation/ObjectAnimator;": 1
+   },
+   "methods": {
+    "(ILandroid/content/Context;L?;Z)V": 1,
+    "(Landroid/content/Context;)V": 1,
+    "(Landroid/content/Context;I)V": 1,
+    "(Landroid/content/Context;L?;)V": 1,
+    "(L?;F)V": 1,
+    "()F": 1,
+    "(F)V": 1,
+    "(IZ)V": 1,
+    "(II)V": 2,
+    "(IIIII)V": 1,
+    "(Ljava/util/ArrayList;Z)V": 1,
+    "(Ljava/lang/CharSequence;ZZ)V": 1,
+    "(Ljava/lang/String;Ljava/lang/String;ZZZ)V": 1,
+    "()Lorg/telegram/ui/Components/Switch;": 1,
+    "()V": 2,
+    "(Landroid/graphics/Canvas;)V": 1,
+    "(Landroid/view/accessibility/AccessibilityNodeInfo;)V": 1,
+    "(Landroid/view/MotionEvent;)Z": 1,
+    "(Z)V": 6,
+    "(I)V": 4,
+    "(Landroid/graphics/Typeface;)V": 1
+   },
+   "chain": [
+    "android.widget.FrameLayout",
+    1
+   ]
+  },
+  "org.telegram.ui.Cells.TextSettingsCell": {
+   "super": "Landroid/widget/FrameLayout;",
+   "counts": [
+    18,
+    22
+   ],
+   "fields": {
+    "Z": 6,
+    "I": 3,
+    "Landroid/graphics/Paint;": 1,
+    "L?;": 4,
+    "Landroid/widget/TextView;": 1,
+    "Landroid/widget/ImageView;": 1,
+    "F": 2
+   },
+   "methods": {
+    "(Landroid/content/Context;)V": 1,
+    "(Landroid/content/Context;IL?;)V": 1,
+    "(Landroid/content/Context;L?;)V": 1,
+    "(Ljava/util/ArrayList;Z)V": 1,
+    "(Ljava/lang/CharSequence;Z)V": 1,
+    "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;ZZ)V": 1,
+    "()V": 2,
+    "(Landroid/graphics/Canvas;)V": 1,
+    "()Landroid/widget/TextView;": 1,
+    "()L?;": 2,
+    "()Landroid/widget/ImageView;": 1,
+    "(Landroid/view/accessibility/AccessibilityNodeInfo;)V": 1,
+    "(ZIIII)V": 1,
+    "(II)V": 1,
+    "(Z)V": 3,
+    "(I)V": 3
+   },
+   "chain": [
+    "android.widget.FrameLayout",
+    1
+   ]
+  },
+  "org.telegram.ui.ChatActivity": {
+   "super": "L?;",
+   "counts": [
+    701,
+    749
+   ],
+   "fields": {
+    "I": 110,
+    "F": 22,
+    "Ljava/util/regex/Pattern;": 4,
+    "[I": 6,
+    "Z": 146,
+    "Landroid/graphics/Rect;": 2,
+    "L?;": 212,
+    "[L?;": 5,
+    "Landroid/graphics/Bitmap;": 1,
+    "Lorg/telegram/tgnet/TLRPC$Document;": 1,
+    "Lorg/telegram/messenger/ChatMessageSharedResources;": 1,
+    "Lorg/telegram/tgnet/TLRPC$PhotoSize;": 4,
+    "[Z": 3,
+    "Landroid/graphics/BitmapShader;": 1,
+    "Landroid/animation/ValueAnimator;": 6,
+    "Lorg/telegram/tgnet/tl/TL_stories$TL_premium_boostsStatus;": 1,
+    "Landroid/graphics/Paint;": 6,
+    "Ljava/util/ArrayList;": 16,
+    "Landroid/widget/TextView;": 9,
+    "Lorg/telegram/messenger/ChannelBoostsController$CanApplyBoost;": 1,
+    "Lorg/telegram/messenger/FlagSecureReason;": 1,
+    "Lorg/telegram/tgnet/TLObject;": 2,
+    "Landroid/graphics/Matrix;": 3,
+    "J": 18,
+    "Landroid/graphics/RectF;": 1,
+    "Lorg/telegram/ui/Components/NumberTextView;": 1,
+    "Lorg/telegram/ui/Components/RadialProgressView;": 3,
+    "Lorg/telegram/messenger/MessageObject;": 18,
+    "Lorg/telegram/tgnet/TLRPC$WebPage;": 1,
+    "Landroid/animation/AnimatorSet;": 6,
+    "Landroid/widget/ImageView;": 6,
+    "[Landroid/animation/AnimatorSet;": 1,
+    "Ljava/lang/String;": 15,
+    "Ljava/util/HashMap;": 5,
+    "Landroid/view/View;": 4,
+    "Landroid/util/SparseArray;": 6,
+    "Lorg/telegram/tgnet/TLRPC$ChatInvite;": 1,
+    "Lorg/telegram/messenger/support/LongSparseIntArray;": 1,
+    "Ljava/lang/Integer;": 2,
+    "Landroid/widget/FrameLayout;": 7,
+    "Lorg/telegram/messenger/BotForumHelper$BotDraftAnimationsPool;": 1,
+    "Lorg/telegram/tgnet/tl/TL_account$TL_businessChatLink;": 1,
+    "Landroid/animation/Animator;": 1,
+    "Landroid/widget/LinearLayout;": 1,
+    "Landroid/graphics/ColorMatrix;": 1,
+    "[B": 2,
+    "Lorg/telegram/messenger/NotificationCenter$ObserversGroup;": 1,
+    "Landroid/util/SparseIntArray;": 2,
+    "Ljava/lang/Long;": 1,
+    "[Landroid/util/SparseArray;": 4,
+    "Lorg/telegram/messenger/ChatObject$Call;": 1,
+    "Landroid/graphics/LinearGradient;": 2,
+    "Lorg/telegram/tgnet/TLRPC$ChatFull;": 1,
+    "Lorg/telegram/tgnet/TLRPC$UserFull;": 1,
+    "Lorg/telegram/tgnet/TLRPC$TL_forumTopic;": 1,
+    "Lorg/telegram/messenger/MessageObject$GroupedMessages;": 3,
+    "Lorg/telegram/tgnet/TLRPC$Chat;": 3,
+    "Lorg/telegram/messenger/MessagePreviewParams;": 1,
+    "Lorg/telegram/tgnet/TLRPC$User;": 2,
+    "Lorg/telegram/messenger/MessageSuggestionParams;": 1,
+    "Lorg/telegram/messenger/ChatMessagesMetadataController;": 1,
+    "Lorg/telegram/tgnet/TLRPC$TL_channels_sendAsPeers;": 1,
+    "Ljava/lang/Boolean;": 1,
+    "Lorg/telegram/tgnet/TLRPC$EncryptedChat;": 1,
+    "Lorg/telegram/tgnet/tl/TL_account$resolvedBusinessChatLinks;": 1,
+    "Lorg/telegram/tgnet/TLRPC$TL_messages_discussionMessage;": 1,
+    "Lorg/telegram/tgnet/TLRPC$messages_Messages;": 1,
+    "Lorg/telegram/ui/Components/ClippingImageView;": 1,
+    "Landroid/view/TextureView;": 1,
+    "Landroid/text/style/CharacterStyle;": 1,
+    "Lorg/telegram/ui/Components/UndoView;": 1
+   },
+   "methods": {
+    "(Landroid/os/Bundle;)V": 3,
+    "(L?;[L?;L?;)V": 1,
+    "(L?;Lorg/telegram/messenger/MessageObject;Lorg/telegram/tgnet/TLRPC$FileLocation;IZZ)L?;": 1,
+    "(L?;)L?;": 96,
+    "(L?;)I": 100,
+    "(L?;IIII)V": 1,
+    "(L?;)V": 30,
+    "(L?;)Landroid/graphics/Paint;": 2,
+    "(Lorg/telegram/messenger/MessageObject;Lorg/telegram/messenger/MessageObject$GroupedMessages;[I)Ljava/lang/CharSequence;": 1,
+    "(L?;)Ljava/lang/Integer;": 1,
+    "(Lorg/telegram/tgnet/TLRPC$Message;)Lorg/telegram/tgnet/TLRPC$TL_message;": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_inlineBotWebView;)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;ZJ)Landroid/text/SpannableStringBuilder;": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_messageMediaWebPage;Lorg/telegram/tgnet/TLRPC$TL_webPageAttributeStory;L?;)V": 1,
+    "(L?;)Z": 33,
+    "(L?;I)V": 7,
+    "(L?;L?;[Z)V": 1,
+    "(Ljava/util/ArrayList;ZLjava/lang/CharSequence;)Ljava/util/ArrayList;": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$User;Ljava/lang/String;Ljava/lang/Boolean;)V": 1,
+    "(Landroid/content/Context;L?;Ljava/lang/CharSequence;I)Landroid/widget/FrameLayout;": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_attachMenuBot;Lorg/telegram/tgnet/TLRPC$TL_error;Lorg/telegram/tgnet/TLRPC$User;)V": 2,
+    "(L?;ILjava/util/ArrayList;Lorg/telegram/tgnet/TLRPC$InputPeer;[ILjava/lang/String;Ljava/lang/CharSequence;ZL?;)V": 1,
+    "(L?;Ljava/lang/Long;Ljava/lang/Boolean;)V": 1,
+    "(L?;[Ljava/lang/Object;L?;ZLorg/telegram/tgnet/TLRPC$StickerSet;)V": 1,
+    "(L?;Lorg/telegram/messenger/MessageObject;)L?;": 1,
+    "(L?;JZZ)V": 1,
+    "(IJ)L?;": 1,
+    "(L?;Ljava/lang/String;)V": 5,
+    "(J)L?;": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_game;Lorg/telegram/messenger/MessageObject;Ljava/lang/String;J)V": 1,
+    "(L?;)Lorg/telegram/messenger/MessageObject;": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$User;Lorg/telegram/tgnet/TLRPC$EmojiStatus;)V": 1,
+    "(L?;L?;)V": 3,
+    "(L?;Lorg/telegram/tgnet/TLRPC$User;Lorg/telegram/tgnet/TLRPC$TL_attachMenuBot;)V": 1,
+    "(L?;F)V": 1,
+    "(JL?;)V": 3,
+    "(L?;ILjava/util/ArrayList;[Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/telegram/tgnet/TLRPC$InputPeer;[ILjava/lang/CharSequence;ZL?;)V": 1,
+    "(L?;ILjava/util/ArrayList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/telegram/tgnet/TLRPC$InputPeer;[ILorg/telegram/tgnet/tl/TL_iv$RichMessage;ZL?;)V": 1,
+    "(L?;)F": 3,
+    "(L?;JJLjava/lang/Long;Ljava/lang/Boolean;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$ReactionCount;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$User;Ljava/util/concurrent/atomic/AtomicBoolean;Lorg/telegram/tgnet/TLRPC$TL_attachMenuBot;)V": 1,
+    "(L?;JJ)V": 2,
+    "(L?;Lorg/telegram/tgnet/TLRPC$Document;)V": 2,
+    "(L?;Landroid/view/View;ZFF)V": 1,
+    "(L?;Ljava/util/ArrayList;JL?;ZI)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLObject;)V": 3,
+    "(L?;ILorg/telegram/messenger/MessageObject;)V": 1,
+    "(L?;Lorg/telegram/messenger/MessageObject$GroupedMessages;Lorg/telegram/messenger/MessageObject;II)V": 1,
+    "(L?;Landroid/view/View;Landroid/graphics/RectF;)Z": 1,
+    "(L?;Landroid/content/Context;Lorg/telegram/tgnet/TLRPC$TL_error;)V": 1,
+    "(L?;Ljava/lang/String;Landroid/text/style/CharacterStyle;Lorg/telegram/messenger/MessageObject;L?;II)V": 1,
+    "(L?;)Landroid/graphics/Matrix;": 1,
+    "(L?;Ljava/lang/CharSequence;Lorg/telegram/messenger/MessagesController;Z)V": 1,
+    "(L?;)Landroid/view/View;": 1,
+    "(L?;Lorg/telegram/tgnet/TLObject;Lorg/telegram/tgnet/TLRPC$User;)V": 1,
+    "(L?;Ljava/lang/Integer;Ljava/lang/Boolean;)V": 1,
+    "(Landroid/view/Menu;Lorg/telegram/tgnet/TLRPC$EncryptedChat;ZZZZ)V": 1,
+    "(L?;L?;Ljava/lang/Runnable;)V": 1,
+    "(L?;[ZLandroid/content/Context;)V": 1,
+    "(L?;Ljava/util/ArrayList;Lorg/telegram/tgnet/TLRPC$TL_messages_discussionMessage;Lorg/telegram/tgnet/TLRPC$messages_Messages;Lorg/telegram/tgnet/TLRPC$Chat;Lorg/telegram/tgnet/TLRPC$TL_messages_getDiscussionMessage;ILorg/telegram/messenger/MessageObject;IILorg/telegram/messenger/MessageObject;)V": 1,
+    "(L?;JZ)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_error;Lorg/telegram/tgnet/TLRPC$TL_messages_editMessage;)V": 1,
+    "(Ljava/util/ArrayList;I[I)Ljava/lang/Integer;": 1,
+    "(L?;JJLjava/lang/Long;)V": 1,
+    "(L?;ILjava/lang/Boolean;Lorg/telegram/tgnet/TLRPC$WebPage;Lorg/telegram/tgnet/tl/TL_account$getWebPagePreview;)V": 1,
+    "(L?;Ljava/lang/String;Lorg/telegram/messenger/MessageObject;Z)V": 1,
+    "(Ljava/lang/String;)Z": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_messages_sendScheduledMessages;)V": 1,
+    "(L?;Lorg/telegram/messenger/MessageObject;Ljava/lang/Long;Ljava/lang/Runnable;)V": 1,
+    "(L?;ILjava/util/ArrayList;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/telegram/tgnet/TLRPC$InputPeer;[ILjava/lang/CharSequence;ZL?;)V": 1,
+    "(L?;Landroid/view/View;I)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_document;Ljava/lang/String;Ljava/lang/Object;ZI)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$MessageEntity;)Z": 1,
+    "(L?;Landroid/content/Context;)V": 1,
+    "()Ljava/util/List;": 1,
+    "(ZZ)V": 7,
+    "(Z)V": 47,
+    "(Lorg/telegram/messenger/MessageObject;Z)I": 1,
+    "()Z": 39,
+    "(I)V": 5,
+    "(Ljava/util/ArrayList;)V": 1,
+    "(FI)V": 1,
+    "(I)I": 4,
+    "(Lorg/telegram/messenger/MessageObject;)J": 1,
+    "(Lorg/telegram/messenger/MessageObject;)V": 13,
+    "(Z)F": 1,
+    "()Lorg/telegram/messenger/SendMessageChatArguments;": 1,
+    "(Lorg/telegram/tgnet/tl/TL_keyboard$TL_inlineButtonTypeSwitchInline;)Z": 1,
+    "(Lorg/telegram/messenger/MessageObject;L?;)V": 1,
+    "()V": 116,
+    "(Lorg/telegram/messenger/MessageObject;I)V": 3,
+    "(Lorg/telegram/messenger/MessageSuggestionParams;)V": 2,
+    "(Lorg/telegram/messenger/MessageObject;)I": 3,
+    "(ZLorg/telegram/tgnet/TLRPC$WebPage;Z)V": 1,
+    "(IIIIZZ)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;)Z": 2,
+    "(Lorg/telegram/messenger/MessageObject;Lorg/telegram/messenger/MessageObject$GroupedMessages;Z)V": 1,
+    "()I": 8,
+    "(III)V": 1,
+    "()J": 6,
+    "(Landroid/view/View;ZZFFZZZ)Z": 1,
+    "(Landroid/view/View;IZ)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;ZZ)V": 2,
+    "(Lorg/telegram/messenger/MessageObject;Ljava/lang/CharSequence;I)V": 1,
+    "(Ljava/lang/String;)V": 2,
+    "(L?;Landroid/text/style/CharacterStyle;)L?;": 1,
+    "(Ljava/util/ArrayList;IZZ)V": 2,
+    "(Landroid/view/View;)I": 1,
+    "(Ljava/lang/CharSequence;)V": 1,
+    "()L?;": 6,
+    "(Lorg/telegram/tgnet/TLRPC$TL_game;Lorg/telegram/messenger/MessageObject;Ljava/lang/String;ZJ)V": 1,
+    "(Z)Landroid/view/TextureView;": 1,
+    "(Landroid/view/View;)F": 1,
+    "()F": 2,
+    "(Lorg/telegram/messenger/MessageObject;Z)Ljava/util/ArrayList;": 1,
+    "(IIZ)V": 1,
+    "(J)V": 3,
+    "(Landroid/view/View;Ljava/lang/CharSequence;Z)V": 1,
+    "(L?;Lorg/telegram/messenger/MessageObject;Landroid/text/style/CharacterStyle;Ljava/lang/String;)V": 1,
+    "(Landroid/text/style/CharacterStyle;ZLorg/telegram/messenger/MessageObject;L?;)V": 1,
+    "(L?;Landroid/text/style/CharacterStyle;Ljava/lang/String;)V": 1,
+    "(F)F": 1,
+    "(Lorg/telegram/messenger/Utilities$CallbackReturn;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$ReactionCount;ZFF)V": 1,
+    "(JLjava/lang/String;Z)V": 1,
+    "(ZL?;)V": 1,
+    "(ZZ)Z": 1,
+    "(I[Ljava/lang/Object;)V": 5,
+    "(Lorg/telegram/messenger/MessageObject;)Lorg/telegram/messenger/MessageObject$GroupedMessages;": 1,
+    "(IIZIZILjava/lang/Integer;[BLjava/lang/Runnable;)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;Z)V": 4,
+    "(Ljava/lang/CharSequence;Z)V": 1,
+    "(Landroid/text/style/CharacterStyle;Ljava/lang/String;ZL?;Lorg/telegram/messenger/MessageObject;)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$Chat;Lorg/telegram/tgnet/TLRPC$User;)V": 1,
+    "(JLorg/telegram/messenger/MessageObject;IJIILorg/telegram/messenger/MessageObject;)V": 1,
+    "(Landroid/view/View;Lorg/telegram/messenger/MessageObject;L?;Landroid/view/View;FFL?;ZZZZ)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$MessageMedia;IZIJ)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$Document;)V": 1,
+    "([Ljava/lang/Object;)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$BotInlineResult;ZIJ)V": 1,
+    "(Landroid/content/Context;)Landroid/view/View;": 1,
+    "(ILjava/util/ArrayList;Z)V": 1,
+    "(Ljava/lang/String;Z)V": 1,
+    "(Ljava/util/ArrayList;Ljava/lang/String;ZIJZ)V": 1,
+    "(II[Ljava/lang/Object;)V": 1,
+    "(Landroid/app/Dialog;)Z": 1,
+    "(Landroid/view/View;)Z": 1,
+    "(Landroid/view/View;)V": 2,
+    "(Ljava/lang/String;L?;Landroid/text/style/CharacterStyle;II)Z": 1,
+    "(Landroid/view/Menu;)Z": 1,
+    "(Landroid/view/View;Z)V": 2,
+    "(Lorg/telegram/messenger/MessageObject;Z)L?;": 1,
+    "()Lorg/telegram/tgnet/TLRPC$Chat;": 1,
+    "(Ljava/lang/Runnable;L?;Z)V": 1,
+    "(ZZF)V": 1,
+    "(ILandroid/net/Uri;Z)V": 1,
+    "()Lorg/telegram/messenger/ChatObject$Call;": 1,
+    "()Ljava/util/ArrayList;": 2,
+    "(Ljava/lang/String;)Landroid/graphics/drawable/Drawable;": 1,
+    "(Ljava/lang/String;)Landroid/graphics/Paint;": 1,
+    "(Ljava/lang/Runnable;)V": 2,
+    "(L?;Lorg/telegram/messenger/MessageObject;)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;L?;IZ)V": 1,
+    "()Lorg/telegram/tgnet/TLRPC$User;": 1,
+    "(Lorg/telegram/tgnet/TLRPC$ChatTheme;)V": 1,
+    "(Landroid/view/MotionEvent;)Z": 1,
+    "(Ljava/util/ArrayList;Ljava/lang/String;Ljava/util/ArrayList;Ljava/util/ArrayList;ZIJZJ)V": 1,
+    "(Z)Z": 2,
+    "(IZ)V": 2,
+    "(JLjava/util/ArrayList;ZI)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$Chat;)V": 1,
+    "(Ljava/lang/CharSequence;Ljava/util/ArrayList;)V": 1,
+    "(ZZZ)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$User;)V": 1,
+    "(IILjava/lang/String;)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;Ljava/util/ArrayList;Ljava/util/ArrayList;Ljava/util/ArrayList;)V": 1,
+    "(Ljava/lang/CharSequence;Ljava/lang/String;)V": 1,
+    "(IILandroid/content/Intent;)V": 1,
+    "(Landroid/content/res/Configuration;)V": 1,
+    "(ZLjava/lang/Runnable;)Landroid/animation/AnimatorSet;": 1,
+    "(Landroid/app/Dialog;)V": 1,
+    "(I[Ljava/lang/String;[I)V": 1,
+    "(Lorg/telegram/messenger/MediaController$PhotoEntry;Lorg/telegram/messenger/VideoEditedInfo;ZIIZJ)V": 1,
+    "(Ljava/util/ArrayList;Lorg/telegram/tgnet/TLRPC$Chat;IIILorg/telegram/tgnet/TLRPC$TL_forumTopic;)V": 1,
+    "(IZ)L?;": 1,
+    "(JZ)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;Ljava/lang/Integer;)V": 1,
+    "(Ljava/util/ArrayList;ZZZIJ)V": 1,
+    "(Ljava/util/ArrayList;Z)V": 2,
+    "(L?;Ljava/util/ArrayList;Ljava/lang/CharSequence;ZZIIL?;)Z": 1,
+    "(Lorg/telegram/messenger/MessageObject;Lorg/telegram/messenger/MessageObject;)V": 1,
+    "()Lorg/telegram/tgnet/TLRPC$ChatFull;": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$ReactionCount;FF)V": 1,
+    "()Lorg/telegram/tgnet/TLRPC$UserFull;": 1,
+    "(Ljava/util/ArrayList;JZZ)V": 1,
+    "(IFFL?;)V": 1,
+    "(ILjava/lang/String;Landroid/text/style/CharacterStyle;L?;Z)V": 1,
+    "(ZLorg/telegram/tgnet/TLRPC$TL_updates_channelDifferenceTooLong;)V": 1,
+    "(J)Lorg/telegram/messenger/MessageObject$GroupedMessages;": 1,
+    "(Lorg/telegram/tgnet/TLRPC$TL_messages_discussionMessage;Lorg/telegram/tgnet/TLRPC$messages_Messages;ILorg/telegram/messenger/MessageObject;Lorg/telegram/tgnet/TLRPC$TL_messages_getDiscussionMessage;Lorg/telegram/tgnet/TLRPC$Chat;ILorg/telegram/messenger/MessageObject;)V": 1,
+    "(ZLorg/telegram/messenger/MessageObject;Lorg/telegram/messenger/MessageObject;Ljava/util/ArrayList;Lorg/telegram/tgnet/TLRPC$WebPage;L?;Z)V": 1,
+    "(ZLorg/telegram/messenger/MessageObject;Lorg/telegram/messenger/MessageObject;Ljava/util/ArrayList;Lorg/telegram/tgnet/TLRPC$WebPage;ZIL?;ZJLorg/telegram/messenger/MessageSuggestionParams;Z)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    2
+   ]
+  },
+  "org.telegram.ui.ChatActivity$ChatMessageCellDelegate": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    1,
+    107
+   ],
+   "fields": {
+    "L?;": 1
+   },
+   "methods": {
+    "(L?;)V": 22,
+    "(L?;L?;Lorg/telegram/tgnet/TLRPC$Document;)V": 1,
+    "()V": 9,
+    "(L?;Lorg/telegram/messenger/BotInlineKeyboard$ButtonCustom;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$MessageExtendedMedia;)V": 1,
+    "(L?;L?;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$User;Lorg/telegram/tgnet/TLRPC$Document;Ljava/lang/String;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$PollAnswer;)Z": 1,
+    "()L?;": 3,
+    "(J)Z": 2,
+    "(Lorg/telegram/messenger/MessageObject$TextLayoutBlock;)V": 1,
+    "(L?;IFFZ)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TodoItem;)Z": 1,
+    "(IL?;)V": 2,
+    "(L?;Lorg/telegram/tgnet/tl/TL_keyboard$KeyboardInlineButton;)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;)V": 2,
+    "(L?;Landroid/text/style/CharacterStyle;Z)V": 1,
+    "(L?;J)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TodoItem;Z)Z": 1,
+    "(L?;Z)Z": 1,
+    "()Z": 9,
+    "(L?;)Z": 3,
+    "(L?;Lorg/telegram/tgnet/tl/TL_iv$PageBlock;)Z": 1,
+    "(IL?;)Z": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$Chat;IFFZ)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;)Z": 2,
+    "(L?;Lorg/telegram/tgnet/TLRPC$ReactionCount;ZFF)V": 1,
+    "()I": 1,
+    "(I)Z": 1,
+    "(L?;Lorg/telegram/tgnet/tl/TL_keyboard$KeyboardButtonProto;)V": 2,
+    "(L?;Lorg/telegram/tgnet/TLRPC$Document;)V": 1,
+    "(L?;II)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$Chat;)V": 2,
+    "(L?;Lorg/telegram/tgnet/TLRPC$User;)Z": 1,
+    "(Lorg/telegram/tgnet/TLRPC$User;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLObject;)V": 1,
+    "(I)V": 1,
+    "(L?;FF)V": 4,
+    "(L?;)I": 1,
+    "(L?;)Ljava/lang/String;": 1,
+    "(L?;Ljava/util/ArrayList;III)V": 1,
+    "(L?;ZZZ)V": 1,
+    "(Ljava/lang/String;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$PollAnswer;Lorg/telegram/tgnet/TLRPC$MessageMedia;I)V": 1,
+    "(L?;Z)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$Chat;)Z": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$Chat;IZ)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$User;FF)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$User;)V": 1,
+    "(L?;FFZ)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$WebPage;Ljava/lang/String;Z)V": 1,
+    "(J)Ljava/lang/String;": 1,
+    "(L?;)Landroid/text/style/CharacterStyle;": 1,
+    "(Lorg/telegram/tgnet/TLRPC$User;Z)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLObject;Z)V": 1,
+    "(Lorg/telegram/messenger/MessageObject;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)V": 1,
+    "(L?;Lorg/telegram/messenger/MessageObject;)Z": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.Components.AvatarDrawable": {
+   "super": "Landroid/graphics/drawable/Drawable;",
+   "counts": [
+    29,
+    32
+   ],
+   "fields": {
+    "[[I": 1,
+    "Z": 8,
+    "Landroid/graphics/drawable/Drawable;": 1,
+    "Landroid/text/TextPaint;": 1,
+    "I": 8,
+    "L?;": 2,
+    "Landroid/text/StaticLayout;": 1,
+    "F": 5,
+    "Ljava/lang/StringBuilder;": 1,
+    "Landroid/graphics/LinearGradient;": 1
+   },
+   "methods": {
+    "()V": 2,
+    "(ILorg/telegram/tgnet/TLRPC$User;)V": 2,
+    "(Lorg/telegram/tgnet/TLRPC$Chat;)V": 2,
+    "(L?;)V": 1,
+    "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/StringBuilder;)V": 1,
+    "(J)I": 2,
+    "(I)I": 1,
+    "(Ljava/lang/String;)Ljava/lang/String;": 1,
+    "()I": 5,
+    "(Landroid/graphics/Canvas;)V": 1,
+    "(I)V": 5,
+    "(II)V": 1,
+    "(ILorg/telegram/tgnet/TLObject;)V": 1,
+    "(ILorg/telegram/tgnet/TLRPC$Chat;)V": 1,
+    "(ILorg/telegram/tgnet/TLRPC$ChatInvite;)V": 1,
+    "(JLjava/lang/String;Ljava/lang/String;)V": 1,
+    "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Lorg/telegram/messenger/MessagesController$PeerColor;)V": 1,
+    "(Lorg/telegram/tgnet/TLObject;)V": 1,
+    "(Lorg/telegram/tgnet/TLRPC$User;)V": 1,
+    "(Landroid/graphics/ColorFilter;)V": 1
+   },
+   "chain": [
+    "android.graphics.drawable.Drawable",
+    1
+   ]
+  },
+  "org.telegram.ui.Components.BackupImageView": {
+   "super": "Landroid/view/View;",
+   "counts": [
+    16,
+    39
+   ],
+   "fields": {
+    "Landroid/graphics/Path;": 1,
+    "Landroid/graphics/ColorMatrixColorFilter;": 1,
+    "Lorg/telegram/messenger/ImageReceiver;": 2,
+    "I": 2,
+    "L?;": 3,
+    "Landroid/graphics/ColorFilter;": 1,
+    "Z": 5,
+    "Landroid/animation/ValueAnimator;": 1
+   },
+   "methods": {
+    "(Landroid/content/Context;)V": 1,
+    "()V": 5,
+    "()Lorg/telegram/messenger/ImageReceiver;": 2,
+    "(Lorg/telegram/tgnet/TLObject;L?;)V": 1,
+    "(Ljava/lang/String;Ljava/lang/String;Landroid/graphics/drawable/Drawable;)V": 1,
+    "()L?;": 2,
+    "()[I": 1,
+    "(Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Landroid/graphics/drawable/Drawable;Ljava/lang/Object;)V": 2,
+    "(Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Ljava/lang/String;Landroid/graphics/drawable/Drawable;Ljava/lang/Object;)V": 1,
+    "(Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;ILjava/lang/Object;)V": 1,
+    "(Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;JLjava/lang/String;Ljava/lang/Object;I)V": 1,
+    "(Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Landroid/graphics/drawable/Drawable;Ljava/lang/Object;)V": 1,
+    "(Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Landroid/graphics/drawable/Drawable;Ljava/lang/String;ILjava/lang/Object;)V": 1,
+    "(L?;Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;Lorg/telegram/messenger/ImageLocation;Lorg/telegram/messenger/ImageLocation;Ljava/lang/String;ILjava/lang/String;)V": 1,
+    "(Landroid/graphics/Canvas;)V": 1,
+    "(IIZ)V": 1,
+    "(IZ)V": 1,
+    "(IIII)V": 1,
+    "(II)V": 1,
+    "(L?;)V": 1,
+    "(Z)V": 3,
+    "(Ljava/lang/CharSequence;)V": 1,
+    "(Landroid/graphics/ColorFilter;)V": 2,
+    "(Landroid/graphics/Bitmap;)V": 1,
+    "(Landroid/graphics/drawable/Drawable;)V": 1,
+    "(I)V": 3,
+    "(Landroid/graphics/drawable/Drawable;)Z": 1
+   },
+   "chain": [
+    "android.view.View",
+    1
+   ]
+  },
+  "org.telegram.ui.Components.DialogsChannelsAdapter": {
+   "super": "L?;",
+   "counts": [
+    16,
+    3
+   ],
+   "fields": {
+    "I": 4,
+    "Ljava/util/ArrayList;": 5,
+    "Z": 5,
+    "Ljava/lang/String;": 1,
+    "L?;": 1
+   },
+   "methods": {
+    "(L?;Landroid/content/Context;II)V": 1,
+    "(Z)V": 1,
+    "()V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    5
+   ]
+  },
+  "org.telegram.ui.Components.ShareAlert$ShareDialogsAdapter": {
+   "super": "L?;",
+   "counts": [
+    4,
+    7
+   ],
+   "fields": {
+    "Landroid/content/Context;": 1,
+    "Ljava/util/ArrayList;": 1,
+    "L?;": 2
+   },
+   "methods": {
+    "(L?;Landroid/content/Context;)V": 1,
+    "(L?;)Z": 1,
+    "()V": 1,
+    "()I": 1,
+    "(I)I": 1,
+    "(L?;I)V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    3
+   ]
+  },
+  "org.telegram.ui.Components.UItem": {
+   "super": "L?;",
+   "counts": [
+    36,
+    39
+   ],
+   "fields": {
+    "I": 8,
+    "Landroid/util/LongSparseArray;": 1,
+    "Ljava/util/HashMap;": 1,
+    "F": 1,
+    "J": 2,
+    "Lorg/telegram/messenger/Utilities$Callback;": 1,
+    "Landroid/view/View$OnClickListener;": 2,
+    "L?;": 1,
+    "Ljava/lang/Object;": 2,
+    "Z": 11,
+    "Landroid/view/View;": 1,
+    "Ljava/lang/CharSequence;": 4,
+    "[Ljava/lang/String;": 1
+   },
+   "methods": {
+    "(I)V": 1,
+    "(ILjava/lang/CharSequence;)L?;": 3,
+    "(Ljava/lang/CharSequence;)L?;": 2,
+    "(I)L?;": 3,
+    "(II)L?;": 2,
+    "(ILjava/lang/String;)L?;": 4,
+    "(Ljava/lang/Class;)L?;": 1,
+    "(Ljava/lang/String;)L?;": 3,
+    "(IILjava/lang/String;)L?;": 1,
+    "(IILjava/lang/String;Ljava/lang/String;)L?;": 1,
+    "(Ljava/lang/String;Ljava/lang/CharSequence;I)L?;": 2,
+    "(IIL?;)L?;": 1,
+    "(ILandroid/view/View;)L?;": 1,
+    "(Landroid/view/View;)L?;": 2,
+    "(ILjava/lang/String;Ljava/lang/String;)L?;": 2,
+    "(Landroid/view/View;IZ)L?;": 1,
+    "(Ljava/lang/String;Ljava/lang/String;Landroid/view/View$OnClickListener;)L?;": 1,
+    "(L?;)L?;": 1,
+    "(Lorg/telegram/tgnet/TLObject;)L?;": 1,
+    "(Ljava/lang/Class;)Z": 1,
+    "(L?;)Z": 3,
+    "(Z)V": 1,
+    "(Ljava/lang/Object;)Z": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    2
+   ]
+  },
+  "org.telegram.ui.Components.UniversalAdapter": {
+   "super": "L?;",
+   "counts": [
+    20,
+    23
+   ],
+   "fields": {
+    "I": 4,
+    "Ljava/util/ArrayList;": 4,
+    "L?;": 5,
+    "Z": 4,
+    "Lorg/telegram/messenger/Utilities$Callback2;": 2,
+    "Landroid/content/Context;": 1
+   },
+   "methods": {
+    "(L?;Landroid/content/Context;IIZLorg/telegram/messenger/Utilities$Callback2;L?;)V": 1,
+    "(I)Z": 2,
+    "(L?;)Z": 1,
+    "(I)V": 1,
+    "(I)L?;": 1,
+    "(I)I": 3,
+    "()V": 5,
+    "()I": 2,
+    "(Z)V": 2,
+    "(L?;)V": 2,
+    "(L?;Z)V": 1,
+    "(L?;I)V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    4
+   ]
+  },
+  "org.telegram.ui.Components.quickforward.QuickShareSelectorOverlayLayout": {
+   "super": "Landroid/view/View;",
+   "counts": [
+    4,
+    7
+   ],
+   "fields": {
+    "Ljava/util/HashMap;": 1,
+    "Ljava/util/ArrayList;": 2,
+    "I": 1
+   },
+   "methods": {
+    "(Landroid/app/Activity;)V": 1,
+    "(L?;)Ljava/lang/String;": 1,
+    "()Z": 1,
+    "(Landroid/graphics/drawable/Drawable;)V": 1,
+    "(Landroid/content/res/Configuration;)V": 1,
+    "(Landroid/graphics/Canvas;)V": 1,
+    "(ZIIII)V": 1
+   },
+   "chain": [
+    "android.view.View",
+    1
+   ]
+  },
+  "org.telegram.ui.GroupCreateActivity": {
+   "super": "L?;",
+   "counts": [
+    57,
+    43
+   ],
+   "fields": {
+    "Z": 15,
+    "L?;": 23,
+    "J": 2,
+    "Lorg/telegram/tgnet/TLRPC$ChatFull;": 1,
+    "I": 8,
+    "Ljava/lang/String;": 1,
+    "Ljava/util/ArrayList;": 3,
+    "Ljava/util/HashSet;": 1,
+    "Landroid/graphics/Rect;": 1,
+    "Landroid/graphics/RectF;": 2
+   },
+   "methods": {
+    "(Landroid/os/Bundle;)V": 1,
+    "(L?;Landroid/content/Context;Landroid/view/View;I)V": 1,
+    "(L?;)L?;": 7,
+    "(L?;)V": 2,
+    "(L?;Landroid/graphics/Canvas;Landroid/graphics/RectF;Landroid/graphics/Paint;)V": 1,
+    "(FI)V": 1,
+    "()V": 11,
+    "()Landroid/view/View;": 1,
+    "()Z": 5,
+    "(Landroid/content/Context;)L?;": 1,
+    "(Landroid/content/Context;)Landroid/view/View;": 1,
+    "(II[Ljava/lang/Object;)V": 1,
+    "(Z)Z": 2,
+    "()Ljava/util/ArrayList;": 1,
+    "()Ljava/util/HashSet;": 1,
+    "(I)V": 2,
+    "(Ljava/util/HashSet;)V": 1,
+    "(Landroid/view/View;)V": 1,
+    "(Ljava/util/ArrayList;ZZ)V": 1,
+    "(IFFL?;)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    2
+   ]
+  },
+  "org.telegram.ui.GroupCreateActivity$GroupCreateAdapter": {
+   "super": "L?;",
+   "counts": [
+    17,
+    11
+   ],
+   "fields": {
+    "I": 9,
+    "L?;": 2,
+    "Landroid/content/Context;": 1,
+    "Ljava/util/ArrayList;": 3,
+    "Ljava/lang/Runnable;": 1,
+    "Z": 1
+   },
+   "methods": {
+    "(L?;Landroid/content/Context;)V": 1,
+    "(L?;)V": 1,
+    "(L?;)Z": 1,
+    "(I)Ljava/lang/String;": 1,
+    "(L?;F[I)V": 1,
+    "(Ljava/lang/String;)V": 1,
+    "()I": 1,
+    "(I)I": 1,
+    "()V": 1,
+    "(L?;I)V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    4
+   ]
+  },
+  "org.telegram.ui.PhotoViewer$PhotoViewerProvider": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    0,
+    54
+   ],
+   "fields": {},
+   "methods": {
+    "()Z": 21,
+    "(I)V": 4,
+    "(I)Ljava/lang/CharSequence;": 2,
+    "()V": 9,
+    "(Lorg/telegram/messenger/MessageObject;Lorg/telegram/tgnet/TLRPC$FileLocation;IZZ)L?;": 1,
+    "(Z)V": 1,
+    "()I": 2,
+    "(Lorg/telegram/messenger/VideoEditedInfo;)V": 1,
+    "(Ljava/lang/Object;)I": 1,
+    "(I)I": 1,
+    "()Lorg/telegram/messenger/MessageObject;": 1,
+    "()J": 1,
+    "()Ljava/lang/String;": 1,
+    "()Ljava/util/ArrayList;": 1,
+    "(Ljava/lang/CharSequence;)V": 1,
+    "(Ljava/lang/String;Ljava/lang/String;Z)V": 1,
+    "(I)Lorg/telegram/messenger/ImageReceiver$BitmapHolder;": 1,
+    "(ILorg/telegram/messenger/VideoEditedInfo;)I": 1,
+    "(ILorg/telegram/messenger/VideoEditedInfo;ZIIZ)V": 1,
+    "()Ljava/util/HashMap;": 1,
+    "(I)Z": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.SettingsActivity": {
+   "super": "L?;",
+   "counts": [
+    38,
+    44
+   ],
+   "fields": {
+    "L?;": 15,
+    "Landroid/widget/FrameLayout;": 4,
+    "Landroid/widget/ImageView;": 1,
+    "Landroid/widget/TextView;": 3,
+    "Z": 2,
+    "Landroid/view/View;": 1,
+    "I": 4,
+    "Landroid/animation/ValueAnimator;": 1,
+    "Ljava/util/ArrayList;": 2,
+    "Landroid/graphics/RectF;": 2,
+    "Landroid/animation/AnimatorSet;": 1,
+    "Lorg/telegram/tgnet/TLRPC$FileLocation;": 2
+   },
+   "methods": {
+    "()V": 7,
+    "(Landroid/os/Bundle;)V": 1,
+    "(L?;L?;Landroid/view/View;)Z": 1,
+    "(L?;)V": 4,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_attachMenuBot;)V": 2,
+    "(L?;Landroid/animation/ValueAnimator;)V": 1,
+    "(L?;Ljava/util/ArrayList;)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$TL_error;Lorg/telegram/tgnet/TLObject;Ljava/lang/String;)V": 1,
+    "(L?;I)V": 1,
+    "(L?;Lorg/telegram/tgnet/TLRPC$InputFile;Lorg/telegram/tgnet/TLRPC$InputFile;Lorg/telegram/tgnet/TLRPC$VideoSize;DLjava/lang/String;Lorg/telegram/tgnet/TLRPC$PhotoSize;Lorg/telegram/tgnet/TLRPC$PhotoSize;)V": 1,
+    "(L?;L?;)V": 1,
+    "(L?;)L?;": 2,
+    "(Ljava/lang/String;Ljava/lang/StringBuilder;)V": 1,
+    "(FI)V": 1,
+    "(F)V": 1,
+    "(ZZ)V": 3,
+    "(Lorg/telegram/tgnet/TLRPC$InputFile;Lorg/telegram/tgnet/TLRPC$InputFile;DLjava/lang/String;Lorg/telegram/tgnet/TLRPC$PhotoSize;Lorg/telegram/tgnet/TLRPC$PhotoSize;ZLorg/telegram/tgnet/TLRPC$VideoSize;)V": 1,
+    "(Landroid/content/Context;)Landroid/view/View;": 1,
+    "(II[Ljava/lang/Object;)V": 1,
+    "()Z": 5,
+    "()L?;": 2,
+    "()Ljava/lang/String;": 1,
+    "(Landroid/view/MotionEvent;)Z": 1,
+    "(Lorg/telegram/tgnet/TLRPC$User;)V": 1,
+    "(Z)Z": 1,
+    "(IFFL?;)V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    2
+   ]
+  },
+  "org.telegram.ui.SettingsActivity$SettingCell": {
+   "super": "Landroid/widget/LinearLayout;",
+   "counts": [
+    8,
+    5
+   ],
+   "fields": {
+    "L?;": 2,
+    "Landroid/widget/FrameLayout;": 1,
+    "Landroid/widget/ImageView;": 1,
+    "Landroid/widget/TextView;": 3,
+    "Z": 1
+   },
+   "methods": {
+    "(Landroid/content/Context;L?;)V": 1,
+    "()V": 1,
+    "()[I": 1,
+    "(II)V": 1,
+    "(Ljava/lang/CharSequence;)V": 1
+   },
+   "chain": [
+    "android.widget.LinearLayout",
+    1
+   ]
+  },
+  "org.telegram.ui.SettingsActivity$SettingCell$Factory": {
+   "super": "L?;",
+   "counts": [
+    0,
+    3
+   ],
+   "fields": {},
+   "methods": {
+    "(IIIILjava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/lang/CharSequence;)L?;": 1,
+    "(Landroid/view/View;L?;ZL?;L?;)V": 1,
+    "(Landroid/content/Context;L?;IIL?;)Landroid/view/View;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    2
+   ]
+  },
+  "org.telegram.ui.Stories.DialogStoriesCell": {
+   "super": "Landroid/widget/FrameLayout;",
+   "counts": [
+    73,
+    36
+   ],
+   "fields": {
+    "F": 12,
+    "Landroid/animation/ValueAnimator;": 5,
+    "L?;": 22,
+    "Landroid/graphics/Paint;": 3,
+    "Landroid/view/animation/OvershootInterpolator;": 1,
+    "Z": 5,
+    "Landroid/animation/AnimatorSet;": 1,
+    "I": 8,
+    "J": 1,
+    "Landroid/graphics/drawable/Drawable;": 2,
+    "Ljava/util/ArrayList;": 7,
+    "Landroid/widget/ImageView;": 2,
+    "Ljava/lang/CharSequence;": 1,
+    "Landroid/text/SpannableStringBuilder;": 1,
+    "Landroid/graphics/LinearGradient;": 1,
+    "Landroid/graphics/Matrix;": 1
+   },
+   "methods": {
+    "(Landroid/content/Context;L?;II)V": 1,
+    "(L?;)I": 1,
+    "()I": 2,
+    "(FI)V": 1,
+    "()V": 8,
+    "(II[Ljava/lang/Object;)V": 1,
+    "(Landroid/graphics/Canvas;)V": 1,
+    "(J)L?;": 1,
+    "(I)I": 1,
+    "()Z": 2,
+    "()F": 2,
+    "()L?;": 1,
+    "(L?;Z)V": 1,
+    "(J)V": 1,
+    "(J)Z": 1,
+    "(FZ)V": 1,
+    "(II)V": 1,
+    "(Landroid/view/MotionEvent;)Z": 1,
+    "(ZZ)V": 1,
+    "(L?;)V": 1,
+    "(I)V": 1,
+    "(F)V": 4,
+    "(IFFL?;)V": 1
+   },
+   "chain": [
+    "android.widget.FrameLayout",
+    1
+   ]
+  },
+  "org.telegram.ui.Stories.PeerStoriesView$StoryItemHolder": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    11,
+    16
+   ],
+   "fields": {
+    "Lorg/telegram/tgnet/tl/TL_stories$StoryItem;": 2,
+    "L?;": 4,
+    "Z": 4,
+    "Ljava/lang/CharSequence;": 1
+   },
+   "methods": {
+    "(L?;)V": 1,
+    "(L?;)Z": 2,
+    "(L?;)Ljava/lang/String;": 1,
+    "()Z": 4,
+    "()Ljava/lang/String;": 2,
+    "()L?;": 2,
+    "()Ljava/io/File;": 1,
+    "(J)Z": 1,
+    "(Lorg/telegram/tgnet/tl/TL_stories$StoryItem;)V": 1,
+    "()V": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.Stories.StoriesController": {
+   "super": "Ljava/lang/Object;",
+   "counts": [
+    50,
+    70
+   ],
+   "fields": {
+    "Ljava/util/Comparator;": 1,
+    "Z": 12,
+    "Lorg/telegram/tgnet/tl/TL_stories$TL_storiesStealthMode;": 1,
+    "Ljava/util/HashSet;": 5,
+    "L?;": 14,
+    "[Ljava/util/HashMap;": 1,
+    "Ljava/util/HashMap;": 1,
+    "Ljava/util/ArrayList;": 4,
+    "I": 5,
+    "J": 1,
+    "Lorg/telegram/messenger/support/LongSparseIntArray;": 2,
+    "Landroid/content/SharedPreferences;": 1,
+    "Ljava/lang/String;": 2
+   },
+   "methods": {
+    "(I)V": 1,
+    "(Ljava/util/ArrayList;)Ljava/lang/String;": 1,
+    "(Lorg/telegram/tgnet/tl/TL_stories$StoryItem;Lorg/telegram/tgnet/tl/TL_stories$StoryItem;)Lorg/telegram/tgnet/tl/TL_stories$StoryItem;": 1,
+    "(Ljava/util/List;)Ljava/lang/String;": 1,
+    "(JIIZ)L?;": 1,
+    "(JZ)L?;": 1,
+    "(Z)I": 1,
+    "(IJ)I": 1,
+    "(J)Ljava/util/ArrayList;": 1,
+    "(J)Z": 8,
+    "()Z": 2,
+    "(Lorg/telegram/tgnet/tl/TL_stories$StoryView;)Z": 1,
+    "(Lorg/telegram/tgnet/TLRPC$User;)Z": 1,
+    "(J)V": 1,
+    "()V": 4,
+    "(Z)V": 1,
+    "(Lorg/telegram/tgnet/tl/TL_stories$PeerStories;Z)V": 1,
+    "(IJ)V": 2,
+    "(Lorg/telegram/tgnet/tl/TL_stories$PeerStories;Lorg/telegram/tgnet/tl/TL_stories$StoryItem;Z)Z": 1,
+    "(JLorg/telegram/tgnet/tl/TL_stories$StoryItem;)V": 1,
+    "(Lorg/telegram/tgnet/tl/TL_stories$PeerStories;)V": 4,
+    "(Lorg/telegram/tgnet/tl/TL_stories$TL_stories_allStories;ZZZ)V": 1,
+    "(Lorg/telegram/tgnet/tl/TL_stories$TL_updateStory;)V": 1,
+    "(JLorg/telegram/tgnet/tl/TL_stories$PeerStories;)V": 3,
+    "(IJLjava/util/ArrayList;)V": 2,
+    "(IJLorg/telegram/tgnet/tl/TL_stories$StoryItem;)V": 1,
+    "(JL?;L?;Z)V": 1,
+    "(JILorg/telegram/messenger/Utilities$Callback;)V": 1,
+    "(JZ)V": 1,
+    "(Lorg/telegram/tgnet/tl/TL_stories$TL_storiesStealthMode;)V": 1,
+    "(JLorg/telegram/tgnet/tl/TL_stories$StoryItem;L?;)V": 1,
+    "(JZZ)V": 2,
+    "(JLorg/telegram/messenger/Utilities$Callback;ZL?;)V": 1,
+    "(JLjava/util/List;)V": 1,
+    "(Ljava/util/ArrayList;)V": 2,
+    "(JLjava/util/List;Z)V": 2,
+    "(Lorg/telegram/tgnet/TLRPC$TL_error;)Z": 1,
+    "()L?;": 1,
+    "(JLjava/util/ArrayList;ZL?;)V": 1,
+    "(JLorg/telegram/tgnet/tl/TL_stories$StoryItem;Z)V": 1,
+    "(JILorg/telegram/tgnet/TLRPC$Reaction;)V": 1,
+    "(JLjava/lang/String;Lorg/telegram/messenger/Utilities$Callback;)V": 1,
+    "(JLjava/util/ArrayList;)V": 1,
+    "(JLorg/telegram/tgnet/tl/TL_stories$StoryItem;)L?;": 1,
+    "(IJ)Lorg/telegram/tgnet/tl/TL_stories$StoryItem;": 1,
+    "(IJ)Ljava/lang/String;": 1,
+    "(J)I": 1,
+    "(J)Lorg/telegram/tgnet/tl/TL_stories$PeerStories;": 2
+   },
+   "chain": [
+    "java.lang.Object",
+    1
+   ]
+  },
+  "org.telegram.ui.UsersSelectActivity$GroupCreateAdapter": {
+   "super": "L?;",
+   "counts": [
+    9,
+    10
+   ],
+   "fields": {
+    "Landroid/content/Context;": 1,
+    "Ljava/util/ArrayList;": 3,
+    "L?;": 1,
+    "Ljava/lang/Runnable;": 1,
+    "Z": 1,
+    "I": 1,
+    "Lorg/telegram/ui/UsersSelectActivity;": 1
+   },
+   "methods": {
+    "(Lorg/telegram/ui/UsersSelectActivity;Landroid/content/Context;)V": 1,
+    "(L?;)V": 1,
+    "(L?;)Z": 1,
+    "(I)Ljava/lang/String;": 1,
+    "(L?;F[I)V": 1,
+    "(Ljava/lang/String;)V": 1,
+    "()I": 1,
+    "(I)I": 1,
+    "(L?;I)V": 1,
+    "(Landroid/view/ViewGroup;I)L?;": 1
+   },
+   "chain": [
+    "java.lang.Object",
+    4
+   ]
+  }
+ },
+ "anchors": {
+  "androidx.collection.LongSparseArray": [
+   {
+    "class": "org.telegram.messenger.ChatObject",
+    "stable": true,
+    "canon": "(L?;Lorg/telegram/tgnet/TLRPC$Chat;)Z",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.ChatObject",
+    "stable": true,
+    "canon": "(L?;Lorg/telegram/tgnet/TLRPC$User;)Z",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.ContactsController",
+    "stable": true,
+    "canon": "(Lorg/telegram/messenger/ContactsController;ILjava/util/ArrayList;Ljava/util/ArrayList;L?;Z)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.ActionBar.ActionBar": [
+   {
+    "class": "org.telegram.ui.ContactsActivity",
+    "stable": true,
+    "canon": "(Lorg/telegram/ui/ContactsActivity;)L?;",
+    "member": 0,
+    "count": 4,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.ContactsActivity",
+    "stable": true,
+    "canon": "(Lorg/telegram/ui/ContactsActivity;)L?;",
+    "member": 1,
+    "count": 4,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.ContactsActivity",
+    "stable": true,
+    "canon": "(Lorg/telegram/ui/ContactsActivity;)L?;",
+    "member": 2,
+    "count": 4,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.ActionBar.ActionBar$ActionBarMenuOnItemClick": [
+   {
+    "class": "org.telegram.ui.ActionBar.ActionBar",
+    "stable": false,
+    "canon": "()L?;",
+    "member": 0,
+    "count": 10,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.ActionBar.ActionBar",
+    "stable": false,
+    "canon": "(L?;)V",
+    "member": 0,
+    "count": 6,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.ActionBar.AlertDialog$OnButtonClickListener": [
+   {
+    "class": "org.telegram.ui.ActionBar.AlertDialog$Builder",
+    "stable": true,
+    "canon": "(Ljava/lang/String;L?;)V",
+    "member": 0,
+    "count": 2,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.ActionBar.AlertDialog$Builder",
+    "stable": true,
+    "canon": "(Ljava/lang/String;L?;)V",
+    "member": 1,
+    "count": 2,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.ActionBar.AlertDialog$Builder",
+    "stable": true,
+    "canon": "(Ljava/lang/CharSequence;L?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.Cells.ChatMessageCell": [
+   {
+    "class": "org.telegram.messenger.RichMessageLayout",
+    "stable": true,
+    "canon": "(Lorg/telegram/messenger/RichMessageLayout;)L?;",
+    "member": 1,
+    "count": 2,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.RichMessageLayout",
+    "stable": true,
+    "canon": "()L?;",
+    "member": 0,
+    "count": 3,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.RichMessageLayout",
+    "stable": true,
+    "canon": "(L?;L?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.Cells.DialogCell": [
+   {
+    "class": "org.telegram.ui.Adapters.DialogsAdapter",
+    "stable": false,
+    "canon": "(L?;)V",
+    "member": 2,
+    "count": 7,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.Adapters.DialogsAdapter",
+    "stable": false,
+    "canon": "(L?;)V",
+    "member": 3,
+    "count": 7,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.Adapters.DialogsAdapter",
+    "stable": false,
+    "canon": "(L?;)V",
+    "member": 4,
+    "count": 7,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.ChatActivity": [
+   {
+    "class": "org.telegram.messenger.ChatMessagesMetadataController",
+    "stable": true,
+    "canon": "(L?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.MediaController",
+    "stable": true,
+    "canon": "(L?;)V",
+    "member": 2,
+    "count": 3,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.MediaController",
+    "stable": true,
+    "canon": "(L?;ZZ)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.Components.AvatarDrawable": [
+   {
+    "class": "org.telegram.messenger.DialogObject",
+    "stable": true,
+    "canon": "(Lorg/telegram/messenger/ImageReceiver;L?;Lorg/telegram/tgnet/TLObject;)Ljava/lang/String;",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.Components.BackupImageView",
+    "stable": false,
+    "canon": "(Lorg/telegram/tgnet/TLObject;L?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.Components.BackupImageView",
+    "stable": false,
+    "canon": "()L?;",
+    "member": 1,
+    "count": 2,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.Components.BackupImageView": [
+   {
+    "class": "org.telegram.messenger.DialogObject",
+    "stable": true,
+    "canon": "(L?;Lorg/telegram/tgnet/TLObject;)Ljava/lang/String;",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.MediaDataController",
+    "stable": true,
+    "canon": "(Ljava/lang/String;L?;Ljava/lang/String;Lorg/telegram/tgnet/TLRPC$TL_messages_stickerSet;)V",
+    "member": 0,
+    "count": 2,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.MediaDataController",
+    "stable": true,
+    "canon": "(Ljava/lang/String;L?;Ljava/lang/String;Lorg/telegram/tgnet/TLRPC$TL_messages_stickerSet;)V",
+    "member": 1,
+    "count": 2,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.Components.UItem": [
+   {
+    "class": "org.telegram.messenger.RichMessageLayout$PreviewView$Factory",
+    "stable": true,
+    "canon": "(Landroid/view/View;L?;ZL?;L?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.RichMessageLayout$PreviewView$Factory",
+    "stable": true,
+    "canon": "(L?;L?;)Z",
+    "member": 0,
+    "count": 2,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.messenger.RichMessageLayout$PreviewView$Factory",
+    "stable": true,
+    "canon": "(L?;L?;)Z",
+    "member": 0,
+    "count": 2,
+    "slot": 1
+   }
+  ],
+  "org.telegram.ui.Components.UniversalAdapter": [
+   {
+    "class": "org.telegram.messenger.RichMessageLayout$PreviewView$Factory",
+    "stable": true,
+    "canon": "(Landroid/view/View;L?;ZL?;L?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 1
+   },
+   {
+    "class": "org.telegram.ui.StickersActivity",
+    "stable": true,
+    "canon": "(Lorg/telegram/ui/StickersActivity;Ljava/util/ArrayList;L?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.UserInfoActivity",
+    "stable": true,
+    "canon": "(Ljava/util/ArrayList;L?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.GroupCreateActivity": [
+   {
+    "class": "org.telegram.ui.GroupCreateActivity$GroupCreateAdapter",
+    "stable": false,
+    "canon": "(L?;Landroid/content/Context;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.PhotoViewer$PhotoViewerProvider": [
+   {
+    "class": "org.telegram.ui.PhotoViewer",
+    "stable": true,
+    "canon": "(Lorg/telegram/ui/PhotoViewer;)L?;",
+    "member": 3,
+    "count": 8,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.PhotoViewer",
+    "stable": true,
+    "canon": "(Ljava/util/ArrayList;IJJJL?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   },
+   {
+    "class": "org.telegram.ui.PhotoViewer",
+    "stable": true,
+    "canon": "(Ljava/util/ArrayList;IL?;)V",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   }
+  ],
+  "org.telegram.ui.Stories.StoriesController": [
+   {
+    "class": "org.telegram.messenger.MessagesController",
+    "stable": true,
+    "canon": "()L?;",
+    "member": 0,
+    "count": 1,
+    "slot": 0
+   }
+  ]
+ },
+ "members": {
+  "androidx.collection.LongSparseArray": {
+   "fields": {
+    "size": [
+     "I",
+     0,
+     1,
+     3,
+     4,
+     "[Ljava/lang/Object;",
+     ""
+    ]
+   },
+   "methods": {
+    "keyAt": [
+     "(I)J",
+     0,
+     1,
+     12,
+     18,
+     "()Z",
+     "(Ljava/lang/Object;J)V",
+     [
+      "I"
+     ]
+    ],
+    "remove": [
+     "(J)V",
+     1,
+     2,
+     14,
+     18,
+     "(Ljava/lang/Object;J)V",
+     "()I",
+     [
+      "J"
+     ]
+    ],
+    "size": [
+     "()I",
+     0,
+     1,
+     15,
+     18,
+     "(J)V",
+     "(I)Ljava/lang/Object;",
+     []
+    ],
+    "valueAt": [
+     "(I)Ljava/lang/Object;",
+     0,
+     1,
+     16,
+     18,
+     "()I",
+     "()Ljava/lang/String;",
+     [
+      "I"
+     ]
+    ]
+   }
+  },
+  "androidx.recyclerview.widget.RecyclerView$Adapter": {
+   "fields": {},
+   "methods": {
+    "notifyDataSetChanged": [
+     "()V",
+     1,
+     2,
+     9,
+     24,
+     "()I",
+     "(I)V",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.ActionBar.ActionBar$ActionBarMenuOnItemClick": {
+   "fields": {},
+   "methods": {
+    "onItemClick": [
+     "(I)V",
+     0,
+     1,
+     1,
+     2,
+     "()Z",
+     "",
+     [
+      "I"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.ActionBar.AlertDialog$Builder": {
+   "fields": {
+    "alertDialog": [
+     "L?;",
+     0,
+     1,
+     0,
+     2,
+     "",
+     "[Z"
+    ]
+   },
+   "methods": {
+    "create": [
+     "()L?;",
+     0,
+     2,
+     3,
+     19,
+     "(Landroid/content/Context;L?;)V",
+     "(Landroid/content/Context;IL?;)L?;",
+     []
+    ],
+    "setMessage": [
+     "(Ljava/lang/CharSequence;)V",
+     0,
+     2,
+     9,
+     19,
+     "([Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)V",
+     "(Ljava/lang/String;L?;)V",
+     [
+      "Ljava/lang/CharSequence;"
+     ]
+    ],
+    "setNegativeButton": [
+     "(Ljava/lang/String;L?;)V",
+     0,
+     2,
+     10,
+     19,
+     "(Ljava/lang/CharSequence;)V",
+     "(Ljava/lang/String;L?;)V",
+     [
+      "Ljava/lang/CharSequence;",
+      "Lorg/telegram/ui/ActionBar/AlertDialog$OnButtonClickListener;"
+     ]
+    ],
+    "setNeutralButton": [
+     "(Ljava/lang/String;L?;)V",
+     1,
+     2,
+     11,
+     19,
+     "(Ljava/lang/String;L?;)V",
+     "(Landroid/content/DialogInterface$OnDismissListener;)V",
+     [
+      "Ljava/lang/CharSequence;",
+      "Lorg/telegram/ui/ActionBar/AlertDialog$OnButtonClickListener;"
+     ]
+    ],
+    "setPositiveButton": [
+     "(Ljava/lang/CharSequence;L?;)V",
+     0,
+     1,
+     13,
+     19,
+     "(Landroid/content/DialogInterface$OnDismissListener;)V",
+     "(Ljava/lang/CharSequence;)V",
+     [
+      "Ljava/lang/CharSequence;",
+      "Lorg/telegram/ui/ActionBar/AlertDialog$OnButtonClickListener;"
+     ]
+    ],
+    "setTitle": [
+     "(Ljava/lang/CharSequence;)V",
+     1,
+     2,
+     14,
+     19,
+     "(Ljava/lang/CharSequence;L?;)V",
+     "(IIILjava/util/HashMap;)V",
+     [
+      "Ljava/lang/CharSequence;"
+     ]
+    ],
+    "setView": [
+     "(Landroid/view/View;)V",
+     0,
+     1,
+     16,
+     19,
+     "(IIILjava/util/HashMap;)V",
+     "()L?;",
+     [
+      "Landroid/view/View;"
+     ]
+    ],
+    "show": [
+     "()L?;",
+     1,
+     2,
+     17,
+     19,
+     "(Landroid/view/View;)V",
+     "(II)Lorg/telegram/ui/ActionBar/AlertDialog$Builder;",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.ActionBar.AlertDialog$OnButtonClickListener": {
+   "fields": {},
+   "methods": {
+    "onClick": [
+     "(L?;I)V",
+     0,
+     1,
+     0,
+     1,
+     "",
+     "",
+     [
+      "Lorg/telegram/ui/ActionBar/AlertDialog;",
+      "I"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.ActionBar.Theme": {
+   "fields": {
+    "chat_timePaint": [
+     "Landroid/text/TextPaint;",
+     33,
+     58,
+     434,
+     1182,
+     "Landroid/graphics/Paint;",
+     "Landroid/graphics/drawable/Drawable;"
+    ]
+   },
+   "methods": {
+    "isCurrentThemeDark": [
+     "()Z",
+     3,
+     5,
+     73,
+     137,
+     "(II)L?;",
+     "(Landroid/util/SparseIntArray;Landroid/util/SparseIntArray;Z)V",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Adapters.ContactsAdapter": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     1,
+     3,
+     7,
+     13,
+     "Z",
+     "Landroid/content/Context;"
+    ],
+    "onlineContacts": [
+     "Ljava/util/ArrayList;",
+     0,
+     1,
+     12,
+     13,
+     "L?;",
+     ""
+    ]
+   },
+   "methods": {
+    "sortOnlineContacts": [
+     "()V",
+     0,
+     1,
+     11,
+     13,
+     "(IZ)V",
+     "(Landroid/view/ViewGroup;I)L?;",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Adapters.DialogsAdapter": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     0,
+     7,
+     2,
+     37,
+     "Z",
+     "Z"
+    ],
+    "itemInternals": [
+     "Ljava/util/ArrayList;",
+     0,
+     4,
+     9,
+     37,
+     "L?;",
+     "Ljava/util/ArrayList;"
+    ],
+    "onlineContacts": [
+     "Ljava/util/ArrayList;",
+     2,
+     4,
+     26,
+     37,
+     "Landroid/content/Context;",
+     "Z"
+    ]
+   },
+   "methods": {
+    "updateItemList": [
+     "()V",
+     3,
+     6,
+     19,
+     34,
+     "()V",
+     "(Ljava/lang/Runnable;)V",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Adapters.DialogsSearchAdapter": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     19,
+     22,
+     54,
+     68,
+     "L?;",
+     "Ljava/util/ArrayList;"
+    ],
+    "filtered2RecentSearchObjects": [
+     "Ljava/util/ArrayList;",
+     11,
+     14,
+     58,
+     68,
+     "Ljava/util/ArrayList;",
+     "I"
+    ],
+    "filteredRecentSearchObjects": [
+     "Ljava/util/ArrayList;",
+     10,
+     14,
+     57,
+     68,
+     "Ljava/util/ArrayList;",
+     "Ljava/util/ArrayList;"
+    ],
+    "recentSearchObjects": [
+     "Ljava/util/ArrayList;",
+     9,
+     14,
+     56,
+     68,
+     "Ljava/util/ArrayList;",
+     "Ljava/util/ArrayList;"
+    ],
+    "searchContacts": [
+     "Ljava/util/ArrayList;",
+     0,
+     14,
+     3,
+     68,
+     "I",
+     "L?;"
+    ],
+    "searchForumResultMessages": [
+     "Ljava/util/ArrayList;",
+     3,
+     14,
+     9,
+     68,
+     "Z",
+     "Z"
+    ],
+    "searchResult": [
+     "Ljava/util/ArrayList;",
+     8,
+     14,
+     55,
+     68,
+     "I",
+     "Ljava/util/ArrayList;"
+    ],
+    "searchResultMessages": [
+     "Ljava/util/ArrayList;",
+     4,
+     14,
+     11,
+     68,
+     "Z",
+     "Ljava/util/ArrayList;"
+    ],
+    "searchResultNames": [
+     "Ljava/util/ArrayList;",
+     2,
+     14,
+     7,
+     68,
+     "I",
+     "Z"
+    ]
+   },
+   "methods": {
+    "filter": [
+     "(Ljava/lang/Object;)Z",
+     0,
+     1,
+     4,
+     28,
+     "()V",
+     "(Ljava/lang/String;)V",
+     [
+      "Ljava/lang/Object;"
+     ]
+    ],
+    "getItemCount": [
+     "()I",
+     2,
+     3,
+     23,
+     28,
+     "(Ljava/lang/String;)V",
+     "(I)J",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Adapters.SearchAdapter": {
+   "fields": {
+    "searchResult": [
+     "Ljava/util/ArrayList;",
+     2,
+     4,
+     7,
+     18,
+     "Landroid/content/Context;",
+     "Ljava/util/ArrayList;"
+    ],
+    "searchResultNames": [
+     "Ljava/util/ArrayList;",
+     3,
+     4,
+     8,
+     18,
+     "Ljava/util/ArrayList;",
+     "L?;"
+    ]
+   },
+   "methods": {
+    "getItemCount": [
+     "()I",
+     0,
+     1,
+     4,
+     8,
+     "(Ljava/lang/String;)V",
+     "(I)I",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Adapters.SearchAdapterHelper": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     0,
+     1,
+     12,
+     19,
+     "Ljava/util/ArrayList;",
+     "Ljava/lang/String;"
+    ],
+    "phonesSearch": [
+     "Ljava/util/ArrayList;",
+     4,
+     8,
+     9,
+     19,
+     "L?;",
+     "Ljava/util/ArrayList;"
+    ]
+   },
+   "methods": {
+    "filter": [
+     "(Lorg/telegram/tgnet/TLObject;)Z",
+     0,
+     1,
+     4,
+     10,
+     "()V",
+     "()Z",
+     [
+      "Lorg/telegram/tgnet/TLObject;"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.Cells.ChatMessageCell": {
+   "fields": {
+    "currentTimeString": [
+     "Ljava/lang/CharSequence;",
+     3,
+     4,
+     675,
+     788,
+     "Z",
+     "L?;"
+    ],
+    "timeTextWidth": [
+     "I",
+     154,
+     196,
+     628,
+     788,
+     "L?;",
+     "L?;"
+    ],
+    "timeWidth": [
+     "I",
+     150,
+     196,
+     613,
+     788,
+     "L?;",
+     "L?;"
+    ]
+   },
+   "methods": {
+    "measureTime": [
+     "(Lorg/telegram/messenger/MessageObject;)V",
+     3,
+     4,
+     422,
+     434,
+     "()V",
+     "(II)V",
+     [
+      "Lorg/telegram/messenger/MessageObject;"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.Cells.DialogCell": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     7,
+     80,
+     22,
+     284,
+     "Z",
+     "L?;"
+    ],
+    "message": [
+     "Lorg/telegram/messenger/MessageObject;",
+     0,
+     1,
+     166,
+     284,
+     "Z",
+     "Lorg/telegram/tgnet/TLRPC$User;"
+    ]
+   },
+   "methods": {
+    "buildLayout": [
+     "()V",
+     9,
+     14,
+     87,
+     93,
+     "(Z)V",
+     "()V",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Cells.TextCheckCell": {
+   "fields": {
+    "textView": [
+     "Landroid/widget/TextView;",
+     0,
+     2,
+     8,
+     20,
+     "I",
+     "Landroid/widget/TextView;"
+    ]
+   },
+   "methods": {
+    "setTextAndCheck": [
+     "(Ljava/lang/CharSequence;ZZ)V",
+     0,
+     1,
+     11,
+     31,
+     "(Ljava/util/ArrayList;Z)V",
+     "(Ljava/lang/String;Ljava/lang/String;ZZZ)V",
+     [
+      "Ljava/lang/CharSequence;",
+      "Z",
+      "Z"
+     ]
+    ],
+    "setTextAndValueAndCheck": [
+     "(Ljava/lang/String;Ljava/lang/String;ZZZ)V",
+     0,
+     1,
+     12,
+     31,
+     "(Ljava/lang/CharSequence;ZZ)V",
+     "()Lorg/telegram/ui/Components/Switch;",
+     [
+      "Ljava/lang/String;",
+      "Ljava/lang/String;",
+      "Z",
+      "Z",
+      "Z"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.Cells.TextSettingsCell": {
+   "fields": {
+    "textView": [
+     "Landroid/widget/TextView;",
+     0,
+     1,
+     5,
+     18,
+     "L?;",
+     "L?;"
+    ]
+   },
+   "methods": {
+    "setText": [
+     "(Ljava/lang/CharSequence;Z)V",
+     0,
+     1,
+     4,
+     22,
+     "(Ljava/util/ArrayList;Z)V",
+     "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;ZZ)V",
+     [
+      "Ljava/lang/CharSequence;",
+      "Z"
+     ]
+    ],
+    "setTextAndValue": [
+     "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;ZZ)V",
+     0,
+     1,
+     5,
+     22,
+     "(Ljava/lang/CharSequence;Z)V",
+     "()V",
+     [
+      "Ljava/lang/CharSequence;",
+      "Ljava/lang/CharSequence;",
+      "Z",
+      "Z"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.ChatActivity": {
+   "fields": {
+    "dialog_id": [
+     "J",
+     7,
+     18,
+     251,
+     701,
+     "Landroid/animation/AnimatorSet;",
+     "L?;"
+    ],
+    "headerItem": [
+     "L?;",
+     124,
+     212,
+     433,
+     701,
+     "I",
+     "L?;"
+    ],
+    "pinnedMessageView": [
+     "L?;",
+     189,
+     212,
+     649,
+     701,
+     "L?;",
+     "I"
+    ],
+    "selectedObject": [
+     "Lorg/telegram/messenger/MessageObject;",
+     10,
+     18,
+     383,
+     701,
+     "J",
+     "I"
+    ]
+   },
+   "methods": {
+    "createPinnedMessageView": [
+     "()V",
+     11,
+     116,
+     420,
+     749,
+     "()Z",
+     "(Lorg/telegram/messenger/MessageObject;)I",
+     []
+    ],
+    "fillMessageMenu": [
+     "(Lorg/telegram/messenger/MessageObject;Ljava/util/ArrayList;Ljava/util/ArrayList;Ljava/util/ArrayList;)V",
+     0,
+     1,
+     638,
+     749,
+     "()V",
+     "()V",
+     [
+      "Lorg/telegram/messenger/MessageObject;",
+      "Ljava/util/ArrayList;",
+      "Ljava/util/ArrayList;",
+      "Ljava/util/ArrayList;"
+     ]
+    ],
+    "hasSelectedNoforwardsMessage": [
+     "()Z",
+     14,
+     39,
+     530,
+     749,
+     "(I[Ljava/lang/Object;)V",
+     "(JLorg/telegram/messenger/MessageObject;IJIILorg/telegram/messenger/MessageObject;)V",
+     []
+    ],
+    "processSelectedOption": [
+     "(I)V",
+     1,
+     5,
+     359,
+     749,
+     "()Z",
+     "(Lorg/telegram/messenger/MessageObject;)V",
+     []
+    ],
+    "sendSecretMediaDelete": [
+     "(L?;Lorg/telegram/messenger/MessageObject;)L?;",
+     0,
+     1,
+     94,
+     749,
+     "(L?;)I",
+     "(L?;)L?;",
+     []
+    ],
+    "sendSecretMessageRead": [
+     "(Lorg/telegram/messenger/MessageObject;Z)L?;",
+     0,
+     1,
+     574,
+     749,
+     "(Lorg/telegram/messenger/MessageObject;)V",
+     "()V",
+     [
+      "Lorg/telegram/messenger/MessageObject;",
+      "Z"
+     ]
+    ],
+    "updatePinnedMessageView": [
+     "(IZ)V",
+     1,
+     2,
+     741,
+     749,
+     "(ZLorg/telegram/messenger/MessageObject;Lorg/telegram/messenger/MessageObject;Ljava/util/ArrayList;Lorg/telegram/tgnet/TLRPC$WebPage;L?;Z)V",
+     "(Lorg/telegram/messenger/MessageObject;)V",
+     [
+      "I",
+      "Z"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.ChatActivity$ChatMessageCellDelegate": {
+   "fields": {},
+   "methods": {
+    "didPressImage": [
+     "(L?;FFZ)V",
+     0,
+     1,
+     90,
+     107,
+     "(L?;Lorg/telegram/tgnet/TLRPC$User;)V",
+     "(Lorg/telegram/messenger/MessageObject;)V",
+     [
+      "Lorg/telegram/ui/Cells/ChatMessageCell;",
+      "F",
+      "F",
+      "Z"
+     ]
+    ],
+    "didQuickShareStart": [
+     "(L?;)V",
+     12,
+     22,
+     65,
+     107,
+     "(L?;)Ljava/lang/String;",
+     "(L?;Ljava/util/ArrayList;III)V",
+     [
+      "Lorg/telegram/ui/Cells/ChatMessageCell;",
+      "F",
+      "F"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.Components.AvatarDrawable": {
+   "fields": {},
+   "methods": {
+    "setAvatarType": [
+     "(I)V",
+     0,
+     5,
+     12,
+     32,
+     "(Landroid/graphics/Canvas;)V",
+     "()I",
+     [
+      "I"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.Components.BackupImageView": {
+   "fields": {},
+   "methods": {
+    "setForUserOrChat": [
+     "(Lorg/telegram/tgnet/TLObject;L?;)V",
+     0,
+     1,
+     5,
+     39,
+     "()V",
+     "(Ljava/lang/String;Ljava/lang/String;Landroid/graphics/drawable/Drawable;)V",
+     [
+      "Lorg/telegram/tgnet/TLObject;",
+      "Lorg/telegram/ui/Components/AvatarDrawable;"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.Components.DialogsChannelsAdapter": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     0,
+     4,
+     0,
+     16,
+     "",
+     "I"
+    ],
+    "myChannels": [
+     "Ljava/util/ArrayList;",
+     4,
+     5,
+     8,
+     16,
+     "Z",
+     "Z"
+    ]
+   },
+   "methods": {
+    "updateMyChannels": [
+     "()V",
+     0,
+     1,
+     2,
+     3,
+     "(Z)V",
+     "",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Components.ShareAlert$ShareDialogsAdapter": {
+   "fields": {
+    "dialogs": [
+     "Ljava/util/ArrayList;",
+     0,
+     1,
+     1,
+     4,
+     "Landroid/content/Context;",
+     "L?;"
+    ],
+    "dialogsMap": [
+     "L?;",
+     0,
+     2,
+     2,
+     4,
+     "Ljava/util/ArrayList;",
+     "L?;"
+    ],
+    "this$0": [
+     "L?;",
+     1,
+     2,
+     3,
+     4,
+     "L?;",
+     ""
+    ]
+   },
+   "methods": {
+    "fetchDialogs": [
+     "()V",
+     0,
+     1,
+     2,
+     7,
+     "(L?;)Z",
+     "()I",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Components.UItem": {
+   "fields": {
+    "id": [
+     "I",
+     1,
+     8,
+     13,
+     36,
+     "Landroid/view/View;",
+     "Z"
+    ],
+    "subtext": [
+     "Ljava/lang/CharSequence;",
+     1,
+     4,
+     22,
+     36,
+     "Ljava/lang/CharSequence;",
+     "Ljava/lang/CharSequence;"
+    ],
+    "text": [
+     "Ljava/lang/CharSequence;",
+     0,
+     4,
+     21,
+     36,
+     "I",
+     "Ljava/lang/CharSequence;"
+    ]
+   },
+   "methods": {}
+  },
+  "org.telegram.ui.Components.quickforward.QuickShareSelectorOverlayLayout": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     0,
+     1,
+     3,
+     4,
+     "Ljava/util/ArrayList;",
+     ""
+    ],
+    "dialogs": [
+     "Ljava/util/ArrayList;",
+     1,
+     2,
+     2,
+     4,
+     "Ljava/util/ArrayList;",
+     "I"
+    ]
+   },
+   "methods": {}
+  },
+  "org.telegram.ui.GroupCreateActivity$GroupCreateAdapter": {
+   "fields": {
+    "contacts": [
+     "Ljava/util/ArrayList;",
+     2,
+     3,
+     11,
+     17,
+     "Z",
+     "I"
+    ]
+   },
+   "methods": {}
+  },
+  "org.telegram.ui.LaunchActivity": {
+   "fields": {
+    "drawerLayoutContainer": [
+     "L?;",
+     28,
+     31,
+     95,
+     99,
+     "Landroid/animation/ValueAnimator;",
+     "L?;"
+    ],
+    "frameLayout": [
+     "L?;",
+     25,
+     31,
+     89,
+     99,
+     "Z",
+     "J"
+    ]
+   },
+   "methods": {}
+  },
+  "org.telegram.ui.PhotoViewer": {
+   "fields": {
+    "galleryButton": [
+     "L?;",
+     108,
+     131,
+     430,
+     506,
+     "Z",
+     "F"
+    ]
+   },
+   "methods": {
+    "getInstance": [
+     "()Lorg/telegram/ui/PhotoViewer;",
+     1,
+     2,
+     59,
+     247,
+     "(Lorg/telegram/ui/PhotoViewer;)J",
+     "(Lorg/telegram/ui/PhotoViewer;)Z",
+     []
+    ],
+    "setIsAboutToSwitchToIndex": [
+     "(IZZZ)V",
+     1,
+     2,
+     87,
+     247,
+     "()V",
+     "(ZZ)V",
+     [
+      "I",
+      "Z",
+      "Z",
+      "Z"
+     ]
+    ],
+    "setParentActivity": [
+     "(Landroid/app/Activity;L?;L?;)V",
+     0,
+     1,
+     97,
+     247,
+     "()V",
+     "()V",
+     [
+      "Landroid/app/Activity;",
+      "Lorg/telegram/ui/ActionBar/BaseFragment;",
+      "Lorg/telegram/ui/ActionBar/Theme$ResourcesProvider;"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.PhotoViewer$PhotoViewerProvider": {
+   "fields": {},
+   "methods": {
+    "getPlaceForPhoto": [
+     "(Lorg/telegram/messenger/MessageObject;Lorg/telegram/tgnet/TLRPC$FileLocation;IZZ)L?;",
+     0,
+     1,
+     4,
+     54,
+     "()V",
+     "(Z)V",
+     [
+      "Lorg/telegram/messenger/MessageObject;",
+      "Lorg/telegram/tgnet/TLRPC$FileLocation;",
+      "I",
+      "Z",
+      "Z"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.ProfileActivity": {
+   "fields": {
+    "chatId": [
+     "J",
+     3,
+     8,
+     216,
+     373,
+     "Landroid/animation/AnimatorSet;",
+     "F"
+    ],
+    "nameTextView": [
+     "[L?;",
+     4,
+     7,
+     222,
+     373,
+     "Ljava/lang/Boolean;",
+     "L?;"
+    ],
+    "onlineTextView": [
+     "[L?;",
+     5,
+     7,
+     309,
+     373,
+     "L?;",
+     "L?;"
+    ],
+    "otherItem": [
+     "L?;",
+     16,
+     76,
+     124,
+     373,
+     "L?;",
+     "I"
+    ],
+    "userId": [
+     "J",
+     2,
+     8,
+     208,
+     373,
+     "L?;",
+     "F"
+    ]
+   },
+   "methods": {
+    "createActionBarMenu": [
+     "(Z)V",
+     0,
+     15,
+     196,
+     342,
+     "(F)V",
+     "()V",
+     [
+      "Z"
+     ]
+    ],
+    "updateProfileData": [
+     "(Z)V",
+     6,
+     15,
+     285,
+     342,
+     "(Z)V",
+     "()Z",
+     [
+      "Z"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.SecretMediaViewer": {
+   "fields": {
+    "onClose": [
+     "Ljava/lang/Runnable;",
+     1,
+     2,
+     88,
+     113,
+     "Z",
+     "F"
+    ]
+   },
+   "methods": {
+    "closePhoto": [
+     "(ZZ)Z",
+     0,
+     1,
+     8,
+     29,
+     "(II[Ljava/lang/Object;)V",
+     "()F",
+     [
+      "Z",
+      "Z"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.SettingsActivity": {
+   "fields": {},
+   "methods": {
+    "fillItems": [
+     "(L?;Ljava/util/ArrayList;)V",
+     0,
+     1,
+     9,
+     44,
+     "(L?;Landroid/animation/ValueAnimator;)V",
+     "(L?;Lorg/telegram/tgnet/TLRPC$TL_error;Lorg/telegram/tgnet/TLObject;Ljava/lang/String;)V",
+     []
+    ],
+    "onClick": [
+     "(L?;L?;)V",
+     0,
+     1,
+     13,
+     44,
+     "(L?;Lorg/telegram/tgnet/TLRPC$InputFile;Lorg/telegram/tgnet/TLRPC$InputFile;Lorg/telegram/tgnet/TLRPC$VideoSize;DLjava/lang/String;Lorg/telegram/tgnet/TLRPC$PhotoSize;Lorg/telegram/tgnet/TLRPC$PhotoSize;)V",
+     "(L?;)L?;",
+     [
+      "Lorg/telegram/ui/Components/UItem;",
+      "Landroid/view/View;",
+      "I",
+      "F",
+      "F"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.SettingsActivity$SettingCell": {
+   "fields": {
+    "iconView": [
+     "Landroid/widget/ImageView;",
+     0,
+     1,
+     3,
+     8,
+     "Landroid/widget/FrameLayout;",
+     "Landroid/widget/TextView;"
+    ]
+   },
+   "methods": {}
+  },
+  "org.telegram.ui.SettingsActivity$SettingCell$Factory": {
+   "fields": {},
+   "methods": {
+    "of": [
+     "(IIIILjava/lang/CharSequence;Ljava/lang/CharSequence;Ljava/lang/CharSequence;)L?;",
+     0,
+     1,
+     0,
+     3,
+     "",
+     "(Landroid/view/View;L?;ZL?;L?;)V",
+     [
+      "I",
+      "I",
+      "I",
+      "I",
+      "Ljava/lang/CharSequence;",
+      "Ljava/lang/CharSequence;",
+      "Ljava/lang/CharSequence;"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.Stories.DialogStoriesCell": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     5,
+     8,
+     43,
+     73,
+     "Ljava/lang/CharSequence;",
+     "Z"
+    ]
+   },
+   "methods": {
+    "updateItems": [
+     "(ZZ)V",
+     0,
+     1,
+     28,
+     36,
+     "(Landroid/view/MotionEvent;)Z",
+     "(L?;)V",
+     [
+      "Z",
+      "Z"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.Stories.PeerStoriesView$StoryItemHolder": {
+   "fields": {},
+   "methods": {
+    "allowScreenshots": [
+     "()Z",
+     0,
+     4,
+     4,
+     16,
+     "(L?;)Ljava/lang/String;",
+     "()Ljava/lang/String;",
+     []
+    ]
+   }
+  },
+  "org.telegram.ui.Stories.StoriesController": {
+   "fields": {
+    "currentAccount": [
+     "I",
+     1,
+     5,
+     24,
+     50,
+     "Ljava/util/HashSet;",
+     "L?;"
+    ],
+    "dialogListStories": [
+     "Ljava/util/ArrayList;",
+     2,
+     4,
+     30,
+     50,
+     "Lorg/telegram/messenger/support/LongSparseIntArray;",
+     "Ljava/util/ArrayList;"
+    ],
+    "hiddenListStories": [
+     "Ljava/util/ArrayList;",
+     3,
+     4,
+     31,
+     50,
+     "Ljava/util/ArrayList;",
+     "L?;"
+    ]
+   },
+   "methods": {
+    "getTotalStoriesCount": [
+     "(Z)I",
+     0,
+     1,
+     6,
+     70,
+     "(JZ)L?;",
+     "(IJ)I",
+     [
+      "Z"
+     ]
+    ],
+    "hasSelfStories": [
+     "()Z",
+     1,
+     2,
+     11,
+     70,
+     "()Z",
+     "(J)Z",
+     []
+    ],
+    "hasStories": [
+     "(J)Z",
+     1,
+     8,
+     12,
+     70,
+     "()Z",
+     "(J)Z",
+     [
+      "J"
+     ]
+    ]
+   }
+  },
+  "org.telegram.ui.UsersSelectActivity$GroupCreateAdapter": {
+   "fields": {
+    "contacts": [
+     "Ljava/util/ArrayList;",
+     2,
+     3,
+     6,
+     9,
+     "Z",
+     "I"
+    ]
+   },
+   "methods": {}
+  }
+ }
+}

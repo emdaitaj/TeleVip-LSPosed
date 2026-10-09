@@ -105,6 +105,7 @@ public class ClassNames {
     public static final String SHARE_DIALOGS_ADAPTER = "org.telegram.ui.Components.ShareAlert$ShareDialogsAdapter";
     public static final String QUICK_SHARE_SELECTOR = "org.telegram.ui.Components.quickforward.QuickShareSelectorOverlayLayout";
     public static final String DIALOG_STORIES_CELL = "org.telegram.ui.Stories.DialogStoriesCell";
+    public static final String DIALOG_CELL = "org.telegram.ui.Cells.DialogCell";
     public static final String DIALOGS_CHANNELS_ADAPTER = "org.telegram.ui.Components.DialogsChannelsAdapter";
     public static final String USERS_SELECT_ACTIVITY = "org.telegram.ui.UsersSelectActivity";
     public static final String USERS_SELECT_ADAPTER = "org.telegram.ui.UsersSelectActivity$GroupCreateAdapter";

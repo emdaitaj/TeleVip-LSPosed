@@ -13,6 +13,8 @@ import java.util.List;
  */
 final class ChatGuardHooks {
 
+    private static final String PREVIEW_MESSAGE = "televipHideChatsPreviewMessage";
+
     private ChatGuardHooks() {}
 
     static void install() {
@@ -51,6 +53,34 @@ final class ChatGuardHooks {
                         return;
                     }
                 }
+            }
+        });
+
+        installPreviewGuard();
+    }
+
+    /**
+     * The chat list preview of a visible chat can be a message forwarded out of a hidden one (most
+     * visibly in Saved Messages). The cell keeps that message in a field, which is cleared while it
+     * builds its layout and put back right after, so Telegram's own data is untouched.
+     */
+    private static void installPreviewGuard() {
+        HideChats.hook(TgAccess.findClass(ClassNames.DIALOG_CELL), "DialogCell", "buildLayout", new BaseMethodHook() {
+            @Override
+            protected void beforeMethod(MethodHookParam param) {
+                Object message = TgAccess.get(param.thisObject, "DialogCell", "message");
+                if (message == null) return;
+                int account = TgAccess.intValue(TgAccess.get(param.thisObject, "DialogCell", "currentAccount"), TgAccess.getSelectedAccount());
+                HiddenFilter filter = HideChatsConfig.filterFor(account);
+                if (filter == null || !isForwardedFromHidden(filter, message)) return;
+                param.setObjectExtra(PREVIEW_MESSAGE, message);
+                TgAccess.set(param.thisObject, "DialogCell", "message", null);
+            }
+
+            @Override
+            protected void afterMethod(MethodHookParam param) {
+                Object message = param.getObjectExtra(PREVIEW_MESSAGE);
+                if (message != null) TgAccess.set(param.thisObject, "DialogCell", "message", message);
             }
         });
     }

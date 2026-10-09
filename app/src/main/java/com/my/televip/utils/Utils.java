@@ -21,6 +21,9 @@ public class Utils {
     public static String modulePath = null;
     public static ClassLoader classLoader = null;
     public static long versionCode = -1;
+    // where the hooked app lives, both known before it has a Context of its own
+    public static String apkPath = null;
+    public static String dataDir = null;
     public static final String issue = "Your Telegram client may be an incompatible version with TeleVip. Please download the latest version that is compatible with TeleVip.";
 
     private static WeakReference<Activity> currentActivity;

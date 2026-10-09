@@ -180,7 +180,8 @@ def parse_dexdump(text, classes):
         m = re.match(r"^\s+Class descriptor\s+: 'L(.+);'", line)
         if m:
             name = m.group(1).replace("/", ".")
-            cur = {"super": None, "fields": {}, "methods": set()}
+            # methods stay in dex order; the shapes locate a member by its position in that order
+            cur = {"super": None, "fields": {}, "methods": [], "methodSet": set()}
             classes[name] = cur
             section = None
             continue
@@ -209,7 +210,8 @@ def parse_dexdump(text, classes):
             if section == "f":
                 cur["fields"][pending_name] = m.group(1)
             elif section == "m":
-                cur["methods"].add((pending_name, m.group(1)))
+                cur["methods"].append((pending_name, m.group(1)))
+                cur["methodSet"].add((pending_name, m.group(1)))
             pending_name = None
 
 
@@ -406,7 +408,7 @@ def main():
 
     def exists(e):
         dexcls = dex.get(e["cls"].obf)
-        return dexcls is not None and (e["obf"], method_descriptor(e, mclasses)) in dexcls["methods"]
+        return dexcls is not None and (e["obf"], method_descriptor(e, mclasses)) in dexcls["methodSet"]
 
     # frames of methods inlined into other classes carry the qualified original name
     inlined_elsewhere = defaultdict(list)

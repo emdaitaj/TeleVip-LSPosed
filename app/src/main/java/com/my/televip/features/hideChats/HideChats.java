@@ -47,7 +47,10 @@ public class HideChats {
         if (supported == null) {
             boolean result = false;
             try {
-                result = isPotentiallySupported() && (isOfficialClient() || hasCriticalHookPoints());
+                // names worked out on the device are checked against the build before the feature is
+                // offered at all, so a class the resolver missed turns it off instead of half hiding
+                boolean trustedNames = isOfficialClient() && !ObfuscationManager.isRuntimeResolved();
+                result = isPotentiallySupported() && (trustedNames || hasCriticalHookPoints());
             } catch (Throwable t) {
                 Logger.e(t);
             }
@@ -60,7 +63,8 @@ public class HideChats {
     }
 
     public static boolean isPotentiallySupported() {
-        return (ObfuscationManager.current() == null || ObfuscationManager.isVersionMapped()) && !ClientManager.isTgnetObfuscated();
+        return (ObfuscationManager.current() == null || ObfuscationManager.isVersionMapped()
+                || ObfuscationManager.isRuntimeResolved()) && !ClientManager.isTgnetObfuscated();
     }
 
     private static boolean isOfficialClient() {
@@ -73,7 +77,6 @@ public class HideChats {
         TgAccess.init();
         Class<?> longSparseArray = TgAccess.findClass(ClassNames.LONG_SPARES_ARRAY);
         Class<?> dialogsSearchAdapter = TgAccess.findClass(ClassNames.DIALOGS_SEARCH_ADAPTER);
-        Class<?> recentLoaded = TgAccess.findClass(ClassNames.DIALOGS_SEARCH_ADAPTER_RECENT_LOADED);
         return hasMethod(TgAccess.messagesControllerClass, "MessagesController", "sortDialogs", longSparseArray)
                 && hasMethod(TgAccess.messagesControllerClass, "MessagesController", "hasHiddenArchive")
                 && hasMethod(TgAccess.messagesControllerClass, "MessagesController", "reorderPinnedDialogs", int.class, ArrayList.class, long.class)
@@ -81,8 +84,9 @@ public class HideChats {
                 && hasMethod(TgAccess.contactsControllerClass, "ContactsController", "buildContactsSectionsArrays", boolean.class)
                 && hasMethod(TgAccess.messagesStorageClass, "MessagesStorage", "localSearch", int.class, String.class, ArrayList.class, ArrayList.class, ArrayList.class, ArrayList.class, int.class)
                 && hasMethod(dialogsSearchAdapter, "DialogsSearchAdapter", "filter", Object.class)
-                && hasMethod(dialogsSearchAdapter, "DialogsSearchAdapter", "updateSearchResults", ArrayList.class, ArrayList.class, ArrayList.class, ArrayList.class, int.class)
-                && hasMethod(dialogsSearchAdapter, "DialogsSearchAdapter", "loadRecentSearch", int.class, int.class, recentLoaded)
+                && hasMethod(dialogsSearchAdapter, "DialogsSearchAdapter", "getItemCount")
+                && hasMethod(TgAccess.findClass(ClassNames.DIALOG_CELL), "DialogCell", "buildLayout")
+                && hasMethod(TgAccess.findClass(ClassNames.CHAT_ACTIVITY), "ChatActivity", "onFragmentCreate")
                 && hasMethod(TgAccess.connectionsManagerClass, "ConnectionsManager", "sendRequestInternal", (Object[]) SearchHooks.sendRequestInternalParameters());
     }
 
@@ -120,6 +124,27 @@ public class HideChats {
                 if (HideChatsConfig.isEnabled()) {
                     installHooks();
                     forEachAccount(DialogsHooks::filterNow);
+                }
+                scheduleRefreshAll();
+            } catch (Throwable t) {
+                Logger.e(t);
+            }
+        });
+    }
+
+    /**
+     * Runnable of the "hide new chats" switch. Takes the snapshot the option needs when it goes on,
+     * and forgets it when it goes off.
+     */
+    public static void onHideNewChatsToggled() {
+        if (!isSupported()) return;
+        runOnUiThread(() -> {
+            try {
+                if (!HideChatsConfig.load()) return;
+                if (HideChatsConfig.isHideNewChats()) {
+                    forEachAccount(HideChatsConfig::captureKnown);
+                } else {
+                    HideChatsConfig.clearKnown();
                 }
                 scheduleRefreshAll();
             } catch (Throwable t) {
@@ -263,6 +288,15 @@ public class HideChats {
                 Logger.e(t);
             }
         }
+    }
+
+    /**
+     * Accounts that log in after "hide new chats" was switched on need their own snapshot, taken the
+     * first time they are seen, or everything they have would count as new.
+     */
+    static void ensureKnownSnapshot(int account) {
+        if (!HideChatsConfig.isHideNewChats()) return;
+        runOnUiThread(() -> HideChatsConfig.captureKnown(account));
     }
 
     static void refreshAccount(int account) {

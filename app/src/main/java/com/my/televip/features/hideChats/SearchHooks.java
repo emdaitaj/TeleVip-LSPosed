@@ -158,6 +158,7 @@ final class SearchHooks {
         });
 
         installNetworkFilter();
+        installAdapterSanitizers();
     }
 
     static void refresh(int account) {
@@ -209,6 +210,74 @@ final class SearchHooks {
 
     private static int getAdapterAccount(Object adapter) {
         return TgAccess.intValue(TgAccess.get(adapter, "DialogsSearchAdapter", "currentAccount"), TgAccess.getSelectedAccount());
+    }
+
+    /**
+     * R8 inlines the methods that fill the search adapters (updateSearchResults, setRecentSearch),
+     * so there is no longer a point where a result list arrives. The lists are cleaned instead every
+     * time an adapter is asked how many rows it has, which happens before anything is drawn and
+     * repeats, so a list that is refilled behind our back is cleaned again.
+     */
+    private static void installAdapterSanitizers() {
+        HideChats.hook(TgAccess.findClass(ClassNames.DIALOGS_SEARCH_ADAPTER), "DialogsSearchAdapter", "getItemCount", new BaseMethodHook() {
+            @Override
+            protected void beforeMethod(MethodHookParam param) {
+                HiddenFilter filter = HideChatsConfig.filterFor(getAdapterAccount(param.thisObject));
+                if (filter == null) return;
+                Object adapter = param.thisObject;
+                removeHiddenResults(filter,
+                        TgAccess.getList(adapter, "DialogsSearchAdapter", "searchResult"),
+                        TgAccess.getList(adapter, "DialogsSearchAdapter", "searchResultNames"));
+                removeHidden(filter, TgAccess.getList(adapter, "DialogsSearchAdapter", "searchContacts"));
+                removeHidden(filter, TgAccess.getList(adapter, "DialogsSearchAdapter", "searchResultMessages"));
+                removeHidden(filter, TgAccess.getList(adapter, "DialogsSearchAdapter", "searchForumResultMessages"));
+                removeHiddenRecent(filter, TgAccess.getList(adapter, "DialogsSearchAdapter", "recentSearchObjects"));
+                removeHiddenRecent(filter, TgAccess.getList(adapter, "DialogsSearchAdapter", "filteredRecentSearchObjects"));
+                removeHiddenRecent(filter, TgAccess.getList(adapter, "DialogsSearchAdapter", "filtered2RecentSearchObjects"));
+            }
+        });
+
+        HideChats.hook(TgAccess.findClass(ClassNames.SEARCH_ADAPTER), "SearchAdapter", "getItemCount", new BaseMethodHook() {
+            @Override
+            protected void beforeMethod(MethodHookParam param) {
+                // SearchAdapter has no account of its own: it searches UserConfig.selectedAccount
+                HiddenFilter filter = HideChatsConfig.filterFor(TgAccess.getSelectedAccount());
+                if (filter == null) return;
+                Object adapter = param.thisObject;
+                removeHiddenResults(filter,
+                        TgAccess.getList(adapter, "SearchAdapter", "searchResult"),
+                        TgAccess.getList(adapter, "SearchAdapter", "searchResultNames"));
+            }
+        });
+    }
+
+    private static void removeHidden(HiddenFilter filter, ArrayList<Object> list) {
+        if (list == null || list.isEmpty()) return;
+        try {
+            list.removeIf(item -> {
+                long dialogId = dialogIdOf(item);
+                return dialogId != 0 && filter.isHidden(dialogId);
+            });
+        } catch (Throwable ignored) {}
+    }
+
+    private static void removeHiddenRecent(HiddenFilter filter, ArrayList<Object> list) {
+        if (list == null || list.isEmpty()) return;
+        try {
+            list.removeIf(item -> {
+                long dialogId = TgAccess.longValue(TgAccess.get(item, "DialogsSearchAdapter$RecentSearchObject", "did"), 0);
+                return dialogId != 0 && filter.isHidden(dialogId);
+            });
+        } catch (Throwable ignored) {}
+    }
+
+    /**
+     * Search results mix users, chats, encrypted chats and message objects.
+     */
+    private static long dialogIdOf(Object item) {
+        long dialogId = TgAccess.getObjectDialogId(item);
+        if (dialogId != 0) return dialogId;
+        return TgAccess.getMessageObjectDialogId(item);
     }
 
     /**

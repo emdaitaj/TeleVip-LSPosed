@@ -10,6 +10,7 @@ import com.my.televip.Clients.ClientManager;
 import com.my.televip.base.BaseMethodHook;
 import com.my.televip.features.hideChats.HideChats;
 import com.my.televip.hooks.HMethod;
+import com.my.televip.utils.DevOptions;
 import com.my.televip.utils.Utils;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -30,6 +31,10 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
         Utils.classLoader = lpparam.classLoader;
         Utils.pkgName = lpparam.packageName;
         Utils.versionCode = Utils.readVersionCode(lpparam.appInfo, lpparam.packageName);
+        if (lpparam.appInfo != null) {
+            Utils.apkPath = lpparam.appInfo.sourceDir;
+            Utils.dataDir = lpparam.appInfo.dataDir;
+        }
 
         if (HideChats.isPotentiallySupported()) {
             HMethod.hookMethod(ClassLoad.getClass(ClassNames.APPLICATION_LOADER), "onCreate", new BaseMethodHook() {
@@ -46,6 +51,7 @@ public class MainHook implements IXposedHookLoadPackage, IXposedHookZygoteInit {
                 Utils.setCurrentActivity((Activity) param.thisObject);
                 if (!isStart) {
                     TeleVip.startHook();
+                    DevOptions.applyTestBackend(0);
                     isStart = true;
                 }
             }

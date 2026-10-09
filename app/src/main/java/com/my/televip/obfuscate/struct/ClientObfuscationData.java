@@ -17,6 +17,23 @@ public class ClientObfuscationData {
     private final Map<String, String[]> paramsMap = new HashMap<>();
     private final Map<String, int[]> argOrderMap = new HashMap<>();
 
+    /**
+     * Data for names worked out on the device rather than shipped: {@code classes} maps original
+     * class names, {@code members} maps "ClassKey#member" for both fields and methods.
+     */
+    public static ClientObfuscationData fromResolved(Map<String, String> classes, Map<String, String> members,
+                                                    Map<String, String[]> params, Map<String, int[]> argOrder) {
+        ClientObfuscationData data = new ClientObfuscationData();
+        data.classMap.putAll(classes);
+        for (Map.Entry<String, String> entry : members.entrySet()) {
+            data.fieldMap.put(entry.getKey(), entry.getValue());
+            data.methodMap.put(entry.getKey(), entry.getValue());
+        }
+        if (params != null) data.paramsMap.putAll(params);
+        if (argOrder != null) data.argOrderMap.putAll(argOrder);
+        return data;
+    }
+
     public static ClientObfuscationData parse(String clientJson, String clientAliasJson) {
         ClientObfuscationData data = new ClientObfuscationData();
         try {

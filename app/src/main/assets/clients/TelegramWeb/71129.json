@@ -66,6 +66,10 @@
       "r": "org.telegram.ui.Cells.u1"
     },
     {
+      "o": "org.telegram.ui.Cells.DialogCell",
+      "r": "org.telegram.ui.Cells.s2"
+    },
+    {
       "o": "org.telegram.ui.Cells.HeaderCell",
       "r": "org.telegram.ui.Cells.n4"
     },
@@ -215,6 +219,16 @@
       "r": "y"
     },
     {
+      "c": "DialogCell",
+      "o": "currentAccount",
+      "r": "E0"
+    },
+    {
+      "c": "DialogCell",
+      "o": "message",
+      "r": "e1"
+    },
+    {
       "c": "DialogStoriesCell",
       "o": "currentAccount",
       "r": "f"
@@ -263,6 +277,46 @@
       "c": "DialogsSearchAdapter",
       "o": "currentAccount",
       "r": "r0"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "filtered2RecentSearchObjects",
+      "r": "u0"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "filteredRecentSearchObjects",
+      "r": "t0"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "recentSearchObjects",
+      "r": "s0"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "searchContacts",
+      "r": "D"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "searchForumResultMessages",
+      "r": "G"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "searchResult",
+      "r": "s"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "searchResultMessages",
+      "r": "H"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "searchResultNames",
+      "r": "F"
     },
     {
       "c": "DialogsSearchAdapter$RecentSearchObject",
@@ -333,6 +387,16 @@
       "c": "QuickShareSelectorOverlayLayout",
       "o": "dialogs",
       "r": "c"
+    },
+    {
+      "c": "SearchAdapter",
+      "o": "searchResult",
+      "r": "d"
+    },
+    {
+      "c": "SearchAdapter",
+      "o": "searchResultNames",
+      "r": "e"
     },
     {
       "c": "SearchAdapterHelper",
@@ -958,6 +1022,16 @@
     },
     {
       "c": "ContactsAdapter",
+      "o": "getItemCount",
+      "r": "h"
+    },
+    {
+      "c": "ContactsAdapter",
+      "o": "getItemCount()",
+      "r": "h"
+    },
+    {
+      "c": "ContactsAdapter",
       "o": "sortOnlineContacts",
       "r": "Z"
     },
@@ -965,6 +1039,16 @@
       "c": "ContactsAdapter",
       "o": "sortOnlineContacts()",
       "r": "Z"
+    },
+    {
+      "c": "DialogCell",
+      "o": "buildLayout",
+      "r": "t"
+    },
+    {
+      "c": "DialogCell",
+      "o": "buildLayout()",
+      "r": "t"
     },
     {
       "c": "DialogStoriesCell",
@@ -1015,6 +1099,16 @@
       "c": "DialogsSearchAdapter",
       "o": "filterO",
       "r": "F"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "getItemCount",
+      "r": "h"
+    },
+    {
+      "c": "DialogsSearchAdapter",
+      "o": "getItemCount()",
+      "r": "h"
     },
     {
       "c": "HeaderCell",
@@ -1265,6 +1359,16 @@
       "c": "RecyclerView$Adapter",
       "o": "notifyDataSetChanged()",
       "r": "l"
+    },
+    {
+      "c": "SearchAdapter",
+      "o": "getItemCount",
+      "r": "h"
+    },
+    {
+      "c": "SearchAdapter",
+      "o": "getItemCount()",
+      "r": "h"
     },
     {
       "c": "SearchAdapterHelper",

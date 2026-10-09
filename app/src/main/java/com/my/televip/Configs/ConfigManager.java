@@ -91,6 +91,7 @@ public class ConfigManager {
     public static ConfigItem hideChats;
     public static ConfigItem hideChatsList;
     public static ConfigItem hideChatsVisible;
+    public static ConfigItem hideChatsHideNew;
     public static ConfigItem hideChatsMuteNotifications;
     public static ConfigItem hideChatsInfo;
 
@@ -243,6 +244,9 @@ public class ConfigManager {
 
             hideChatsVisible = new ConfigItem(ConfigItem.TEXT, Keys.HideChatsVisible);
             items.add(hideChatsVisible);
+
+            hideChatsHideNew = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsHideNew, Translator.get(Keys.HideChatsHideNewInfo), ConfigPreferences.getBoolean(Keys.HideChatsHideNew), HideChats::onHideNewChatsToggled);
+            items.add(hideChatsHideNew);
 
             hideChatsMuteNotifications = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsMuteNotifications, Translator.get(Keys.HideChatsMuteNotificationsInfo), ConfigPreferences.getBoolean(Keys.HideChatsMuteNotifications, true), HideChats::onSettingsChanged);
             items.add(hideChatsMuteNotifications);

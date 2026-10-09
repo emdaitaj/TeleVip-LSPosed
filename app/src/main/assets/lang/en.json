@@ -111,6 +111,8 @@
   "HideChats": "Hide chats",
   "HideChatsList": "Chats to manage",
   "HideChatsVisible": "Show while hiding",
+  "HideChatsHideNew": "Hide new chats",
+  "HideChatsHideNewInfo": "Chats and contacts that appear from now on are added to the list, hidden",
   "HideChatsSelectedCount": "%d selected",
   "HideChatsNoneSelected": "None",
   "HideChatsMuteNotifications": "Mute hidden chats",
