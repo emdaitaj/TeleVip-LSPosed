@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,9 +35,18 @@ public final class StructuralResolver {
     private static final Pattern OBFUSCATED = Pattern.compile("[a-z][a-z0-9]{0,3}");
     private static final double MIN_SCORE = 0.75;
     private static final double MIN_MARGIN = 0.05;
+    /** How alike two methods' code lengths have to be before that counts as having found it again. */
+    private static final double SIZE_MATCH = 0.8;
+    private static final double SIZE_MARGIN = 0.1;
+    /** How far the members of a class may slide between releases before we stop following them. */
+    private static final int BAND = 96;
+    /** How many of the members around one have to line up before its own pairing counts. */
+    private static final int SUPPORT = 3;
+    private static final byte NONE = 0, DIAG = 1, UP = 2, LEFT = 3;
 
     private final Map<String, String> classes = new HashMap<>();
-    private final Map<String, String> members = new HashMap<>();
+    private final Map<String, String> fields = new HashMap<>();
+    private final Map<String, String> methods = new HashMap<>();
     private final Map<String, List<String>> params = new HashMap<>();
     private final Map<String, int[]> argOrder = new HashMap<>();
     private int wantedClasses;
@@ -48,8 +58,12 @@ public final class StructuralResolver {
     }
 
     /** Keys are "ClassKey#member", the way the shipped mappings are written. */
-    public Map<String, String> memberMap() {
-        return Collections.unmodifiableMap(members);
+    public Map<String, String> fieldMap() {
+        return Collections.unmodifiableMap(fields);
+    }
+
+    public Map<String, String> methodMap() {
+        return Collections.unmodifiableMap(methods);
     }
 
     /** Parameter types of the methods R8 rewrote, keyed like the members. */
@@ -88,7 +102,7 @@ public final class StructuralResolver {
             StructuralResolver resolver = new StructuralResolver();
             resolver.run(root, index);
             Logger.l("Structural resolver: " + resolver.classes.size() + "/" + resolver.wantedClasses
-                    + " classes and " + resolver.members.size() + " members out of " + index.size()
+                    + " classes and " + (resolver.fields.size() + resolver.methods.size()) + " members out of " + index.size()
                     + " in " + (System.currentTimeMillis() - started) + " ms");
             return resolver;
         } catch (Throwable t) {
@@ -123,7 +137,8 @@ public final class StructuralResolver {
         JSONObject anchors = root.optJSONObject("anchors");
         if (anchors != null) {
             for (String original : unresolved) {
-                String match = byAnchor(anchors.optJSONArray(original), index, shapeCache);
+                String match = byAnchor(anchors.optJSONArray(original), index, shapeCache,
+                        shapes.optJSONObject(original));
                 if (match != null) classes.put(original, match);
             }
         }
@@ -138,8 +153,10 @@ public final class StructuralResolver {
         for (Map.Entry<String, String> entry : classes.entrySet()) {
             Logger.l("resolved class " + entry.getKey() + " -> " + entry.getValue());
         }
-        for (Map.Entry<String, String> entry : members.entrySet()) {
-            Logger.l("resolved member " + entry.getKey() + " -> " + entry.getValue());
+        for (Map<String, String> found : Arrays.asList(fields, methods)) {
+            for (Map.Entry<String, String> entry : found.entrySet()) {
+                Logger.l("resolved member " + entry.getKey() + " -> " + entry.getValue());
+            }
         }
     }
 
@@ -205,7 +222,8 @@ public final class StructuralResolver {
         return have >= want * 0.6 - 3 && have <= want * 1.8 + 5;
     }
 
-    private String byAnchor(JSONArray anchors, DexIndex index, Map<String, Shape> shapeCache) {
+    private String byAnchor(JSONArray anchors, DexIndex index, Map<String, Shape> shapeCache,
+                            JSONObject wanted) {
         if (anchors == null) return null;
         for (int i = 0; i < anchors.length(); i++) {
             JSONObject anchor = anchors.optJSONObject(i);
@@ -216,9 +234,29 @@ public final class StructuralResolver {
             if (shape == null) continue;
             String found = shape.typeAtSlot(anchor.optString("canon"), anchor.optInt("member"),
                     anchor.optInt("count"), anchor.optInt("slot"));
-            if (found != null && index.sizeOf(found) != null) return found;
+            if (found != null && index.sizeOf(found) != null && looksRight(found, wanted, index, shapeCache)) {
+                return found;
+            }
         }
         return null;
+    }
+
+    /**
+     * An anchor names a class by where it is mentioned in another one, so a member that moved can
+     * send it to something else entirely. What it names still has to look like what we are after.
+     */
+    private boolean looksRight(String found, JSONObject wanted, DexIndex index, Map<String, Shape> shapeCache) {
+        if (wanted == null) return true;
+        JSONArray chain = wanted.optJSONArray("chain");
+        if (chain != null && !(chain.optString(0) + "/" + chain.optInt(1)).equals(chainKey(found, index))) {
+            return false;
+        }
+        JSONArray counts = wanted.optJSONArray("counts");
+        if (counts != null && !plausibleSize(index.sizeOf(found), counts.optInt(0), counts.optInt(1))) {
+            return false;
+        }
+        Shape candidate = shapeOf(found, index, shapeCache);
+        return candidate != null && Shape.fromJson(wanted).similarity(candidate) >= MIN_SCORE;
     }
 
     private Shape shapeOf(String name, DexIndex index, Map<String, Shape> cache) {
@@ -240,26 +278,83 @@ public final class StructuralResolver {
             JSONObject wanted = memberShapes.optJSONObject(original);
             if (wanted == null) continue;
             String classKey = original.substring(original.lastIndexOf('.') + 1);
-            put(classKey, wanted.optJSONObject("fields"), shape.fields, false);
-            put(classKey, wanted.optJSONObject("methods"), shape.methods, true);
+            JSONObject order = wanted.optJSONObject("order");
+            JSONArray forms = wanted.optJSONArray("forms");
+            put(classKey, wanted.optJSONObject("fields"), shape.fields, false,
+                    shipped(order, forms, "fields"));
+            put(classKey, wanted.optJSONObject("methods"), shape.methods, true,
+                    shipped(order, forms, "methods"));
         }
     }
 
-    private void put(String classKey, JSONObject wanted, List<Member> have, boolean areMethods) {
+    /** The shape of every member the class had where the shapes were taken, in order. */
+    private static List<String> shipped(JSONObject order, JSONArray forms, String kind) {
+        List<String> out = new ArrayList<>();
+        if (order == null || forms == null) return out;
+        JSONArray indexes = order.optJSONArray(kind);
+        if (indexes == null) return out;
+        for (int i = 0; i < indexes.length(); i++) {
+            int form = indexes.optInt(i, -1);
+            if (form >= 0 && form < forms.length()) out.add(forms.optString(form));
+        }
+        return out;
+    }
+
+    /**
+     * Where the class has changed since the shapes were taken, a member is claimed on two weaker
+     * signals: the length of its code, and where the members either side of what was added or
+     * removed put it. Both have to point at the same member where both have an opinion, and a
+     * member with a shape nothing else in the class shares needs neither.
+     */
+    private static Member otherwise(List<Member> have, JSONArray description, boolean areMethods, int[] pairs) {
+        String canon = description.optString(0);
+        int sameCount = description.optInt(2);
+        int absolute = description.optInt(3);
+        Member sized = areMethods
+                ? Member.byCodeSize(have, canon, description.optInt(8))
+                : null;
+        Member aligned = aligned(have, canon, absolute, pairs);
+        if (sized != null && aligned != null) return sized == aligned ? sized : null;
+        if (sameCount == 1) {
+            Member only = Member.onlyWithShape(have, canon);
+            if (only != null && (sized == null || sized == only)) return only;
+        }
+        return sized != null ? sized : aligned;
+    }
+
+    private static Member aligned(List<Member> have, String canon, int absolute, int[] pairs) {
+        if (absolute < 0 || absolute >= pairs.length) return null;
+        int at = pairs[absolute];
+        if (at < 0 || at >= have.size() || !have.get(at).canon.equals(canon)) return null;
+        // on its own a pairing means little; it counts when the members around it line up too
+        int support = 0;
+        for (int k = Math.max(0, absolute - 3); k < Math.min(pairs.length, absolute + 4); k++) {
+            if (k != absolute && pairs[k] >= 0) support++;
+        }
+        return support >= SUPPORT ? have.get(at) : null;
+    }
+
+    private void put(String classKey, JSONObject wanted, List<Member> have, boolean areMethods,
+                     List<String> was) {
         if (wanted == null) return;
+        int[] pairs = null;
         for (Iterator<String> it = wanted.keys(); it.hasNext(); ) {
             String member = it.next();
             JSONArray description = wanted.optJSONArray(member);
             if (description == null || description.length() < 7) continue;
-            Member found = Member.locate(have, description.optString(0), description.optInt(1),
+            Member found = Member.exactly(have, description.optString(0), description.optInt(1),
                     description.optInt(2), description.optInt(3), description.optInt(4),
                     description.optString(5), description.optString(6));
+            if (found == null) {
+                if (pairs == null) pairs = align(was, have);
+                found = otherwise(have, description, areMethods, pairs);
+            }
             if (found == null) {
                 Logger.w("Structural resolver: could not place " + classKey + "#" + member);
                 continue;
             }
             String key = classKey + "#" + member;
-            members.put(key, found.name);
+            (areMethods ? methods : fields).put(key, found.name);
             if (!areMethods) continue;
             // a hook has to be installed with the parameter list the method really has, which R8 may
             // have shortened or reordered; both are read back out of the descriptor it ended up with
@@ -276,26 +371,29 @@ public final class StructuralResolver {
         final String name;
         final String canon;
         final String raw;
+        final int codeSize;
 
         Member(String name, String canon, String raw) {
+            this(name, canon, raw, 0);
+        }
+
+        Member(String name, String canon, String raw, int codeSize) {
             this.name = name;
             this.canon = canon;
             this.raw = raw;
+            this.codeSize = codeSize;
         }
 
         /**
-         * Three things have to agree before a member is claimed: its position among the members of
-         * the same shape, its position among all of them, and the shapes of the two it sits between.
-         * A member added in one place and removed in another shifts the first two together, and only
-         * the neighbours catch that.
+         * Three things have to agree before a member is claimed this way: its position among the
+         * members of the same shape, its position among all of them, and the shapes of the two it
+         * sits between. A member added in one place and removed in another shifts the first two
+         * together, and only the neighbours catch that.
          */
-        static Member locate(List<Member> members, String canon, int sameIndex, int sameCount,
-                             int absolute, int total, String before, String after) {
+        static Member exactly(List<Member> members, String canon, int sameIndex, int sameCount,
+                              int absolute, int total, String before, String after) {
             if (members.size() != total || absolute < 0 || absolute >= members.size()) return null;
-            List<String> same = new ArrayList<>();
-            for (Member member : members) {
-                if (member.canon.equals(canon)) same.add(member.name);
-            }
+            List<String> same = sameShape(members, canon);
             if (same.size() != sameCount || sameIndex < 0 || sameIndex >= same.size()) return null;
             Member at = members.get(absolute);
             if (!at.canon.equals(canon) || !at.name.equals(same.get(sameIndex))) return null;
@@ -303,6 +401,125 @@ public final class StructuralResolver {
             String haveAfter = absolute + 1 < members.size() ? members.get(absolute + 1).canon : "";
             return haveBefore.equals(before) && haveAfter.equals(after) ? at : null;
         }
+
+        static List<String> sameShape(List<Member> members, String canon) {
+            List<String> same = new ArrayList<>();
+            for (Member member : members) {
+                if (member.canon.equals(canon)) same.add(member.name);
+            }
+            return same;
+        }
+
+        /** The one member of this shape, where the class has exactly one. */
+        static Member onlyWithShape(List<Member> members, String canon) {
+            Member only = null;
+            for (Member member : members) {
+                if (!member.canon.equals(canon)) continue;
+                if (only != null) return null;
+                only = member;
+            }
+            return only;
+        }
+
+        /** The method of this shape whose code is closest in length, where one clearly is. */
+        static Member byCodeSize(List<Member> members, String canon, int wantedSize) {
+            if (wantedSize <= 0) return null;
+            Member best = null;
+            double bestScore = 0, runnerUp = 0;
+            for (Member member : members) {
+                if (!member.canon.equals(canon) || member.codeSize <= 0) continue;
+                double score = (double) Math.min(member.codeSize, wantedSize) / Math.max(member.codeSize, wantedSize);
+                if (score > bestScore) {
+                    runnerUp = bestScore;
+                    bestScore = score;
+                    best = member;
+                } else if (score > runnerUp) {
+                    runnerUp = score;
+                }
+            }
+            return bestScore >= SIZE_MATCH && bestScore - runnerUp >= SIZE_MARGIN ? best : null;
+        }
+    }
+
+    /**
+     * Which member of the installed class each member of the shipped list became, for the ones a
+     * longest common run of shapes pairs up. Members added or removed in between shift the rest
+     * along; this is what follows them, and anything it cannot pair up is left out.
+     */
+    private static int[] align(List<String> was, List<Member> have) {
+        int n = was.size(), m = have.size();
+        int[] pairs = new int[n];
+        Arrays.fill(pairs, -1);
+        // lists this far apart are not the same class a release later, and lining them up would
+        // cost a table as wide as the difference
+        if (n == 0 || m == 0 || Math.abs(n - m) > Math.max(BAND, Math.min(n, m) / 2)) return pairs;
+        int width = Math.max(BAND, Math.abs(n - m) + 16);
+        int span = 2 * width + 1;
+        // the move that got us to each cell, kept so the pairing can be read back off the end
+        byte[] moves = new byte[(n + 1) * span];
+        int[] previous = new int[span];
+        int[] current = new int[span];
+        for (int j = 0; j < span; j++) previous[j] = 0;
+        for (int i = 1; i <= n; i++) {
+            Arrays.fill(current, 0);
+            int lo = Math.max(1, i - width), hi = Math.min(m, i + width);
+            for (int j = lo; j <= hi; j++) {
+                int best = 0;
+                byte move = NONE;
+                int diagonal = cell(previous, j - 1, i - 1, width);
+                if (diagonal >= 0 && was.get(i - 1).equals(have.get(j - 1).canon)) {
+                    best = diagonal + 1;
+                    move = DIAG;
+                }
+                int up = cell(previous, j, i - 1, width);
+                if (up > best) {
+                    best = up;
+                    move = UP;
+                }
+                int left = cell(current, j - 1, i, width);
+                if (left > best) {
+                    best = left;
+                    move = LEFT;
+                }
+                int slot = slot(j, i, width);
+                if (slot < 0) continue;
+                current[slot] = best;
+                moves[i * span + slot] = move;
+            }
+            int[] swap = previous;
+            previous = current;
+            current = swap;
+        }
+        int i = n, j = Math.min(m, n + width);
+        while (j > 0 && slot(j, i, width) < 0) j--;
+        while (i > 0 && j > 0) {
+            int slot = slot(j, i, width);
+            if (slot < 0) break;
+            byte move = moves[i * span + slot];
+            if (move == DIAG) {
+                pairs[i - 1] = j - 1;
+                i--;
+                j--;
+            } else if (move == UP) {
+                i--;
+            } else if (move == LEFT) {
+                j--;
+            } else {
+                break;
+            }
+        }
+        return pairs;
+    }
+
+    private static int slot(int j, int i, int width) {
+        int slot = j - i + width;
+        return slot < 0 || slot >= 2 * width + 1 ? -1 : slot;
+    }
+
+    private static int cell(int[] row, int j, int i, int width) {
+        if (j < 0) return 0;
+        int slot = slot(j, i, width);
+        return slot < 0 ? -1 : row[slot];
     }
 
     private static final class Shape {
@@ -333,7 +550,8 @@ public final class StructuralResolver {
                 String descriptor = raw.methodTypes.get(i);
                 // a static initialiser is in the dex but never in a shipped shape
                 if (name == null || descriptor == null || "<clinit>".equals(name)) continue;
-                shape.methods.add(new Member(name, canonDescriptor(descriptor), descriptor));
+                int size = i < raw.methodSizes.size() ? raw.methodSizes.get(i) : 0;
+                shape.methods.add(new Member(name, canonDescriptor(descriptor), descriptor, size));
             }
             // left in dex order, which is what the shipped positions were recorded in
             for (Member field : shape.fields) count(shape.fieldCounts, field.canon);

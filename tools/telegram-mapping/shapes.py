@@ -185,6 +185,34 @@ def resolve_by_anchor(anchor, dex, resolved_classes, stable):
     return part[1:-1].replace("/", ".") if part.startswith("L") else None
 
 
+def looks_right(found, wanted, dex, stable):
+    """
+    An anchor names a class by where it is mentioned in another one, so a member that moved can send
+    it to something else entirely. What it names still has to look like what we are after.
+    """
+    entry = dex.get(found)
+    if entry is None or wanted is None:
+        return entry is not None
+    chain = wanted.get("chain")
+    if chain and list(super_chain(found, dex, stable)) != list(chain):
+        return False
+    counts = wanted.get("counts")
+    if counts and not plausible_size(entry, counts[0], counts[1]):
+        return False
+    return similarity(wanted, shape_of(entry, stable)) >= 0.75
+
+
+def plausible_size(entry, want_fields, want_methods):
+    have_fields = len(entry["fields"])
+    have_methods = len([1 for n, _ in entry["methods"] if n != "<clinit>"])
+    return within(have_fields, want_fields) and within(have_methods, want_methods)
+
+
+def within(have, want):
+    # a release adds and removes a few members; beyond this it is a different class
+    return want * 0.6 - 3 <= have <= want * 1.8 + 5
+
+
 # ---------------------------------------------------------------- dex side
 
 def load(apk, mapping_path):
@@ -210,6 +238,42 @@ def shapes_for(dex, classes, names):
             continue
         out[orig] = shape_of(entry, stable)
     return out, stable
+
+
+def decide_classes(data, dex, stable, threshold=0.75, margin=0.05):
+    """
+    What the device would make of this build: original class name -> the name it goes by here, or
+    None where nothing fits clearly enough. The rules are the ones StructuralResolver applies.
+    """
+    candidates = {name: with_chain(shape_of(entry, stable), name, dex, stable)
+                  for name, entry in dex.items()}
+    decided = {}
+    for orig, shape in sorted(data["shapes"].items()):
+        chain = shape.get("chain")
+        counts = shape.get("counts")
+        scored = []
+        for name, candidate in candidates.items():
+            if chain and candidate.get("chain") != list(chain):
+                continue
+            if counts and not plausible_size(dex[name], counts[0], counts[1]):
+                continue
+            score = similarity(shape, candidate)
+            if score >= threshold:
+                scored.append((score, name))
+        scored.sort(reverse=True)
+        best = scored[0] if scored else None
+        runner_up = scored[1][0] if len(scored) > 1 else 0.0
+        decided[orig] = best[1] if best and best[0] - runner_up >= margin else None
+    # a class whose shape is shared with others may still be named in one that was matched
+    for orig in list(decided):
+        if decided[orig]:
+            continue
+        for anchor in data.get("anchors", {}).get(orig, []):
+            found = resolve_by_anchor(anchor, dex, decided, stable)
+            if found and looks_right(found, data["shapes"].get(orig), dex, stable):
+                decided[orig] = found
+                break
+    return decided
 
 
 # ---------------------------------------------------------------- commands
@@ -253,62 +317,58 @@ def cmd_emit(args):
 
 def cmd_match(args):
     data = json.load(open(args.shapes, encoding="utf-8"))
-    shapes = data["shapes"]
     dex = g.parse_dex(args.apk)
     truth, _ = (g.parse_mapping(args.mapping) if args.mapping else ({}, None))
-    stable = stable_types(dex, truth) if truth else stable_types(dex, {})
-    candidates = {name: with_chain(shape_of(entry, stable), name, dex, stable)
-                  for name, entry in dex.items()}
+    stable = stable_types(dex, truth or {})
+    decided = decide_classes(data, dex, stable, args.threshold, args.margin)
+    members = {}
+    if args.members:
+        import members as mem
+        for orig, description in data.get("members", {}).items():
+            entry = dex.get(decided.get(orig) or orig)
+            if entry is not None:
+                members[orig] = mem.resolve(entry, stable, description)
 
     expected = {mc.orig: mc.obf for mc in truth.values()} if truth else {}
-    anchors = data.get("anchors", {})
-    decided_all = {}
-    pending = []
-    for orig, shape in sorted(shapes.items()):
-        scored = []
-        chain = shape.get("chain")
-        for name, cand in candidates.items():
-            if chain and cand.get("chain") != chain:
-                continue
-            s = similarity(shape, cand)
-            if s >= args.threshold:
-                scored.append((s, name))
-        scored.sort(reverse=True)
-        best = scored[0] if scored else None
-        runner = scored[1][0] if len(scored) > 1 else 0.0
-        decided = best[1] if best and best[0] - runner >= args.margin else None
-        decided_all[orig] = decided
-        pending.append((orig, decided, best, runner))
-
-    # a class the shapes could not tell apart may still be named in one that they could
-    for orig, decided, _, _ in pending:
-        if decided is not None:
-            continue
-        for anchor in anchors.get(orig, []):
-            found = resolve_by_anchor(anchor, dex, decided_all, stable)
-            if found and found in candidates:
-                decided_all[orig] = found
-                break
-
     right = wrong = unresolved = 0
-    for orig, _, best, runner in pending:
-        decided = decided_all[orig]
-        if expected:
-            want = expected.get(orig)
-            if decided is None:
-                unresolved += 1
-                if args.verbose:
-                    print(f"  unresolved {orig} (best {best[0]:.2f} vs {runner:.2f})" if best else f"  unresolved {orig} (no candidate)")
-            elif decided == want:
-                right += 1
-            else:
-                wrong += 1
-                print(f"  WRONG {orig}: picked {decided} ({best[0]:.2f}), wanted {want}")
+    for orig in sorted(data["shapes"]):
+        found = decided.get(orig)
+        if not expected:
+            print(f"{orig} -> {found}")
+            continue
+        want = expected.get(orig)
+        if found is None:
+            unresolved += 1
+            if args.verbose:
+                print(f"  unresolved {orig}")
+        elif found == want:
+            right += 1
         else:
-            print(f"{orig} -> {decided}")
+            wrong += 1
+            print(f"  WRONG {orig}: picked {found}, wanted {want}")
     if expected:
-        total = right + wrong + unresolved
-        print(f"\nresolved correctly {right}/{total}, wrong {wrong}, unresolved {unresolved}")
+        print("")
+        print(f"classes resolved correctly {right}/{right + wrong + unresolved}, wrong {wrong}, unresolved {unresolved}")
+
+    if not members:
+        return
+    right = wrong = unresolved = 0
+    for orig, found in sorted(members.items()):
+        described = data["members"][orig]
+        for kind in ("fields", "methods"):
+            for member in described[kind]:
+                got = found[kind].get(member)
+                want = mem.truth_for(truth, orig, member, kind) if truth else None
+                if got is None:
+                    unresolved += 1
+                    if args.verbose:
+                        print(f"  unresolved {orig.rsplit('.', 1)[-1]}#{member}")
+                elif want is None or got == want:
+                    right += 1
+                else:
+                    wrong += 1
+                    print(f"  WRONG {orig.rsplit('.', 1)[-1]}#{member}: got {got}, wanted {want}")
+    print(f"members resolved {right}/{right + wrong + unresolved}, wrong {wrong}, unresolved {unresolved}")
 
 
 def main():
@@ -330,6 +390,7 @@ def main():
     m.add_argument("--mapping", help="mapping of the APK, to score the result")
     m.add_argument("--threshold", type=float, default=0.75)
     m.add_argument("--margin", type=float, default=0.05)
+    m.add_argument("--members", action="store_true", help="also locate the members described in the shapes")
     m.add_argument("--verbose", action="store_true")
     m.set_defaults(func=cmd_match)
 

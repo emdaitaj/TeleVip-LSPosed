@@ -181,7 +181,7 @@ def parse_dexdump(text, classes):
         if m:
             name = m.group(1).replace("/", ".")
             # methods stay in dex order; the shapes locate a member by its position in that order
-            cur = {"super": None, "fields": {}, "methods": [], "methodSet": set()}
+            cur = {"super": None, "fields": {}, "methods": [], "methodSet": set(), "sizes": []}
             classes[name] = cur
             section = None
             continue
@@ -212,7 +212,13 @@ def parse_dexdump(text, classes):
             elif section == "m":
                 cur["methods"].append((pending_name, m.group(1)))
                 cur["methodSet"].add((pending_name, m.group(1)))
+                cur["sizes"].append(0)
             pending_name = None
+            continue
+        # how long the method's code is, which tells two methods of the same shape apart
+        m = re.match(r"^\s+insns size\s+: (\d+)", line)
+        if m and cur["sizes"]:
+            cur["sizes"][-1] = int(m.group(1))
 
 
 # ---------------------------------------------------------------- type helpers

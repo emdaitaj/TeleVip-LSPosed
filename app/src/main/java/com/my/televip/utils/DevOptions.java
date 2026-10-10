@@ -30,6 +30,22 @@ public final class DevOptions {
      */
     private static final String FORCE_RESOLVER_MARKER = "/data/local/tmp/televip_force_resolver";
 
+    /**
+     * Opens TeleVip's own settings screen a few seconds after Telegram's activity comes up, which is
+     * the only way to reach it on a build that cannot be signed in to, such as an emulator.
+     *
+     *   adb shell "touch /data/local/tmp/televip_open_settings && chmod 666 /data/local/tmp/televip_open_settings"
+     */
+    private static final String OPEN_SETTINGS_MARKER = "/data/local/tmp/televip_open_settings";
+
+    public static boolean isSettingsAutoOpenRequested() {
+        try {
+            return new File(OPEN_SETTINGS_MARKER).exists();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     public static boolean isResolverForced() {
         try {
             return new File(FORCE_RESOLVER_MARKER).exists();

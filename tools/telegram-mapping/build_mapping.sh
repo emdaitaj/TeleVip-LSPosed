@@ -68,10 +68,27 @@ echo "sdk.dir=$(echo "$SDK" | sed 's/\\/\//g; s/:/\\:/')" > local.properties
 
 ./gradlew --no-daemon "$TASK" -x lint
 
+MAPPING_JSON=$ROOT/app/src/main/assets/clients/$CLIENT/$VERSION_CODE.json
+
 python "$HERE/generate_mapping.py" \
     --mapping "$MAPPING" \
     --apk "$APK" \
     --src "$ROOT/app/src/main/java" \
     --alias "$ROOT/app/src/main/assets/clients/Alias/Nekogram.json" "$ROOT/app/src/main/assets/clients/Alias/Cherrygram.json" \
-    --out "$ROOT/app/src/main/assets/clients/$CLIENT/$VERSION_CODE.json" \
+    --out "$MAPPING_JSON" \
     --version-code "$VERSION_CODE" --version-name "$VERSION_NAME"
+
+# the shapes are what lets the device work the same names out on its own on a build nobody mapped,
+# so they are taken from the newest build that was mapped
+python "$HERE/shapes.py" emit \
+    --apk "$APK" \
+    --mapping "$MAPPING" \
+    --names "$HERE/needed-classes.json" \
+    --members "$MAPPING_JSON" \
+    --version "$VERSION_NAME" \
+    --out "$ROOT/app/src/main/assets/shapes.json"
+
+echo
+echo "how much of itself the shapes find again in the build they came from:"
+python "$HERE/shapes.py" match --apk "$APK" --mapping "$MAPPING" \
+    --shapes "$ROOT/app/src/main/assets/shapes.json" --members

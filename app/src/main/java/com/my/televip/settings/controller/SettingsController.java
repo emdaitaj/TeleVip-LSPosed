@@ -2,6 +2,8 @@ package com.my.televip.settings.controller;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import com.my.televip.Configs.ConfigPreferences;
@@ -63,13 +65,15 @@ public class SettingsController {
     }
 
     public void show(View target) {
-        LaunchActivity launchActivity = new LaunchActivity(Utils.getCurrentActivity());
+        FrameLayout container = new LaunchActivity(Utils.getCurrentActivity()).frameLayout;
+        if (container == null) return;
+
         if (target.getParent() == null) {
-            launchActivity.frameLayout.addView(target);
+            container.addView(target);
         }
 
-        for (int i = 0; i < launchActivity.frameLayout.getChildCount(); i++) {
-            View child = launchActivity.frameLayout.getChildAt(i);
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View child = container.getChildAt(i);
             child.setVisibility(child == target ? View.VISIBLE : View.GONE);
         }
 
@@ -77,16 +81,19 @@ public class SettingsController {
     }
 
     public void hide() {
-        LaunchActivity launchActivity = new LaunchActivity(settingsView.getContext());
-        for (int i = 0; i < launchActivity.frameLayout.getChildCount(); i++) {
-            View child = launchActivity.frameLayout.getChildAt(i);
+        SettingsActivity.isSettings = false;
+        if (settingsView == null) return;
+
+        ViewParent parent = settingsView.getParent();
+        if (!(parent instanceof ViewGroup)) return;
+        ViewGroup container = (ViewGroup) parent;
+
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View child = container.getChildAt(i);
             child.setVisibility(child == settingsView ? View.GONE : View.VISIBLE);
         }
 
-        if (settingsView != null && settingsView.getParent() != null) {
-            launchActivity.frameLayout.removeView(settingsView);
-        }
-        SettingsActivity.isSettings = false;
+        container.removeView(settingsView);
     }
 
     public Context getContext() {

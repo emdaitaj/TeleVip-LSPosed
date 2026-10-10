@@ -85,6 +85,8 @@ public final class DexIndex {
         public final List<String> fieldTypes = new ArrayList<>();
         public final List<String> methodNames = new ArrayList<>();
         public final List<String> methodTypes = new ArrayList<>();
+        /** How long each method's code is, in 16-bit units; zero where it has none. */
+        public final List<Integer> methodSizes = new ArrayList<>();
     }
 
     private static final class Entry {
@@ -185,11 +187,21 @@ public final class DexIndex {
             for (int i = 0; i < count; i++) {
                 index += uleb128(cursor);          // method_idx_diff, restarting per group
                 uleb128(cursor);                   // access flags
-                uleb128(cursor);                   // offset of the code, not needed here
+                int codeOff = uleb128(cursor);
                 int offset = methodIdsOff + index * 8;
                 members.methodTypes.add(protoDescriptor(uint16(offset + 2)));
                 members.methodNames.add(string(int32(offset + 4)));
+                members.methodSizes.add(codeSize(codeOff));
             }
+        }
+
+        /**
+         * The length of a method's code, which is what tells two methods of the same shape apart
+         * from one build to the next. It sits in the code item, past the register counts.
+         */
+        private int codeSize(int codeOff) {
+            if (codeOff <= 0 || codeOff + 16 > data.length) return 0;
+            return int32(codeOff + 12);
         }
 
         private String protoDescriptor(int protoIndex) {

@@ -2,6 +2,7 @@ package com.my.televip.settings.hook;
 
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.my.televip.Class.ClassLoad;
@@ -25,6 +26,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -39,6 +43,25 @@ public class SettingsHook {
             GhostDrawable ghostDrawable = new GhostDrawable();
             Class<?> UItemClass = ClassLoad.getClass(ClassNames.UITEM);
 
+            // Telegram's own handler is where the tap is normally picked up; on a build whose name
+            // for it could not be worked out the row gets a listener of its own instead
+            final boolean clickHooked = HMethod.hookMethod(
+                    SettingsActivityClass,
+                    Obfuscate.getMethodName("SettingsActivity", "onClick"), ArgsResolver.merge("SettingsActivity", "onClick", new Class[]{UItemClass, View.class, int.class, float.class, float.class}, new BaseMethodHook() {
+                        @Override
+                        protected void afterMethod(final MethodHookParam param) {
+                            UItem uItem = new UItem(findArg(param.args, UItemClass));
+                            if (uItem.getUItem() != null) {
+                                if (uItem.getID() == 8353847) {
+                                    settingsController.openView();
+                                }
+                            }
+                        }
+                    })) != null;
+            if (!clickHooked) {
+                Logger.w("Telegram's settings click handler could not be hooked, the row carries its own listener");
+            }
+
             Class<?> settingCellClass = ClassLoad.getClass(ClassNames.SETTINGS_ACTIVITY_SETTING_CELL);
             Class<?>[] setTypes = ArgsResolver.resolveObject("set", new Class[]{int.class, int.class, int.class, CharSequence.class, CharSequence.class, CharSequence.class});
             if (settingCellClass == null || XposedHelpers.findMethodExactIfExists(settingCellClass, Obfuscate.getMethodName("SettingsActivity$SettingCell", "set"), (Object[]) setTypes) != null) {
@@ -46,10 +69,7 @@ public class SettingsHook {
                     @Override
                     protected void afterMethod(MethodHookParam param) {
                         int id = (int) param.args[2];
-                        if (id == 8353847) {
-                            ImageView iconView = (ImageView) XposedHelpers.getObjectField(param.thisObject, Obfuscate.getFieldName("SettingsActivity$SettingCell", "iconView"));
-                            iconView.setImageDrawable(ghostDrawable);
-                        }
+                        dressRow(param.thisObject, id == 8353847, ghostDrawable, clickHooked, settingsController);
                     }
                 }));
             } else {
@@ -59,9 +79,10 @@ public class SettingsHook {
                     protected void afterMethod(MethodHookParam param) {
                         Object item = findArg(param.args, UItemClass);
                         View view = findArg(param.args, settingCellClass);
-                        if (item != null && view != null && new UItem(item).getID() == 8353847) {
-                            ImageView iconView = (ImageView) XposedHelpers.getObjectField(view, Obfuscate.getFieldName("SettingsActivity$SettingCell", "iconView"));
-                            iconView.setImageDrawable(ghostDrawable);
+                        if (view == null) view = findArg(param.args, View.class);
+                        if (item != null && view != null) {
+                            dressRow(view, new UItem(item).getID() == 8353847, ghostDrawable,
+                                    clickHooked, settingsController);
                         }
                     }
                 });
@@ -91,24 +112,71 @@ public class SettingsHook {
                             }
                         }
                     }));
-
-
-            HMethod.hookMethod(
-                    SettingsActivityClass,
-                    Obfuscate.getMethodName("SettingsActivity", "onClick"), ArgsResolver.merge("SettingsActivity", "onClick", new Class[]{UItemClass, View.class, int.class, float.class, float.class}, new BaseMethodHook() {
-                        @Override
-                        protected void afterMethod(final MethodHookParam param) {
-                            UItem uItem = new UItem(findArg(param.args, UItemClass));
-                            if (uItem.getUItem() != null) {
-                                if (uItem.getID() == 8353847) {
-                                    settingsController.openView();
-                                }
-                            }
-                        }
-                    }));
         } catch (Throwable t){
             Logger.e(t);
         }
+    }
+
+    /**
+     * Puts the ghost on TeleVip's own row and, where Telegram's click handler is out of reach, makes
+     * the row open the settings itself: a list leaves a row that handles its own taps alone. Cells
+     * are reused for other rows, so the one taken over has to be handed back when that happens.
+     */
+    private static void dressRow(Object cell, boolean ours, GhostDrawable ghost, boolean clickHooked,
+                                 SettingsController settingsController) {
+        if (!(cell instanceof View)) return;
+        View view = (View) cell;
+        if (!ours) {
+            handBack(view);
+            return;
+        }
+        ImageView iconView = iconOf(cell);
+        if (iconView != null) {
+            iconView.setImageDrawable(ghost);
+        } else {
+            Logger.w("Cannot find the icon of TeleVip's settings row, leaving it blank");
+        }
+        if (!clickHooked) takeOverClicks(view, settingsController);
+    }
+
+    /** Cells TeleVip made clickable itself, with how clickable they were before. */
+    private static final Map<View, Boolean> takenOver =
+            Collections.synchronizedMap(new WeakHashMap<View, Boolean>());
+
+    private static void takeOverClicks(View cell, SettingsController settingsController) {
+        if (takenOver.containsKey(cell)) return;
+        takenOver.put(cell, cell.isClickable());
+        cell.setOnClickListener(v -> settingsController.openView());
+    }
+
+    private static void handBack(View cell) {
+        Boolean wasClickable = takenOver.remove(cell);
+        if (wasClickable == null) return;
+        cell.setOnClickListener(null);
+        cell.setClickable(wasClickable);   // setOnClickListener made it clickable, whatever it was
+    }
+
+    /** The cell's icon, by name where the mapping has it and by what it is otherwise. */
+    private static ImageView iconOf(Object cell) {
+        try {
+            Object named = XposedHelpers.getObjectField(cell, Obfuscate.getFieldName("SettingsActivity$SettingCell", "iconView"));
+            if (named instanceof ImageView) return (ImageView) named;
+        } catch (Throwable ignored) {
+            // an obfuscated build whose field name could not be worked out, the search below serves
+        }
+        return firstImageView(cell instanceof View ? (View) cell : null);
+    }
+
+    private static ImageView firstImageView(View view) {
+        if (view instanceof ImageView) return (ImageView) view;
+        if (view instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                ImageView found = firstImageView(group.getChildAt(i));
+                if (found != null) return found;
+            }
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")

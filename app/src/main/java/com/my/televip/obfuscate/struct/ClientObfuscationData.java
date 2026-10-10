@@ -19,16 +19,15 @@ public class ClientObfuscationData {
 
     /**
      * Data for names worked out on the device rather than shipped: {@code classes} maps original
-     * class names, {@code members} maps "ClassKey#member" for both fields and methods.
+     * class names, {@code fields} and {@code methods} map "ClassKey#member".
      */
-    public static ClientObfuscationData fromResolved(Map<String, String> classes, Map<String, String> members,
-                                                    Map<String, String[]> params, Map<String, int[]> argOrder) {
+    public static ClientObfuscationData fromResolved(Map<String, String> classes, Map<String, String> fields,
+                                                    Map<String, String> methods, Map<String, String[]> params,
+                                                    Map<String, int[]> argOrder) {
         ClientObfuscationData data = new ClientObfuscationData();
         data.classMap.putAll(classes);
-        for (Map.Entry<String, String> entry : members.entrySet()) {
-            data.fieldMap.put(entry.getKey(), entry.getValue());
-            data.methodMap.put(entry.getKey(), entry.getValue());
-        }
+        data.fieldMap.putAll(fields);
+        data.methodMap.putAll(methods);
         if (params != null) data.paramsMap.putAll(params);
         if (argOrder != null) data.argOrderMap.putAll(argOrder);
         return data;

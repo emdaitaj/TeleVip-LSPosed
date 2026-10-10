@@ -29,7 +29,8 @@ import java.util.Map;
  */
 public final class RuntimeMapping {
 
-    private static final String CACHE_NAME = "televip-names-";
+    // the file keeps what was worked out for one build; the number goes up when its shape changes
+    private static final String CACHE_NAME = "televip-names-2-";
 
     private RuntimeMapping() {}
 
@@ -46,12 +47,13 @@ public final class RuntimeMapping {
             StructuralResolver resolver = StructuralResolver.resolve(Utils.apkPath);
             if (resolver == null || resolver.classMap().isEmpty()) return null;
             Map<String, String> classes = resolver.classMap();
-            Map<String, String> members = resolver.memberMap();
+            Map<String, String> fields = resolver.fieldMap();
+            Map<String, String> methods = resolver.methodMap();
             Map<String, String[]> params = toArrays(resolver.paramMap());
             ObfuscationManager.setResolvedCompletely(resolver.isComplete());
             ObfuscationManager.setRuntimeResolved(true);
-            store(cache, classes, members, params, resolver.argOrderMap(), resolver.isComplete());
-            return ClientObfuscationData.fromResolved(classes, members, params, resolver.argOrderMap());
+            store(cache, classes, fields, methods, params, resolver.argOrderMap(), resolver.isComplete());
+            return ClientObfuscationData.fromResolved(classes, fields, methods, params, resolver.argOrderMap());
         } catch (Throwable t) {
             Logger.e(t);
             return null;
@@ -69,12 +71,13 @@ public final class RuntimeMapping {
             JSONObject root = new JSONObject(new String(readAll(in), StandardCharsets.UTF_8));
             Map<String, String> classes = read(root.optJSONObject("classes"));
             if (classes.isEmpty()) return null;
-            Map<String, String> members = read(root.optJSONObject("members"));
+            Map<String, String> fields = read(root.optJSONObject("fields"));
+            Map<String, String> methods = read(root.optJSONObject("methods"));
             ObfuscationManager.setResolvedCompletely(root.optBoolean("complete"));
             ObfuscationManager.setRuntimeResolved(true);
             Logger.l("Using names worked out earlier for versionCode " + Utils.versionCode
-                    + " (" + classes.size() + " classes, " + members.size() + " members)");
-            return ClientObfuscationData.fromResolved(classes, members,
+                    + " (" + classes.size() + " classes, " + (fields.size() + methods.size()) + " members)");
+            return ClientObfuscationData.fromResolved(classes, fields, methods,
                     readArrays(root.optJSONObject("params")), readOrders(root.optJSONObject("argOrder")));
         } catch (Throwable t) {
             Logger.e(t);
@@ -118,14 +121,16 @@ public final class RuntimeMapping {
         return out;
     }
 
-    private static void store(File file, Map<String, String> classes, Map<String, String> members,
-                              Map<String, String[]> params, Map<String, int[]> argOrder, boolean complete) {
+    private static void store(File file, Map<String, String> classes, Map<String, String> fields,
+                              Map<String, String> methods, Map<String, String[]> params,
+                              Map<String, int[]> argOrder, boolean complete) {
         try {
             File dir = file.getParentFile();
             if (dir != null && !dir.isDirectory() && !dir.mkdirs()) return;
             JSONObject root = new JSONObject();
             root.put("classes", new JSONObject(classes));
-            root.put("members", new JSONObject(members));
+            root.put("fields", new JSONObject(fields));
+            root.put("methods", new JSONObject(methods));
             root.put("params", new JSONObject(params));
             root.put("argOrder", new JSONObject(argOrder));
             root.put("complete", complete);

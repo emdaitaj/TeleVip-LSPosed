@@ -7,19 +7,22 @@ import com.my.televip.obfuscate.Obfuscate;
 
 import java.lang.reflect.Method;
 
+import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class HMethod {
 
-    public static void hookMethod(Class<?> cls, String name, Object... args) {
+    /** The installed hook, or null when the method is not there under that name. */
+    public static XC_MethodHook.Unhook hookMethod(Class<?> cls, String name, Object... args) {
         try {
             if (cls != null) {
-                XposedHelpers.findAndHookMethod(cls, name, args);
+                return XposedHelpers.findAndHookMethod(cls, name, args);
             }
         } catch (Throwable t) {
             Logger.e(t);
         }
+        return null;
     }
 
     public static void hookMethod(Class<?> cls, String className, String[] names, Object... args) {
