@@ -110,7 +110,7 @@
   "HideChatsList": "چت‌های قابل مدیریت",
   "HideChatsVisible": "نمایش هنگام مخفی‌سازی",
   "HideChatsHideNew": "مخفی کردن چت‌های جدید",
-  "HideChatsHideNewInfo": "چت‌ها و مخاطبینی که از این پس ظاهر می‌شوند به فهرست اضافه و مخفی می‌شوند",
+  "HideChatsHideNewInfo": "تا وقتی مخفی‌سازی روشن است، چت‌ها و مخاطبینی که از آن پس ظاهر می‌شوند به فهرست اضافه و مخفی می‌شوند",
   "HideChatsSelectedCount": "%d انتخاب شده",
   "HideChatsNoneSelected": "هیچکدوم",
   "HideChatsMuteNotifications": "بی‌صدا کردن چت‌های مخفی",

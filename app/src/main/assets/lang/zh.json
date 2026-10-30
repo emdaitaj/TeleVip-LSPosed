@@ -110,7 +110,7 @@
   "HideChatsList": "纳入管理的聊天",
   "HideChatsVisible": "隐藏时仍显示",
   "HideChatsHideNew": "隐藏新聊天",
-  "HideChatsHideNewInfo": "今后出现的聊天和联系人将被加入列表并隐藏",
+  "HideChatsHideNewInfo": "隐藏开启期间，此后出现的聊天和联系人将被加入列表并隐藏",
   "HideChatsSelectedCount": "已选择 %d 个",
   "HideChatsNoneSelected": "无",
   "HideChatsMuteNotifications": "静音隐藏的聊天",

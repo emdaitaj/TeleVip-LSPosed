@@ -122,6 +122,9 @@ public class HideChats {
             try {
                 if (!HideChatsConfig.load()) return;
                 if (HideChatsConfig.isEnabled()) {
+                    // "hide new chats" takes effect now: what exists at this point is not new. A
+                    // snapshot kept from before (startup with hiding on) is left as it is.
+                    if (HideChatsConfig.isHideNewChats()) forEachAccount(HideChatsConfig::captureKnown);
                     installHooks();
                     forEachAccount(DialogsHooks::filterNow);
                 }
@@ -133,19 +136,15 @@ public class HideChats {
     }
 
     /**
-     * Runnable of the "hide new chats" switch. Takes the snapshot the option needs when it goes on,
-     * and forgets it when it goes off.
+     * Runnable of the "hide new chats" switch. Takes the snapshot the option needs when it takes
+     * effect; load() forgets it whenever the option is not in effect.
      */
     public static void onHideNewChatsToggled() {
         if (!isSupported()) return;
         runOnUiThread(() -> {
             try {
                 if (!HideChatsConfig.load()) return;
-                if (HideChatsConfig.isHideNewChats()) {
-                    forEachAccount(HideChatsConfig::captureKnown);
-                } else {
-                    HideChatsConfig.clearKnown();
-                }
+                if (HideChatsConfig.isHideNewChats()) forEachAccount(HideChatsConfig::captureKnown);
                 scheduleRefreshAll();
             } catch (Throwable t) {
                 Logger.e(t);

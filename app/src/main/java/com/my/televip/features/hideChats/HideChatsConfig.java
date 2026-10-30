@@ -55,6 +55,8 @@ public class HideChatsConfig {
         // true while the snapshot is still being read from the database: classify nothing until then
         volatile boolean knownPending;
         volatile boolean hasKnown;
+        // bumped on every capture and clear, so a database read that finishes late is dropped
+        volatile int knownGeneration;
         // managed minus visible, cached because the hot paths ask for it on every dialog
         private volatile Set<Long> hidden = Collections.emptySet();
 
@@ -171,10 +173,17 @@ public class HideChatsConfig {
         enabled = ConfigPreferences.getBoolean(Keys.HideChats);
         muteNotifications = ConfigPreferences.getBoolean(Keys.HideChatsMuteNotifications, true);
         hideNewChats = ConfigPreferences.getBoolean(Keys.HideChatsHideNew);
+        // the snapshot only means something while the option is in effect: one kept from a time
+        // hiding was off would count every chat that arrived meanwhile as new, and hide it
+        if (!isHideNewChats()) clearKnown();
     }
 
+    /**
+     * "Hide new chats" is on and in effect, which needs hiding itself to be on: a chat that appears
+     * while hiding is off is not new to the option, it is simply there when hiding goes on again.
+     */
     public static boolean isHideNewChats() {
-        return hideNewChats;
+        return hideNewChats && isEnabled();
     }
 
     public static boolean isLoaded() {
@@ -244,11 +253,11 @@ public class HideChatsConfig {
     }
 
     /**
-     * A chat seen in a list. While "hide new chats" is on, anything that was not there when the
-     * option was switched on joins the managed list, hidden, where the user can see and untick it.
+     * A chat seen in a list. While "hide new chats" is in effect, anything that was not there when
+     * it took effect joins the managed list, hidden, where the user can see and untick it.
      */
     static synchronized void observeDialog(int account, long key) {
-        if (!hideNewChats || key == 0 || preferences == null) return;
+        if (!isHideNewChats() || key == 0) return;
         AccountData data = getOrCreate(TgAccess.getClientUserId(account));
         if (data == null || data.knownPending || !data.hasKnown) return;
         if (!data.known.add(key)) return;
@@ -263,12 +272,16 @@ public class HideChatsConfig {
 
     /**
      * Snapshot of everything the account has right now, so later chats can be told apart. Taken when
-     * "hide new chats" is switched on, and for an account that logs in afterwards. UI thread only.
+     * "hide new chats" takes effect (it or hiding is switched on), and for an account that logs in
+     * afterwards. UI thread only.
      */
     static void captureKnown(int account) {
+        // a capture posted just before hiding went off would otherwise outlive the clear
+        if (!isHideNewChats()) return;
         AccountData data = getOrCreate(TgAccess.getClientUserId(account));
         if (data == null || data.hasKnown || data.knownPending) return;
         data.knownPending = true;
+        int generation = ++data.knownGeneration;
         Object messagesController = TgAccess.getMessagesController(account);
         data.known.add(data.userId);
         ArrayList<Object> dialogs = TgAccess.getAllDialogs(messagesController);
@@ -286,13 +299,13 @@ public class HideChatsConfig {
                 if (contactId != 0) data.known.add(contactId);
             }
         }
-        loadKnownFromDatabase(account, data);
+        loadKnownFromDatabase(account, data, generation);
     }
 
     /**
      * Chats that are only in the local database yet existed all along.
      */
-    private static void loadKnownFromDatabase(int account, AccountData data) {
+    private static void loadKnownFromDatabase(int account, AccountData data, int generation) {
         Object storage = TgAccess.getMessagesStorage(account);
         if (storage == null) {
             finishKnown(data);
@@ -310,6 +323,8 @@ public class HideChatsConfig {
                     Logger.e(t);
                 }
                 handler.post(() -> {
+                    // cleared (or cleared and taken again) while the database was read
+                    if (data.knownGeneration != generation) return;
                     data.known.addAll(keys);
                     finishKnown(data);
                     HideChats.refreshAccount(account);
@@ -340,21 +355,24 @@ public class HideChatsConfig {
     }
 
     /**
-     * "Hide new chats" was switched off: stop telling new chats apart, and forget the snapshot so
-     * switching it on again starts from what exists then.
+     * "Hide new chats" is no longer in effect (it or hiding was switched off): stop telling new chats
+     * apart, and forget the snapshot so the next time it takes effect it starts from what exists then.
      */
     static void clearKnown() {
         if (preferences == null) return;
-        SharedPreferences.Editor editor = preferences.edit();
+        // chats the option already added stay on the list: write them out before the snapshot goes
+        flush();
+        SharedPreferences.Editor editor = null;
         for (AccountData data : accounts.values()) {
+            data.knownGeneration++;
+            if (!data.hasKnown && !data.knownPending) continue;
             data.known.clear();
             data.hasKnown = false;
             data.knownPending = false;
+            if (editor == null) editor = preferences.edit();
             editor.remove(KEY_KNOWN + data.userId);
         }
-        dirtyAccounts.clear();
-        handler.removeCallbacks(flushRunnable);
-        editor.apply();
+        if (editor != null) editor.apply();
     }
 
     private static void markDirty(AccountData data) {
