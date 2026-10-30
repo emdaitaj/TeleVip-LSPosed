@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
-=======
 # Gradle files
 .gradle/
 build/
@@ -24,6 +7,7 @@ local.properties
 
 # Log/OS Files
 *.log
+.DS_Store
 
 # Android Studio generated files and folders
 captures/
@@ -39,14 +23,13 @@ misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
 
-# Keystore files
+# Signing: never commit these
 *.jks
 *.keystore
+/keystore.properties
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
 
 # Android Profiling
 *.hprof
->>>>>>> e9865a95eb7ed2d3a6e3c0283d94db23f9eefe06
-/keystore.properties
