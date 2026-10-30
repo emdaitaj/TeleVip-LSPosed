@@ -142,14 +142,14 @@
   "HideChatsPickerHintManaged": "选择允许此功能隐藏的聊天。其余聊天始终显示。",
   "HideChatsPickerHintVisible": "选择隐藏期间仍然显示的已管理聊天，其余将被隐藏。",
   "HideChatsHideSettings": "隐藏这些设置",
-  "HideChatsHideSettingsInfo": "在聊天搜索中输入你的密码即可重新显示",
+  "HideChatsHideSettingsInfo": "在这些设置顶部的搜索框中输入你的密码即可重新显示",
   "HideChatsHideSettingsConfirm": "隐藏",
-  "HideChatsHideSettingsFailed": "此 Telegram 版本无法隐藏这些设置，聊天搜索无法挂钩。",
-  "HideChatsSettingsHidden": "隐藏聊天设置已隐藏。在聊天搜索中输入你的密码即可重新显示。",
+  "HideChatsSettingsHidden": "隐藏聊天设置已隐藏。在上方搜索框中输入你的密码即可重新显示。",
   "HideChatsSecretCode": "密码",
   "HideChatsSecretCodeRepeat": "再次输入密码",
-  "HideChatsSecretCodeMessage": "隐藏聊天部分将从这些设置中消失。要重新显示，请在 Telegram 的聊天搜索中输入该密码。至少 %d 个字符，不区分大小写。",
+  "HideChatsSecretCodeMessage": "隐藏聊天部分将从这些设置中消失。要重新显示，请在 TeleVip 设置顶部的搜索框中输入该密码。至少 %d 个字符，不区分大小写。",
   "HideChatsSecretCodeTooShort": "密码至少需要 %d 个字符。",
   "HideChatsSecretCodeMismatch": "两次输入的密码不一致。",
-  "HideChatsHideSettingsSaveFailed": "无法保存该设置，请重试。"
+  "HideChatsHideSettingsSaveFailed": "无法保存该设置，请重试。",
+  "SearchSettings": "搜索设置"
 }

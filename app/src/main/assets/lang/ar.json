@@ -142,14 +142,14 @@
   "HideChatsPickerHintManaged": "اختر الدردشات التي يُسمح لهذه الميزة بإخفائها. كل دردشة أخرى تبقى ظاهرة دائماً.",
   "HideChatsPickerHintVisible": "اختر أي من الدردشات المدارة تبقى ظاهرة أثناء الإخفاء، والباقي يُخفى.",
   "HideChatsHideSettings": "إخفاء هذه الإعدادات",
-  "HideChatsHideSettingsInfo": "اكتب رمزك السري في بحث الدردشات لإظهارها مرة أخرى",
+  "HideChatsHideSettingsInfo": "اكتب رمزك السري في مربع البحث أعلى هذه الإعدادات لإظهارها مرة أخرى",
   "HideChatsHideSettingsConfirm": "إخفاء",
-  "HideChatsHideSettingsFailed": "لا يمكن إخفاء هذه الإعدادات في إصدار تيليجرام هذا، تعذّر ربط بحث الدردشات.",
-  "HideChatsSettingsHidden": "تم إخفاء إعدادات إخفاء الدردشات. اكتب رمزك في بحث الدردشات لإظهارها مرة أخرى.",
+  "HideChatsSettingsHidden": "تم إخفاء إعدادات إخفاء الدردشات. اكتب رمزك في مربع البحث بالأعلى لإظهارها مرة أخرى.",
   "HideChatsSecretCode": "الرمز السري",
   "HideChatsSecretCodeRepeat": "أعد كتابة الرمز",
-  "HideChatsSecretCodeMessage": "سيختفي قسم إخفاء الدردشات من هذه الإعدادات. لإظهاره مرة أخرى اكتب الرمز في بحث الدردشات في تيليجرام. %d أحرف على الأقل، ولا فرق بين الأحرف الكبيرة والصغيرة.",
+  "HideChatsSecretCodeMessage": "سيختفي قسم إخفاء الدردشات من هذه الإعدادات. لإظهاره مرة أخرى اكتب الرمز في مربع البحث أعلى إعدادات TeleVip. %d أحرف على الأقل، ولا فرق بين الأحرف الكبيرة والصغيرة.",
   "HideChatsSecretCodeTooShort": "يجب أن يتكون الرمز من %d أحرف على الأقل.",
   "HideChatsSecretCodeMismatch": "الرمزان غير متطابقين.",
-  "HideChatsHideSettingsSaveFailed": "تعذّر حفظ الإعداد، حاول مرة أخرى."
+  "HideChatsHideSettingsSaveFailed": "تعذّر حفظ الإعداد، حاول مرة أخرى.",
+  "SearchSettings": "البحث في الإعدادات"
 }

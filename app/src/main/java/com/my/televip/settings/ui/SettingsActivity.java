@@ -1,17 +1,30 @@
 package com.my.televip.settings.ui;
 
 
+import static com.my.televip.application.AndroidUtilities.dp;
+
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.my.televip.Class.ClassLoad;
 import com.my.televip.Class.ClassNames;
+import com.my.televip.Configs.ConfigManager;
 import com.my.televip.Drawable.ArrowDrawable;
 import com.my.televip.base.BaseMethodHook;
 import com.my.televip.dex.DexInjector;
+import com.my.televip.features.hideChats.HiddenSettings;
 import com.my.televip.features.hideChats.ui.ChatPicker;
 import com.my.televip.hooks.HMethod;
 import com.my.televip.language.Keys;
@@ -22,6 +35,7 @@ import com.my.televip.settings.adapter.ListAdapter;
 import com.my.televip.settings.controller.SettingsController;
 import com.my.televip.ui.ThemeColors;
 import com.my.televip.ui.toolBar.MainToolBar;
+import com.my.televip.virtuals.ActionBar.Theme;
 import com.my.televip.virtuals.TeleVip.Bridge.Bridge;
 import com.my.televip.virtuals.ui.Components.RecyclerListView;
 
@@ -55,6 +69,7 @@ public class SettingsActivity {
             toolbar.getImage().setOnClickListener(v -> settingsController.hide());
 
             layout.addView(toolbar);
+            layout.addView(createSearchField(), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             listView = new RecyclerListView(context);
             if (DexInjector.classLoader != null) {
@@ -87,6 +102,56 @@ public class SettingsActivity {
         }
 
         return layout;
+    }
+
+    /**
+     * Filters the rows by name. It is also where the hidden Hide Chats section is unlocked: the field
+     * is TeleVip's own, so what is typed never reaches Telegram's search or its servers.
+     */
+    private View createSearchField() {
+        ConfigManager.setFilter("");
+        LinearLayout container = new LinearLayout(context);
+        container.setBackgroundColor(ThemeColors.getToolBarColor());
+        container.setPadding(dp(14), dp(4), dp(14), dp(10));
+        EditText field = new EditText(context);
+        field.setSingleLine(true);
+        field.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        field.setImeOptions(EditorInfo.IME_ACTION_SEARCH | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        field.setHint(Translator.get(Keys.SearchSettings));
+        field.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        field.setTextColor(ThemeColors.getTextColor());
+        field.setHintTextColor(ThemeColors.getTextGrayColor());
+        field.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+        field.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(dp(20));
+        background.setColor(Theme.isLight() ? 0xFFF0F2F5 : 0xFF17212B);
+        field.setBackground(background);
+        field.setPadding(dp(16), dp(9), dp(16), dp(9));
+        field.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (HiddenSettings.onSearchText(s.toString())) {
+                    // the code is not left on screen; the emptied field lists every row again
+                    s.clear();
+                    return;
+                }
+                ConfigManager.setFilter(s.toString());
+                try {
+                    if (listView != null) listView.getAdapter().notifyDataSetChanged();
+                } catch (Throwable t) {
+                    Logger.e(t);
+                }
+            }
+        });
+        container.addView(field, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        return container;
     }
 
     public SettingsActivity(Context context) {

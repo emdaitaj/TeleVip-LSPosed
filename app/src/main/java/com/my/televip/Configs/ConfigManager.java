@@ -46,6 +46,8 @@ public class ConfigManager {
     // the Hide Chats section's rows in items, [start, end)
     private static int hideChatsStart = -1;
     private static int hideChatsEnd = -1;
+    // what the settings search holds, lower-cased; empty lists everything
+    private static String filter = "";
 
 
     // GhostMode
@@ -261,7 +263,7 @@ public class ConfigManager {
             hideChatsMuteNotifications = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsMuteNotifications, Translator.get(Keys.HideChatsMuteNotificationsInfo), ConfigPreferences.getBoolean(Keys.HideChatsMuteNotifications, true), HideChats::onSettingsChanged);
             items.add(hideChatsMuteNotifications);
 
-            hideChatsHideSettings = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsHideSettings, Translator.get(Keys.HideChatsHideSettingsInfo), HiddenSettings.isHidden(), HiddenSettings::install);
+            hideChatsHideSettings = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsHideSettings, Translator.get(Keys.HideChatsHideSettingsInfo), HiddenSettings.isHidden(), null);
             items.add(hideChatsHideSettings);
 
             hideChatsInfo = new ConfigItem(ConfigItem.INFO, Keys.HideChatsInfo);
@@ -312,15 +314,42 @@ public class ConfigManager {
         return shownItems;
     }
 
+    public static void setFilter(String query) {
+        filter = query == null ? "" : query.trim().toLowerCase();
+        updateShownItems();
+    }
+
     /**
-     * Recomputes the rows of the settings screen after the Hide Chats section was hidden or shown.
+     * Recomputes the rows of the settings screen after the search changed or the Hide Chats section
+     * was hidden or shown. A hidden section is left out before searching, so no search finds it.
      */
     public static void updateShownItems() {
         shownItems.clear();
         boolean hideSection = hideChatsStart >= 0 && !HiddenSettings.isSectionShown();
         for (int i = 0; i < items.size(); i++) {
             if (hideSection && i >= hideChatsStart && i < hideChatsEnd) continue;
-            shownItems.add(items.get(i));
+            ConfigItem item = items.get(i);
+            if (!filter.isEmpty() && !matchesFilter(item)) continue;
+            shownItems.add(item);
+        }
+    }
+
+    /**
+     * While searching only the rows that can be tapped are listed, found by their name.
+     */
+    private static boolean matchesFilter(ConfigItem item) {
+        switch (item.getType()) {
+            case ConfigItem.SWITCH:
+            case ConfigItem.TEXT:
+                return Translator.get(item.getKey()).toLowerCase().contains(filter);
+            case ConfigItem.EXPANDABLE_SWITCH:
+                if (Translator.get(item.getKey()).toLowerCase().contains(filter)) return true;
+                for (ConfigItem child : item.getChildren()) {
+                    if (matchesFilter(child)) return true;
+                }
+                return false;
+            default:
+                return false;
         }
     }
 
