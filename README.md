@@ -55,6 +55,8 @@ Hidden chats disappear from every folder, the archive, contacts, search (recent 
 
 Extra options: **Hide new chats** (chats and contacts that appear from now on join the list, hidden) and **Mute hidden chats** (no notifications or badge counts). The chat picker handles any number of chats, with search, "Select all" and a "Selected only" view.
 
+**Hide these settings** takes the whole Hide Chats section out of TeleVip's settings behind a secret code you choose (at least 4 characters, letter case does not matter). To get it back, type the code into Telegram's chat search: the search field is cleared and TeleVip's settings open with the section shown. It locks again when the settings screen closes or Telegram goes to the background, and while it is unlocked the screen is kept out of screenshots and the recents thumbnail. The switch and the code (only a salted hash of it) are written to disk immediately, so the section stays hidden after the app is killed or the phone restarts. The server search request for the full code is dropped, so the code itself never reaches Telegram's servers. Typed slowly, the shorter beginnings of it are still searched like any other text.
+
 ## What this fork changes
 
 - **Obfuscated Telegram builds.** Since 12.10.2 the official releases run R8 with obfuscation, so everything outside `org.telegram.messenger.*` and `org.telegram.tgnet.**` is renamed on every release. Upstream's hooks stop finding their targets. This fork loads a per-build name mapping (`app/src/main/assets/clients/<Client>/<versionCode>.json`), resolves overloads and rewritten parameter lists, and hooks the shapes that survive obfuscation. Builds without a mapping file keep the original names, so older, unobfuscated Telegram versions are unaffected.

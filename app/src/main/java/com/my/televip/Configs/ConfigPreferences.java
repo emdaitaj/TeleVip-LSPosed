@@ -39,6 +39,15 @@ public class ConfigPreferences {
             sharedPreferences.edit().remove(key).apply();
         }
     }
+    // settings switches: on disk before the call returns, so a process killed right after keeps them
+    public static void commitBoolean(String key, boolean b) {
+        try {
+            sharedPreferences.edit().putBoolean(key, b).commit();
+        } catch (ClassCastException e) {
+            sharedPreferences.edit().remove(key).apply();
+        }
+    }
+
     public static int getInt(String key) {
         try {
             return sharedPreferences.getInt(key, 0);
@@ -72,6 +81,11 @@ public class ConfigPreferences {
         } catch (ClassCastException e) {
             sharedPreferences.edit().remove(key).apply();
         }
+    }
+
+    // for values that must be on disk before the process can die, the caller commit()s the editor
+    public static SharedPreferences.Editor edit() {
+        return sharedPreferences.edit();
     }
 
     public static void remove(String key){

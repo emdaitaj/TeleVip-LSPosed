@@ -27,6 +27,7 @@ import com.my.televip.features.otherFeatures.AlwaysSaveMedia;
 import com.my.televip.features.otherFeatures.CopyNameHook;
 import com.my.televip.features.otherFeatures.EditOnlineTextView;
 import com.my.televip.features.otherFeatures.FeatureInitializer;
+import com.my.televip.features.hideChats.HiddenSettings;
 import com.my.televip.features.hideChats.HideChats;
 import com.my.televip.language.Keys;
 import com.my.televip.language.Translator;
@@ -40,6 +41,11 @@ public class ConfigManager {
     
 
     private static final List<ConfigItem> items = new ArrayList<>();
+    // what the settings screen lists: items without the Hide Chats section while it is hidden
+    private static final List<ConfigItem> shownItems = new ArrayList<>();
+    // the Hide Chats section's rows in items, [start, end)
+    private static int hideChatsStart = -1;
+    private static int hideChatsEnd = -1;
 
 
     // GhostMode
@@ -93,6 +99,7 @@ public class ConfigManager {
     public static ConfigItem hideChatsVisible;
     public static ConfigItem hideChatsHideNew;
     public static ConfigItem hideChatsMuteNotifications;
+    public static ConfigItem hideChatsHideSettings;
     public static ConfigItem hideChatsInfo;
 
     // Other Features
@@ -114,6 +121,8 @@ public class ConfigManager {
 
     public static void load() {
         items.clear();
+        hideChatsStart = -1;
+        hideChatsEnd = -1;
 
         // GhostMode
         ghostModeSettings = new ConfigItem(ConfigItem.HEADER, Keys.GhostModeSettings);
@@ -233,6 +242,7 @@ public class ConfigManager {
 
         // Hide Chats
         if (HideChats.isSupported()) {
+            hideChatsStart = items.size();
             hideChatsSettings = new ConfigItem(ConfigItem.HEADER, Keys.HideChatsSettings);
             items.add(hideChatsSettings);
 
@@ -251,10 +261,14 @@ public class ConfigManager {
             hideChatsMuteNotifications = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsMuteNotifications, Translator.get(Keys.HideChatsMuteNotificationsInfo), ConfigPreferences.getBoolean(Keys.HideChatsMuteNotifications, true), HideChats::onSettingsChanged);
             items.add(hideChatsMuteNotifications);
 
+            hideChatsHideSettings = new ConfigItem(ConfigItem.SWITCH, Keys.HideChatsHideSettings, Translator.get(Keys.HideChatsHideSettingsInfo), HiddenSettings.isHidden(), HiddenSettings::install);
+            items.add(hideChatsHideSettings);
+
             hideChatsInfo = new ConfigItem(ConfigItem.INFO, Keys.HideChatsInfo);
             items.add(hideChatsInfo);
 
             items.add(shadows);
+            hideChatsEnd = items.size();
         }
 
         // Other Features
@@ -288,12 +302,26 @@ public class ConfigManager {
 
         items.add(shadows);
 
+        // every switch runs at startup, including the ones of a hidden section
         readFeature();
+        updateShownItems();
 
     }
 
     public static List<ConfigItem> getItems() {
-        return items;
+        return shownItems;
+    }
+
+    /**
+     * Recomputes the rows of the settings screen after the Hide Chats section was hidden or shown.
+     */
+    public static void updateShownItems() {
+        shownItems.clear();
+        boolean hideSection = hideChatsStart >= 0 && !HiddenSettings.isSectionShown();
+        for (int i = 0; i < items.size(); i++) {
+            if (hideSection && i >= hideChatsStart && i < hideChatsEnd) continue;
+            shownItems.add(items.get(i));
+        }
     }
 
     public static void readFeature() {

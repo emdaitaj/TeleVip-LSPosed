@@ -140,4 +140,15 @@ public class Keys {
     public static final String HideChatsTypeChannel = "HideChatsTypeChannel";
     public static final String HideChatsTypeSecret = "HideChatsTypeSecret";
     public static final String HideChatsTypeArchived = "HideChatsTypeArchived";
+    public static final String HideChatsHideSettings = "HideChatsHideSettings";
+    public static final String HideChatsHideSettingsInfo = "HideChatsHideSettingsInfo";
+    public static final String HideChatsHideSettingsConfirm = "HideChatsHideSettingsConfirm";
+    public static final String HideChatsHideSettingsFailed = "HideChatsHideSettingsFailed";
+    public static final String HideChatsHideSettingsSaveFailed = "HideChatsHideSettingsSaveFailed";
+    public static final String HideChatsSettingsHidden = "HideChatsSettingsHidden";
+    public static final String HideChatsSecretCode = "HideChatsSecretCode";
+    public static final String HideChatsSecretCodeRepeat = "HideChatsSecretCodeRepeat";
+    public static final String HideChatsSecretCodeMessage = "HideChatsSecretCodeMessage";
+    public static final String HideChatsSecretCodeTooShort = "HideChatsSecretCodeTooShort";
+    public static final String HideChatsSecretCodeMismatch = "HideChatsSecretCodeMismatch";
 }

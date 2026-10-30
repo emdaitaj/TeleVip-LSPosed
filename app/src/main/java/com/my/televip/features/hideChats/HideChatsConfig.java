@@ -226,10 +226,11 @@ public class HideChatsConfig {
         data.managed = Collections.unmodifiableSet(newManaged);
         data.visible = Collections.unmodifiableSet(newVisible);
         data.recomputeHidden();
+        // committed, not applied: a chat the user just hid must stay hidden if the process dies now
         preferences.edit()
                 .putString(KEY_MANAGED + data.userId, encode(data.managed))
                 .putString(KEY_VISIBLE + data.userId, encode(data.visible))
-                .apply();
+                .commit();
     }
 
     public static void setVisible(int account, Set<Long> visible) {
@@ -239,7 +240,7 @@ public class HideChatsConfig {
         newVisible.retainAll(data.managed);
         data.visible = Collections.unmodifiableSet(newVisible);
         data.recomputeHidden();
-        preferences.edit().putString(KEY_VISIBLE + data.userId, encode(data.visible)).apply();
+        preferences.edit().putString(KEY_VISIBLE + data.userId, encode(data.visible)).commit();
     }
 
     /**

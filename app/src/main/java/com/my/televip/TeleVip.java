@@ -8,6 +8,7 @@ import android.os.Looper;
 import com.my.televip.Configs.ConfigManager;
 import com.my.televip.application.AndroidUtilities;
 import com.my.televip.dex.DexInjector;
+import com.my.televip.features.hideChats.HiddenSettings;
 import com.my.televip.language.Translator;
 import com.my.televip.logging.Logger;
 import com.my.televip.settings.SettingsManager;
@@ -27,6 +28,7 @@ public class TeleVip {
 
             SettingsController settingsController = new SettingsController();
 
+            HiddenSettings.attach(settingsController);
             Bridge.init(settingsController);
             ConfigManager.loadAndRead();
             SettingsManager.init(settingsController);

@@ -333,20 +333,8 @@ final class SearchHooks {
         messagesSearchClass = TgAccess.findClass(ClassNames.TL_MESSAGES_SEARCH);
         inputPeerEmptyClass = TgAccess.findClass(ClassNames.TL_INPUT_PEER_EMPTY);
         messagesMessagesClass = TgAccess.findClass(ClassNames.TL_MESSAGES_MESSAGES);
-        Class<?> connectionsManager = TgAccess.findClass(ClassNames.CONNECTIONS_MANAGER);
         Class<?> requestDelegate = TgAccess.findClass(ClassNames.REQUEST_DELEGATE);
-        Class<?>[] parameters = sendRequestInternalParameters();
-        boolean available = requestDelegate != null;
-        for (Class<?> parameter : parameters) {
-            if (parameter == null) available = false;
-        }
-        if (!available) {
-            Logger.w("HideChats: network search filter unavailable");
-            return;
-        }
-        Object[] parametersAndCallback = new Object[parameters.length + 1];
-        System.arraycopy(parameters, 0, parametersAndCallback, 0, parameters.length);
-        parametersAndCallback[parameters.length] = new BaseMethodHook() {
+        boolean hooked = requestDelegate != null && hookSendRequestInternal(new BaseMethodHook() {
             @Override
             protected void beforeMethod(MethodHookParam param) {
                 Object request = param.args[0];
@@ -358,8 +346,24 @@ final class SearchHooks {
                 int account = TgAccess.getAccount(param.thisObject);
                 param.args[1] = wrapRequestDelegate(requestDelegate, account, type, request, param.args[1]);
             }
-        };
-        HideChats.hook(connectionsManager, "ConnectionsManager", "sendRequestInternal", parametersAndCallback);
+        });
+        if (!hooked) {
+            Logger.w("HideChats: network search filter unavailable");
+        }
+    }
+
+    /**
+     * Hooks ConnectionsManager.sendRequestInternal; false when its signature is not known here.
+     */
+    static boolean hookSendRequestInternal(BaseMethodHook callback) {
+        Class<?>[] parameters = sendRequestInternalParameters();
+        for (Class<?> parameter : parameters) {
+            if (parameter == null) return false;
+        }
+        Object[] parametersAndCallback = new Object[parameters.length + 1];
+        System.arraycopy(parameters, 0, parametersAndCallback, 0, parameters.length);
+        parametersAndCallback[parameters.length] = callback;
+        return HideChats.hook(TgAccess.findClass(ClassNames.CONNECTIONS_MANAGER), "ConnectionsManager", "sendRequestInternal", parametersAndCallback);
     }
 
     /**

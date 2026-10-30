@@ -7,6 +7,7 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import com.my.televip.Configs.ConfigPreferences;
+import com.my.televip.features.hideChats.HiddenSettings;
 import com.my.televip.language.Keys;
 import com.my.televip.language.Translator;
 import com.my.televip.settings.ui.SettingsActivity;
@@ -28,6 +29,16 @@ public class SettingsController {
         try {
             if (settingsView == null) {
                 settingsView = new FrameLayout(getContext());
+                // a hidden Hide Chats section locks again however the screen goes away, hide() included
+                settingsView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {}
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+                        HiddenSettings.relock();
+                    }
+                });
             }
 
             settingsView.removeAllViews();

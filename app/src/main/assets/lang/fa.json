@@ -140,5 +140,16 @@
   "HideChatsPickerTitleManaged": "چت‌های قابل مدیریت",
   "HideChatsPickerTitleVisible": "چت‌های قابل نمایش",
   "HideChatsPickerHintManaged": "چت‌هایی را که این قابلیت اجازه دارد مخفی کند انتخاب کنید. بقیه چت‌ها همیشه نمایان می‌مانند.",
-  "HideChatsPickerHintVisible": "انتخاب کنید کدام چت‌های مدیریت‌شده هنگام مخفی‌سازی نمایان بمانند. بقیه مخفی می‌شوند."
+  "HideChatsPickerHintVisible": "انتخاب کنید کدام چت‌های مدیریت‌شده هنگام مخفی‌سازی نمایان بمانند. بقیه مخفی می‌شوند.",
+  "HideChatsHideSettings": "مخفی کردن این تنظیمات",
+  "HideChatsHideSettingsInfo": "برای نمایش دوباره، کد مخفی خود را در جستجوی چت‌ها بنویسید",
+  "HideChatsHideSettingsConfirm": "مخفی کن",
+  "HideChatsHideSettingsFailed": "این تنظیمات در این نسخه از تلگرام قابل مخفی شدن نیست، جستجوی چت‌ها قابل اتصال نبود.",
+  "HideChatsSettingsHidden": "تنظیمات مخفی کردن چت‌ها مخفی شد. برای نمایش دوباره، کد خود را در جستجوی چت‌ها بنویسید.",
+  "HideChatsSecretCode": "کد مخفی",
+  "HideChatsSecretCodeRepeat": "تکرار کد",
+  "HideChatsSecretCodeMessage": "بخش مخفی کردن چت‌ها از این تنظیمات حذف می‌شود. برای نمایش دوباره، کد را در جستجوی چت‌های تلگرام بنویسید. حداقل %d نویسه، حروف بزرگ و کوچک فرقی ندارند.",
+  "HideChatsSecretCodeTooShort": "کد باید حداقل %d نویسه باشد.",
+  "HideChatsSecretCodeMismatch": "دو کد با هم یکسان نیستند.",
+  "HideChatsHideSettingsSaveFailed": "تنظیم ذخیره نشد، دوباره تلاش کنید."
 }

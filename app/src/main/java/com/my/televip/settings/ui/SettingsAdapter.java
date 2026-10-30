@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.my.televip.Configs.ConfigItem;
 import com.my.televip.Configs.ConfigManager;
+import com.my.televip.features.hideChats.HiddenSettings;
 import com.my.televip.features.hideChats.HideChats;
 import com.my.televip.language.Keys;
 import com.my.televip.language.Translator;
@@ -134,6 +135,11 @@ public class SettingsAdapter {
             viewHolder.getItemView().setOnClickListener(v -> {
 
                 if (viewType == ConfigItem.SWITCH) {
+                    if (item == ConfigManager.hideChatsHideSettings) {
+                        // asks for the secret code before anything changes, and rebinds the list itself
+                        HiddenSettings.onSwitchClicked((Activity) settingsController.getContext(), item);
+                        return;
+                    }
                     TextCheckCellHolder textCheck = new TextCheckCellHolder(holder);
                     // the switch is bound from item.isEnable(), TextCheckCell.isChecked() is inlined away in R8 builds
                     boolean checked = !item.isEnable();

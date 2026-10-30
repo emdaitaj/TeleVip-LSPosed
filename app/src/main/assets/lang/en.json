@@ -141,5 +141,16 @@
   "HideChatsPickerTitleManaged": "Chats to manage",
   "HideChatsPickerTitleVisible": "Chats to show",
   "HideChatsPickerHintManaged": "Pick the chats this feature is allowed to hide. Every other chat always stays visible.",
-  "HideChatsPickerHintVisible": "Pick which of the managed chats stay visible while hiding is on. The rest of them are hidden."
+  "HideChatsPickerHintVisible": "Pick which of the managed chats stay visible while hiding is on. The rest of them are hidden.",
+  "HideChatsHideSettings": "Hide these settings",
+  "HideChatsHideSettingsInfo": "Type your secret code in the chat search to show them again",
+  "HideChatsHideSettingsConfirm": "Hide",
+  "HideChatsHideSettingsFailed": "These settings cannot be hidden on this Telegram build, the chat search could not be hooked.",
+  "HideChatsSettingsHidden": "Hide Chats settings hidden. Type your code in the chat search to show them again.",
+  "HideChatsSecretCode": "Secret code",
+  "HideChatsSecretCodeRepeat": "Repeat the code",
+  "HideChatsSecretCodeMessage": "The Hide Chats section disappears from these settings. To show it again, type the code into Telegram's chat search. At least %d characters, letter case does not matter.",
+  "HideChatsSecretCodeTooShort": "The code needs at least %d characters.",
+  "HideChatsSecretCodeMismatch": "The two codes do not match.",
+  "HideChatsHideSettingsSaveFailed": "The setting could not be saved, try again."
 }

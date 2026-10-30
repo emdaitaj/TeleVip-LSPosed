@@ -74,7 +74,7 @@ public class ConfigItem {
 
     public void setEnable(boolean value) {
         this.enable = value;
-        ConfigPreferences.putBoolean(key, value);
+        ConfigPreferences.commitBoolean(key, value);
     }
 
     public int getIntValue() { return ConfigPreferences.getInt(key + "Int"); }
