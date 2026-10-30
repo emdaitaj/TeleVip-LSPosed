@@ -2,7 +2,6 @@ package com.my.televip.settings.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.TextView;
 
 import com.my.televip.Configs.ConfigItem;
 import com.my.televip.Configs.ConfigManager;
-import com.my.televip.Audio;
 import com.my.televip.features.hideChats.HideChats;
 import com.my.televip.language.Keys;
 import com.my.televip.language.Translator;
@@ -132,11 +130,6 @@ public class SettingsAdapter {
                     break;
             }
             ViewHolder viewHolder = new ViewHolder(holder);
-
-            viewHolder.getItemView().setOnLongClickListener(v -> {
-                playAudio(settingsController.getContext());
-                return true;
-            });
 
             viewHolder.getItemView().setOnClickListener(v -> {
 
@@ -274,15 +267,6 @@ public class SettingsAdapter {
             textView.setMaxLines(expanded ? Integer.MAX_VALUE : collapsedLines);
             textView.setEllipsize(expanded ? null : TextUtils.TruncateAt.END);
         });
-    }
-
-    public static void playAudio(Context context) {
-        if (Audio.playing) {
-            Audio.stop();
-        } else {
-            Audio.start();
-            DialogUtils.showQuranAlert(context);
-        }
     }
 
 }

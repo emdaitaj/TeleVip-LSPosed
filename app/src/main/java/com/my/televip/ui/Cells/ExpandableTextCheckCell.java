@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 
 import com.my.televip.Configs.ConfigItem;
 import com.my.televip.language.Translator;
-import com.my.televip.settings.ui.SettingsAdapter;
 import com.my.televip.virtuals.TeleVip.Bridge.Bridge;
 import com.my.televip.virtuals.ui.Cells.TextCheckCell;
 
@@ -40,10 +39,6 @@ public class ExpandableTextCheckCell extends LinearLayout {
         childContainer.setOrientation(VERTICAL);
         childContainer.setVisibility(GONE);
 
-        textCheckCell.getView().setOnLongClickListener(v -> {
-            SettingsAdapter.playAudio(context);
-            return true;
-        });
         addView(childContainer, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         textCheckCell.getView().setOnClickListener(v -> setExpanded(!expanded, true));
@@ -65,10 +60,6 @@ public class ExpandableTextCheckCell extends LinearLayout {
             row.setOrientation(HORIZONTAL);
             row.setBackgroundResource(resIdRow);
             row.setPadding(dp(), 0, 0, 0);
-            row.setOnLongClickListener(v -> {
-                SettingsAdapter.playAudio(context);
-                return true;
-            });
             row.addView(textCheckCell1.getView(),
                     new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 

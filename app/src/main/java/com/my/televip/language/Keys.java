@@ -82,7 +82,6 @@ public class Keys {
     public static final String Persian = "Persian";
     public static final String TodayAt = "TodayAt";
     public static final String YesterdayAt = "YesterdayAt";
-    public static final String QuranNotification = "QuranNotification";
     public static final String GregorianMonthJanuary = "GregorianMonthJanuary";
     public static final String GregorianMonthFebruary = "GregorianMonthFebruary";
     public static final String GregorianMonthMarch = "GregorianMonthMarch";

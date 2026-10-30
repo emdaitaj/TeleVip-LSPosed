@@ -4,7 +4,6 @@ import static com.my.televip.application.AndroidUtilities.dp;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.LinearLayout;
 
@@ -38,13 +37,5 @@ public class DialogUtils {
         builder.setView(linearLayout);
         builder.setPositiveButton(Translator.get(Keys.Cancel), null);
         return builder.create();
-    }
-
-    public static void showQuranAlert(Context context){
-        AlertDialog alertDialog = new AlertDialog(context);
-        alertDialog.setTitle("TeleVip");
-        alertDialog.setMessage(Translator.get(Keys.QuranNotification));
-        alertDialog.setPositiveButton(Translator.get(Keys.Done), null);
-        alertDialog.show();
     }
 }
